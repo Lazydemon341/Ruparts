@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/menuFragment">
+
+    <fragment
+        android:id="@+id/menuFragment"
+        android:name="com.ruparts.app.features.menu.presentation.MenuFragment"
+        android:label="Menu"
+        tools:layout="@layout/fragment_menu" />
+        
+    <!-- Additional fragments can be added here later -->
+    
+</navigation>
