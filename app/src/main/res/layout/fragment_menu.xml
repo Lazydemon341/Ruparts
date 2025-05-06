@@ -13,13 +13,13 @@
         android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        tools:ignore="MissingConstraints">
 
         <TextView
             android:id="@+id/user"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginVertical="7dp"
             android:layout_marginLeft="15dp"
             android:gravity="center_vertical"
             android:text="Петров АВ"
@@ -38,54 +38,42 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:layout_toRightOf="@id/right_icon"
             android:text="Задачи"
             android:textSize="16dp"
             android:backgroundTint="@color/white"
-            android:drawableStart="@drawable/baseline_cancel_24"
+            android:drawableStart="@drawable/baseline_home_24"
             android:textColor="@color/black"
             app:iconGravity="textStart"
             app:iconSize="25dp"
             />
-
-
 
         <Button
             android:id="@+id/placement"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:layout_toRightOf="@id/right_icon"
-            android:ellipsize="end"
             android:text="Размещение"
             android:textSize="16dp"
             android:backgroundTint="@color/white"
-            android:drawableStart="@drawable/baseline_cancel_24"
+            android:drawableStart="@drawable/baseline_home_24"
             android:textColor="@color/black"
             app:iconGravity="textStart"
             app:iconSize="25dp"
             />
-
-
 
         <Button
             android:id="@+id/work_with_product"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:layout_toRightOf="@id/right_icon"
-            android:ellipsize="end"
             android:text="Работа с товаром"
             android:textSize="16dp"
             android:backgroundTint="@color/white"
-            android:drawableStart="@drawable/baseline_cancel_24"
+            android:drawableStart="@drawable/baseline_home_24"
             android:textColor="@color/black"
             app:iconGravity="textStart"
             app:iconSize="25dp" />
 
     </LinearLayout>
-
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
