@@ -30,7 +30,6 @@ class MenuFragment : Fragment() {
     
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // TODO: tasksButton = findViewById(...)
 
         tasksButton = view.findViewById(R.id.tasks)
         placementButton = view.findViewById(R.id.placement)

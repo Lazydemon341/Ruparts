@@ -29,13 +29,14 @@
     <LinearLayout
         android:id="@+id/layout_tasks"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
         app:layout_constraintTop_toBottomOf="@+id/header">
 
         <Button
             android:id="@+id/tasks"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:layout_toRightOf="@id/right_icon"
             android:text="Задачи"
@@ -44,20 +45,15 @@
             android:drawableStart="@drawable/baseline_cancel_24"
             android:textColor="@color/black"
             app:iconGravity="textStart"
-            app:iconSize="25dp" />
+            app:iconSize="25dp"
+            />
 
-    </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/layout_placement"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        app:layout_constraintTop_toBottomOf="@+id/layout_tasks">
 
         <Button
             android:id="@+id/placement"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:layout_toRightOf="@id/right_icon"
             android:ellipsize="end"
@@ -67,20 +63,15 @@
             android:drawableStart="@drawable/baseline_cancel_24"
             android:textColor="@color/black"
             app:iconGravity="textStart"
-            app:iconSize="25dp" />
+            app:iconSize="25dp"
+            />
 
-    </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/layout_product"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        app:layout_constraintTop_toBottomOf="@+id/layout_placement">
 
         <Button
             android:id="@+id/work_with_product"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:layout_toRightOf="@id/right_icon"
             android:ellipsize="end"
