@@ -10,6 +10,12 @@
         android:name="com.ruparts.app.features.menu.presentation.MenuFragment"
         android:label="Menu"
         tools:layout="@layout/fragment_menu" />
+
+    <fragment
+        android:id="@+id/taskslistFragment"
+        android:name="com.ruparts.app.features.taskslist.presentation.TasksListFragment"
+        android:label="TasksList"
+        tools:layout="@layout/fragment_taskslist" />
         
     <!-- Additional fragments can be added here later -->
     
