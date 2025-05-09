@@ -9,6 +9,7 @@ import com.ruparts.app.features.taskslist.model.TaskListGroup
 
 class ExpandableListAdapter : BaseExpandableListAdapter() {
 
+
     private var items: List<TaskListGroup> = ArrayList()
 
     fun submitList(newList: List<TaskListGroup>) {
