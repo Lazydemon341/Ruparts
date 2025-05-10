@@ -1,19 +1,25 @@
 package com.ruparts.app.features.taskslist
 
 
+import android.content.Context
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
+import android.widget.ImageView
+import android.widget.TextView
+import com.ruparts.app.R
 import com.ruparts.app.features.taskslist.model.TaskListGroup
 
 
-class ExpandableListAdapter : BaseExpandableListAdapter() {
-
+class ExpandableListAdapter(private val context: Context) : BaseExpandableListAdapter() {
 
     private var items: List<TaskListGroup> = ArrayList()
+    private val layoutInflater = LayoutInflater.from(context)
 
     fun submitList(newList: List<TaskListGroup>) {
         items = newList
+        notifyDataSetChanged()
     }
 
     override fun getGroupCount(): Int {
@@ -45,7 +51,12 @@ class ExpandableListAdapter : BaseExpandableListAdapter() {
     }
 
     override fun getGroupView(groupPosition: Int, isExpanded: Boolean, convertView: View?, parent: ViewGroup?): View? {
-        TODO("Not yet implemented")
+
+        val view = layoutInflater.inflate(R.layout.expandable_list_group, parent, false)
+
+        var textView = view.findViewById<TextView>(R.id.exp_list_group_title)
+
+        return view
     }
 
     override fun getChildView(
@@ -55,7 +66,15 @@ class ExpandableListAdapter : BaseExpandableListAdapter() {
         convertView: View?,
         parent: ViewGroup?
     ): View {
-        TODO("Not yet implemented")
+        val view = layoutInflater.inflate(R.layout.expandable_list_child, parent, false)
+
+        var priorityImage = view.findViewById<ImageView>(R.id.item_priority)
+        var itemName = view.findViewById<TextView>(R.id.item_name)
+        var itemDate = view.findViewById<TextView>(R.id.item_date)
+        var itemNote = view.findViewById<TextView>(R.id.item_note)
+        var itemDescription = view.findViewById<TextView>(R.id.item_comment)
+
+        return view
     }
 
     override fun isChildSelectable(groupPosition: Int, childPosition: Int): Boolean {

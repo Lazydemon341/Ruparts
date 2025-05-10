@@ -40,7 +40,7 @@ class TasksListFragment : Fragment() {
 //        toolbar = view.findViewById(R.id.toolbar)
 
         expandableListView = view.findViewById(R.id.taskslist_expandable_list_view)
-        adapter = ExpandableListAdapter()
+        adapter = ExpandableListAdapter(requireContext())
         expandableListView.setAdapter(adapter)
 
         observeScreenState()
