@@ -54,9 +54,13 @@ class ExpandableListAdapter(private val context: Context) : BaseExpandableListAd
 
     override fun getGroupView(groupPosition: Int, isExpanded: Boolean, convertView: View?, parent: ViewGroup?): View? {
 
-        val view = layoutInflater.inflate(R.layout.expandable_list_group, parent, false)
+        val view = if (convertView != null) {
+            convertView
+        } else {
+            layoutInflater.inflate(R.layout.expandable_list_group, parent, false)
+        }
 
-        var textView = view.findViewById<TextView>(R.id.exp_list_group_title)
+        val textView = view.findViewById<TextView>(R.id.exp_list_group_title)
         textView.text = getGroup(groupPosition).title
 
         return view
@@ -69,13 +73,17 @@ class ExpandableListAdapter(private val context: Context) : BaseExpandableListAd
         convertView: View?,
         parent: ViewGroup?
     ): View {
-        val view = layoutInflater.inflate(R.layout.expandable_list_child, parent, false)
+        val view = if (convertView != null) {
+            convertView
+        } else {
+            layoutInflater.inflate(R.layout.expandable_list_child, parent, false)
+        }
 
-        var itemPriorityImage = view.findViewById<ImageView>(R.id.item_priority)
-        var itemName = view.findViewById<TextView>(R.id.item_name)
-        var itemDate = view.findViewById<TextView>(R.id.item_date)
-        var itemNote = view.findViewById<TextView>(R.id.item_note)
-        var itemDescription = view.findViewById<TextView>(R.id.item_comment)
+        val itemPriorityImage = view.findViewById<ImageView>(R.id.item_priority)
+        val itemName = view.findViewById<TextView>(R.id.item_name)
+        val itemDate = view.findViewById<TextView>(R.id.item_date)
+        val itemNote = view.findViewById<TextView>(R.id.item_note)
+        val itemDescription = view.findViewById<TextView>(R.id.item_comment)
 
         val item: TaskListItem = getChild(groupPosition, childPosition)
 
@@ -84,9 +92,9 @@ class ExpandableListAdapter(private val context: Context) : BaseExpandableListAd
         itemDescription.text = item.description
 
         when (item.priority) {
-            (TaskPriority.HIGH) -> itemPriorityImage.setImageResource(R.drawable.baseline_keyboard_double_arrow_up_24)
-            (TaskPriority.LOW) -> itemPriorityImage.setImageResource(R.drawable.keyboard_double_arrow_down_24dp_40c8ff_fill0_wght400_grad0_opsz24)
-            else -> itemPriorityImage.setImageResource(R.drawable.equal_24dp_faed00_fill0_wght400_grad0_opsz24)
+            (TaskPriority.HIGH) -> itemPriorityImage.setImageResource(R.drawable.arrow_up)
+            (TaskPriority.LOW) -> itemPriorityImage.setImageResource(R.drawable.arrow_down)
+            else -> itemPriorityImage.setImageResource(R.drawable.equal)
         }
 
         return view

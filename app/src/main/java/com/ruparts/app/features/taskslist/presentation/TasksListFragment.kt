@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ExpandableListView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -24,7 +25,7 @@ class TasksListFragment : Fragment() {
 
     private lateinit var expandableListView: ExpandableListView
     private lateinit var adapter: ExpandableListAdapter
-//    private lateinit var toolbar: Toolbar
+    private lateinit var toolbar: Toolbar
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,7 +38,6 @@ class TasksListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        toolbar = view.findViewById(R.id.toolbar)
 
         expandableListView = view.findViewById(R.id.taskslist_expandable_list_view)
         adapter = ExpandableListAdapter(requireContext())
@@ -58,6 +58,7 @@ class TasksListFragment : Fragment() {
 
     private fun updateUI(state: TasksListScreenState) {
         adapter.submitList(state.groups)
+        (activity as AppCompatActivity).supportActionBar?.title = state.title
     }
 
 }
