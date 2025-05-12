@@ -9,12 +9,27 @@ import com.ruparts.app.features.taskslist.presentation.model.TasksListScreenStat
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
 class TasksListViewModel @Inject constructor() : ViewModel() {
+
     private val _screenState = MutableStateFlow(mockScreenState)
     val screenState = _screenState.asStateFlow()
+
+    fun filterTasks(query: String) {
+
+        var resultList = mutableListOf<TaskListGroup>()
+
+        for (group in mockTasksList) {
+            val filtered: List<TaskListItem> = group.tasks.filter { it.title.contains(query) }
+            if (filtered.isNotEmpty()) {
+                resultList.add(TaskListGroup(filtered, group.title))
+            }
+        }
+        _screenState.update { it.copy(groups = resultList) }
+    }
 }
 
 private val mockTasksList = listOf(

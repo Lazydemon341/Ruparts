@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ExpandableListView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -25,6 +26,7 @@ class TasksListFragment : Fragment() {
 
     private lateinit var expandableListView: ExpandableListView
     private lateinit var adapter: ExpandableListAdapter
+    private lateinit var searchView: SearchView
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,10 +39,22 @@ class TasksListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         expandableListView = view.findViewById(R.id.taskslist_expandable_list_view)
         adapter = ExpandableListAdapter(requireContext())
         expandableListView.setAdapter(adapter)
+
+        searchView = view.findViewById(R.id.taskslist_searchview)
+
+        searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+
+                return false
+            }
+            override fun onQueryTextChange(query: String): Boolean {
+                viewModel.filterTasks(query)
+                return true
+            }
+        })
 
         observeScreenState()
     }
