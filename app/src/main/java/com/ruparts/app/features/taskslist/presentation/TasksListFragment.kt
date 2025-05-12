@@ -4,13 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import android.widget.ExpandableListView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.ruparts.app.R
+import com.ruparts.app.features.taskslist.ExpandableListAdapter
 import com.ruparts.app.features.taskslist.presentation.model.TasksListScreenState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -19,6 +22,9 @@ import kotlinx.coroutines.launch
 class TasksListFragment : Fragment() {
 
     private val viewModel: TasksListViewModel by viewModels()
+
+    private lateinit var expandableListView: ExpandableListView
+    private lateinit var adapter: ExpandableListAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,8 +36,11 @@ class TasksListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
-        // TODO: тут проинициализировать view (findViewById(...))
+
+
+        expandableListView = view.findViewById(R.id.taskslist_expandable_list_view)
+        adapter = ExpandableListAdapter(requireContext())
+        expandableListView.setAdapter(adapter)
 
         observeScreenState()
     }
@@ -47,8 +56,8 @@ class TasksListFragment : Fragment() {
     }
 
     private fun updateUI(state: TasksListScreenState) {
-        // TODO: тут обновить стейт. Например:
-        // adapter.submitList(state.groups)
+        adapter.submitList(state.groups)
+        (activity as AppCompatActivity).supportActionBar?.title = state.title
     }
 
 }
