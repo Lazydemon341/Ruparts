@@ -13,6 +13,19 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TasksListViewModel @Inject constructor() : ViewModel() {
+
+    fun filterTasks(query: String) {
+
+        var resultList = mutableListOf<TaskListGroup>()
+
+        for (group in mockTasksList) {
+            val filtered: List<TaskListItem> = group.tasks.filter { it.title.contains(query) }
+            if (filtered.isNotEmpty()) {
+                resultList.add(TaskListGroup(filtered, group.title))
+            }
+        }
+    }
+
     private val _screenState = MutableStateFlow(mockScreenState)
     val screenState = _screenState.asStateFlow()
 }
