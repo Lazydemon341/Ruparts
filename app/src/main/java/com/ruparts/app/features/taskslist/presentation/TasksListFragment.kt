@@ -25,7 +25,6 @@ class TasksListFragment : Fragment() {
 
     private lateinit var expandableListView: ExpandableListView
     private lateinit var adapter: ExpandableListAdapter
-    private lateinit var toolbar: Toolbar
 
     override fun onCreateView(
         inflater: LayoutInflater,

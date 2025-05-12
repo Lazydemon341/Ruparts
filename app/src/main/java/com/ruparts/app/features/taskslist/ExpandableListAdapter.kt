@@ -92,9 +92,9 @@ class ExpandableListAdapter(private val context: Context) : BaseExpandableListAd
         itemDescription.text = item.description
 
         when (item.priority) {
-            (TaskPriority.HIGH) -> itemPriorityImage.setImageResource(R.drawable.arrow_up)
-            (TaskPriority.LOW) -> itemPriorityImage.setImageResource(R.drawable.arrow_down)
-            else -> itemPriorityImage.setImageResource(R.drawable.equal)
+            TaskPriority.HIGH -> itemPriorityImage.setImageResource(R.drawable.arrow_up)
+            TaskPriority.LOW -> itemPriorityImage.setImageResource(R.drawable.arrow_down)
+            TaskPriority.MEDIUM -> itemPriorityImage.setImageResource(R.drawable.equal)
         }
 
         return view
