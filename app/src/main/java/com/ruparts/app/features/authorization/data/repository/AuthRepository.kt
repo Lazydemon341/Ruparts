@@ -22,4 +22,8 @@ class AuthRepository @Inject constructor(
     suspend fun isAuthenticated(): Boolean {
         return tokenStorage.hasToken()
     }
+
+    suspend fun logout() {
+        tokenStorage.clearToken()
+    }
 }

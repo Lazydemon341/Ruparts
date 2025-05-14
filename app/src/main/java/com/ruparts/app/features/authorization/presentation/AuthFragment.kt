@@ -35,15 +35,13 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.ruparts.app.R
+import com.ruparts.app.core.extensions.collectWhileStarted
 import com.ruparts.app.features.authorization.presentation.model.AuthUiAction
 import com.ruparts.app.features.authorization.presentation.model.AuthUiEffect
 import com.ruparts.app.features.authorization.presentation.model.AuthUiState
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 
 @AndroidEntryPoint
 class AuthFragment : Fragment() {
@@ -75,7 +73,7 @@ class AuthFragment : Fragment() {
     }
 
     private fun collectUiEffects() {
-        viewModel.uiEffect.onEach { effect ->
+        viewModel.uiEffect.collectWhileStarted(viewLifecycleOwner) { effect ->
             when (effect) {
                 is AuthUiEffect.NavigateToMenu -> {
                     findNavController().navigate(R.id.action_authFragment_to_menuFragment)
@@ -86,7 +84,7 @@ class AuthFragment : Fragment() {
                     Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
                 }
             }
-        }.launchIn(viewLifecycleOwner.lifecycleScope)
+        }
     }
 }
 

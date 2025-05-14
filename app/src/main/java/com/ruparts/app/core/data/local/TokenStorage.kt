@@ -59,8 +59,8 @@ class TokenStorage @Inject constructor(
     /**
      * Check if a token exists
      */
-    suspend fun hasToken(): Boolean = withContext(dispatcher) {
-        !getToken().isNullOrEmpty()
+    suspend fun hasToken(): Boolean {
+        return !getToken().isNullOrEmpty()
     }
 
     companion object {

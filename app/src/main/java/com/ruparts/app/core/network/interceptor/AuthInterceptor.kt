@@ -1,6 +1,7 @@
 package com.ruparts.app.core.network.interceptor
 
 import com.ruparts.app.core.data.local.TokenStorage
+import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Response
 import javax.inject.Inject
@@ -14,15 +15,16 @@ class AuthInterceptor @Inject constructor(
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
-        
+
         // If no token is available, proceed with the original request
-        val token = tokenStorage.getToken() ?: return chain.proceed(originalRequest)
-        
+        val token = runBlocking { tokenStorage.getToken() }
+            ?: return chain.proceed(originalRequest)
+
         // Add the Authorization header with the Bearer token
         val newRequest = originalRequest.newBuilder()
             .header("Authorization", "Bearer $token")
             .build()
-        
+
         return chain.proceed(newRequest)
     }
 }
