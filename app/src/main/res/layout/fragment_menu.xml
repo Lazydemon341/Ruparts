@@ -6,9 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".features.menu.presentation.MenuFragment">
 
-    <!-- Empty layout as per requirements -->
-    <!-- Add your UI elements here when needed -->
-
     <LinearLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
@@ -20,7 +17,7 @@
             android:id="@+id/user"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginLeft="15dp"
+            android:layout_marginStart="16dp"
             android:gravity="center_vertical"
             android:text="Петров АВ"
             android:textSize="20sp" />

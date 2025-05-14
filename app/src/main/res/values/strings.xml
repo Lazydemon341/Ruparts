@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Ruparts</string>
+    <string name="auth_required_title">Требуется авторизация</string>
+    <string name="auth_error_message">Ошибка авторизации</string>
 </resources>
