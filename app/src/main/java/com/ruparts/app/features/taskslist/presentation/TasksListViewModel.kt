@@ -25,7 +25,7 @@ class TasksListViewModel @Inject constructor() : ViewModel() {
         for (group in mockTasksList) {
             val filtered: List<TaskListItem> = group.tasks.filter { it.title.containsNormalized(query) }
             if (filtered.isNotEmpty()) {
-                resultList.add(TaskListGroup(filtered, group.title, group.id))
+                resultList.add(group.copy(tasks = filtered))
             }
         }
         _screenState.update { it.copy(groups = resultList) }
