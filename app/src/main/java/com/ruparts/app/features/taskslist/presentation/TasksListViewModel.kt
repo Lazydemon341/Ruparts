@@ -23,12 +23,33 @@ class TasksListViewModel @Inject constructor() : ViewModel() {
         var resultList = mutableListOf<TaskListGroup>()
 
         for (group in mockTasksList) {
-            val filtered: List<TaskListItem> = group.tasks.filter { it.title.contains(query) }
+            val filtered: List<TaskListItem> = group.tasks.filter { it.title.containsNormalized(query) }
             if (filtered.isNotEmpty()) {
                 resultList.add(TaskListGroup(filtered, group.title))
             }
         }
         _screenState.update { it.copy(groups = resultList) }
+    }
+
+    fun filterTasks(status: TaskStatus) {
+
+        var resultList = mutableListOf<TaskListGroup>()
+
+        for (group in mockTasksList) {
+            val filtered: List<TaskListItem> = group.tasks.filter { it.status == status }
+            if (filtered.isNotEmpty()) {
+                resultList.add(TaskListGroup(filtered, group.title))
+            }
+        }
+        _screenState.update { it.copy(groups = resultList) }
+    }
+
+    fun String.containsNormalized(value: String): Boolean {
+        fun normalize(input: String): String {
+            return input.lowercase().replace('ё', 'е')
+        }
+
+        return normalize(this).contains(normalize(value))
     }
 }
 
