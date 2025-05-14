@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -22,9 +21,13 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,11 +40,12 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.fragment.findNavController
 import com.ruparts.app.R
-import com.ruparts.app.core.extensions.collectWhileStarted
 import com.ruparts.app.features.authorization.presentation.model.AuthUiAction
 import com.ruparts.app.features.authorization.presentation.model.AuthUiEffect
 import com.ruparts.app.features.authorization.presentation.model.AuthUiState
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class AuthFragment : Fragment() {
@@ -51,19 +55,34 @@ class AuthFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        collectUiEffects()
         return ComposeView(requireContext()).apply {
             setContent {
                 val state = viewModel.uiState.collectAsStateWithLifecycle().value
+                val snackbarHostState = remember { SnackbarHostState() }
+                LaunchedEffect(Unit) {
+                    var snackBarJob: Job? = null
+                    viewModel.uiEffect.collect { effect ->
+                        when (effect) {
+                            is AuthUiEffect.NavigateToMenu -> {
+                                findNavController().navigate(R.id.action_authFragment_to_menuFragment)
+                            }
 
+                            is AuthUiEffect.ShowError -> {
+                                snackBarJob?.cancel()
+                                snackBarJob = launch {
+                                    snackbarHostState.showSnackbar(
+                                        message = getString(R.string.auth_error_message),
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
                 AuthScreen(
+                    snackbarHostState = snackbarHostState,
                     state = state,
                     onDigitPressed = { digit ->
-                        viewModel.handleAction(
-                            AuthUiAction.DigitPressed(
-                                digit
-                            )
-                        )
+                        viewModel.handleAction(AuthUiAction.DigitPressed(digit))
                     },
                     onClearPressed = { viewModel.handleAction(AuthUiAction.ClearPin) },
                     onDeletePressed = { viewModel.handleAction(AuthUiAction.DeleteLastDigit) }
@@ -71,34 +90,26 @@ class AuthFragment : Fragment() {
             }
         }
     }
-
-    private fun collectUiEffects() {
-        viewModel.uiEffect.collectWhileStarted(viewLifecycleOwner) { effect ->
-            when (effect) {
-                is AuthUiEffect.NavigateToMenu -> {
-                    findNavController().navigate(R.id.action_authFragment_to_menuFragment)
-                }
-
-                is AuthUiEffect.ShowError -> {
-                    val message = getString(R.string.auth_error_message)
-                    Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-    }
 }
 
 @Composable
 private fun AuthScreen(
+    snackbarHostState: SnackbarHostState,
     state: AuthUiState,
     onDigitPressed: (Int) -> Unit,
     onClearPressed: () -> Unit,
     onDeletePressed: () -> Unit
 ) {
-    Surface(
-        modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
-    ) {
-        Box(modifier = Modifier.fillMaxSize()) {
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        },
+    ) { contentPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(contentPadding)
+        ) {
             if (state.isLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier.align(Alignment.Center)
@@ -265,5 +276,7 @@ private fun AuthScreenPreview() {
         state = AuthUiState(pinCode = "123"),
         onDigitPressed = {},
         onClearPressed = {},
-        onDeletePressed = {})
+        onDeletePressed = {},
+        snackbarHostState = SnackbarHostState()
+    )
 }
