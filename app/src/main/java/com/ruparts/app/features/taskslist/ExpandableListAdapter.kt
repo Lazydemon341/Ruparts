@@ -41,7 +41,7 @@ class ExpandableListAdapter(private val context: Context) : BaseExpandableListAd
     }
 
     override fun getGroupId(groupPosition: Int): Long {
-        return 0
+        return items[groupPosition].id
     }
 
     override fun getChildId(groupPosition: Int, childPosition: Int): Long {

@@ -66,10 +66,11 @@ class TasksListFragment : Fragment() {
             override fun onTabSelected(tab: TabLayout.Tab?) {
 
                 when (tab?.position) {
-                    0 -> viewModel.filterTasks(TaskStatus.TODO)
-                    1 -> viewModel.filterTasks(TaskStatus.IN_PROGRESS)
-                    2 -> viewModel.filterTasks(TaskStatus.COMPLETED)
-                    3 -> viewModel.filterTasks(TaskStatus.CANCELLED)
+                    0 -> viewModel.filterTasks(null)
+                    1 -> viewModel.filterTasks(TaskStatus.TODO)
+                    2 -> viewModel.filterTasks(TaskStatus.IN_PROGRESS)
+                    3 -> viewModel.filterTasks(TaskStatus.COMPLETED)
+                    4 -> viewModel.filterTasks(TaskStatus.CANCELLED)
                 }
             }
 
