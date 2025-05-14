@@ -20,15 +20,43 @@ class TasksListViewModel @Inject constructor() : ViewModel() {
 
     fun filterTasks(query: String) {
 
-        var resultList = mutableListOf<TaskListGroup>()
+        val resultList = mutableListOf<TaskListGroup>()
 
         for (group in mockTasksList) {
-            val filtered: List<TaskListItem> = group.tasks.filter { it.title.contains(query) }
+            val filtered: List<TaskListItem> = group.tasks.filter { it.title.containsNormalized(query) }
             if (filtered.isNotEmpty()) {
-                resultList.add(TaskListGroup(filtered, group.title))
+                resultList.add(group.copy(tasks = filtered))
             }
         }
         _screenState.update { it.copy(groups = resultList) }
+    }
+
+    fun filterTasks(status: TaskStatus?) {
+        val resultList = mutableListOf<TaskListGroup>()
+
+        for (group in mockTasksList) {
+            val filtered: List<TaskListItem> = group.tasks.filter { it.status == status }
+            if (filtered.isNotEmpty()) {
+                resultList.add(group.copy(tasks = filtered))
+            }
+        }
+        _screenState.update { it.copy(groups = resultList) }
+    }
+
+    fun showAllTasks() {
+        val resultList = mutableListOf<TaskListGroup>()
+        for (group in mockTasksList) {
+            resultList.add(group.copy(tasks = group.tasks))
+        }
+        _screenState.update { it.copy(groups = resultList) }
+    }
+
+    fun String.containsNormalized(value: String): Boolean {
+        fun normalize(input: String): String {
+            return input.lowercase().replace('ё', 'е')
+        }
+
+        return normalize(this).contains(normalize(value))
     }
 }
 
@@ -44,7 +72,8 @@ private val mockTasksList = listOf(
                 description = "Номер заказа: 3321\nДоставка: ТК деловые линии",
                 date = "10 июн 23"
             )
-        )
+        ),
+        id = 1
     ),
     TaskListGroup(
         title = "Сборка заказа",
@@ -57,7 +86,8 @@ private val mockTasksList = listOf(
                 description = "Номер заказа: 3512\nСумма: 34512 руб., кол-во позиций: 35",
                 date = "9 июн 23"
             )
-        )
+        ),
+        id = 2
     ),
     TaskListGroup(
         title = "Сборка возврата",
@@ -70,7 +100,8 @@ private val mockTasksList = listOf(
                 description = "Клиент: ООО Лидер",
                 date = "9 июн 23"
             )
-        )
+        ),
+        id = 3
     )
 )
 

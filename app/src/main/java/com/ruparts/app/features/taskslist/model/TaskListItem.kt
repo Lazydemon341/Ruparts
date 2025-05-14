@@ -1,7 +1,7 @@
 package com.ruparts.app.features.taskslist.model
 
 data class TaskListItem(
-    val id: Int,
+    val id: Long,
     val status: TaskStatus,
     val priority: TaskPriority,
     val title: String,

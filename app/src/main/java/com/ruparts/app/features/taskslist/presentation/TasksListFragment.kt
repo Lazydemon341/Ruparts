@@ -4,17 +4,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ExpandableListView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.google.android.material.tabs.TabLayout
 import com.ruparts.app.R
 import com.ruparts.app.features.taskslist.ExpandableListAdapter
+import com.ruparts.app.features.taskslist.model.TaskStatus
 import com.ruparts.app.features.taskslist.presentation.model.TasksListScreenState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -27,6 +29,7 @@ class TasksListFragment : Fragment() {
     private lateinit var expandableListView: ExpandableListView
     private lateinit var adapter: ExpandableListAdapter
     private lateinit var searchView: SearchView
+    private lateinit var tabLayout: TabLayout
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,9 +48,11 @@ class TasksListFragment : Fragment() {
 
         searchView = view.findViewById(R.id.taskslist_searchview)
 
+        tabLayout = view.findViewById(R.id.tasks_tablayout);
+        tabLayout.tabMode = TabLayout.MODE_SCROLLABLE;
+
         searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
-
                 return false
             }
             override fun onQueryTextChange(query: String): Boolean {
@@ -55,6 +60,29 @@ class TasksListFragment : Fragment() {
                 return true
             }
         })
+
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+
+                when (tab?.position) {
+                    1 -> viewModel.filterTasks(TaskStatus.TODO)
+                    2 -> viewModel.filterTasks(TaskStatus.IN_PROGRESS)
+                    3 -> viewModel.filterTasks(TaskStatus.COMPLETED)
+                    4 -> viewModel.filterTasks(TaskStatus.CANCELLED)
+                    0 -> viewModel.showAllTasks()
+                }
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+
+            }
+            
+        } )
 
         observeScreenState()
     }

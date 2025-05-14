@@ -41,11 +41,11 @@ class ExpandableListAdapter(private val context: Context) : BaseExpandableListAd
     }
 
     override fun getGroupId(groupPosition: Int): Long {
-        return 0
+        return items[groupPosition].id
     }
 
     override fun getChildId(groupPosition: Int, childPosition: Int): Long {
-        return 0
+        return items[groupPosition].tasks[childPosition].id
     }
 
     override fun hasStableIds(): Boolean {
