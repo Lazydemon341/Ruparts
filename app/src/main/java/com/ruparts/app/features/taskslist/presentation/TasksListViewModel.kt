@@ -34,17 +34,19 @@ class TasksListViewModel @Inject constructor() : ViewModel() {
     fun filterTasks(status: TaskStatus?) {
         val resultList = mutableListOf<TaskListGroup>()
 
-        if (status == null) {
-            for (group in mockTasksList) {
-                resultList.add(TaskListGroup(group.tasks, group.title, group.id))
+        for (group in mockTasksList) {
+            val filtered: List<TaskListItem> = group.tasks.filter { it.status == status }
+            if (filtered.isNotEmpty()) {
+                resultList.add(group.copy(tasks = filtered))
             }
-        } else {
-            for (group in mockTasksList) {
-                val filtered: List<TaskListItem> = group.tasks.filter { it.status == status }
-                if (filtered.isNotEmpty()) {
-                    resultList.add(TaskListGroup(filtered, group.title, group.id))
-                }
-            }
+        }
+        _screenState.update { it.copy(groups = resultList) }
+    }
+
+    fun showAllTasks() {
+        val resultList = mutableListOf<TaskListGroup>()
+        for (group in mockTasksList) {
+            resultList.add(group.copy(tasks = group.tasks))
         }
         _screenState.update { it.copy(groups = resultList) }
     }
