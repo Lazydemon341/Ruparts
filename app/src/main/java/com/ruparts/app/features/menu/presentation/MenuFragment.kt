@@ -65,7 +65,7 @@ class MenuFragment : Fragment() {
         viewModel.uiEffect.collectWhileStarted(viewLifecycleOwner) { effect ->
             when (effect) {
                 is MenuUiEffect.NavigateToAuth -> {
-                    findNavController().navigate(R.id.authFragment)
+                    findNavController().navigate(R.id.action_menuFragment_to_authFragment)
                 }
             }
         }
