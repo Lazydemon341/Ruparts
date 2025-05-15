@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -18,6 +20,7 @@ class MenuFragment : Fragment() {
 
     private val viewModel: MenuViewModel by viewModels()
 
+    private lateinit var toolbar: Toolbar
     private lateinit var tasksButton: Button
     private lateinit var placementButton: Button
     private lateinit var workWithProductButton: Button
@@ -34,6 +37,10 @@ class MenuFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        
+        // Set up toolbar
+        toolbar = view.findViewById(R.id.menu_toolbar)
+        (activity as? AppCompatActivity)?.supportActionBar?.hide()
 
         tasksButton = view.findViewById(R.id.tasks)
         placementButton = view.findViewById(R.id.placement)
@@ -45,15 +52,15 @@ class MenuFragment : Fragment() {
 
     private fun setupClickListeners() {
         tasksButton.setOnClickListener {
-            findNavController().navigate(R.id.taskslistFragment, null)
+            findNavController().navigate(R.id.action_menuFragment_to_taskslistFragment)
         }
 
         placementButton.setOnClickListener {
-            // To be implemented
+            // TODO
         }
 
         workWithProductButton.setOnClickListener {
-            // To be implemented
+            // TODO
         }
 
         logoutButton.setOnClickListener {

@@ -8,47 +8,39 @@ import com.ruparts.app.features.taskslist.model.TaskStatus
 import com.ruparts.app.features.taskslist.presentation.model.TasksListScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
 
 @HiltViewModel
 class TasksListViewModel @Inject constructor() : ViewModel() {
 
-    private val _screenState = MutableStateFlow(mockScreenState)
-    val screenState = _screenState.asStateFlow()
+    private val searchQuery = MutableStateFlow("")
+    private val taskStatusFilter = MutableStateFlow<TaskStatus?>(null)
 
-    fun filterTasks(query: String) {
+    val screenState = combine(taskStatusFilter, searchQuery) { status, query ->
+        mockScreenState.copy(groups = performFilter(status, query))
+    }
 
+    fun onSearchQueryChange(query: String) {
+        searchQuery.value = query
+    }
+
+    fun onTaskStatusFilterChange(status: TaskStatus?) {
+        taskStatusFilter.value = status
+    }
+
+    private fun performFilter(status: TaskStatus?, query: String): List<TaskListGroup> {
         val resultList = mutableListOf<TaskListGroup>()
-
         for (group in mockTasksList) {
-            val filtered: List<TaskListItem> = group.tasks.filter { it.title.containsNormalized(query) }
+            val filtered: List<TaskListItem> = group.tasks.filter {
+                (status == null || it.status == status)
+                        && it.title.containsNormalized(query)
+            }
             if (filtered.isNotEmpty()) {
                 resultList.add(group.copy(tasks = filtered))
             }
         }
-        _screenState.update { it.copy(groups = resultList) }
-    }
-
-    fun filterTasks(status: TaskStatus?) {
-        val resultList = mutableListOf<TaskListGroup>()
-
-        for (group in mockTasksList) {
-            val filtered: List<TaskListItem> = group.tasks.filter { it.status == status }
-            if (filtered.isNotEmpty()) {
-                resultList.add(group.copy(tasks = filtered))
-            }
-        }
-        _screenState.update { it.copy(groups = resultList) }
-    }
-
-    fun showAllTasks() {
-        val resultList = mutableListOf<TaskListGroup>()
-        for (group in mockTasksList) {
-            resultList.add(group.copy(tasks = group.tasks))
-        }
-        _screenState.update { it.copy(groups = resultList) }
+        return resultList
     }
 
     fun String.containsNormalized(value: String): Boolean {

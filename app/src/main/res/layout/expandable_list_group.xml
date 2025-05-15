@@ -1,19 +1,31 @@
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    android:paddingStart="4dp"
+    android:paddingTop="10dp"
+    android:paddingEnd="10dp"
+    android:paddingBottom="10dp">
 
     <TextView
         android:id="@+id/exp_list_group_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_toStartOf="@+id/group_indicator"
         android:gravity="center_vertical"
-        android:paddingStart="?android:attr/expandableListPreferredChildPaddingLeft"
-        android:paddingTop="10dp"
-        android:paddingEnd="10dp"
-        android:paddingBottom="10dp"
         android:textColor="@color/black"
-        android:textSize="17dp"
+        android:textSize="16sp"
         android:textStyle="bold" />
 
-</FrameLayout>
+    <ImageView
+        android:id="@+id/group_indicator"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:contentDescription="@string/expand_collapse_indicator"
+        android:src="@drawable/ic_expand_more" />
+
+</RelativeLayout>

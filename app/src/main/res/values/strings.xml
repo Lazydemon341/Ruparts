@@ -7,4 +7,7 @@
     <string name="tasks_button">Задачи</string>
     <string name="placement_button">Размещение</string>
     <string name="work_with_product_button">Работа с товаром</string>
+
+    <string name="tasklist_search_hint">Поиск</string>
+    <string name="expand_collapse_indicator">Развернуть/свернуть группу</string>
 </resources>

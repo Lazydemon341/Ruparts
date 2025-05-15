@@ -43,6 +43,7 @@ import com.ruparts.app.R
 import com.ruparts.app.features.authorization.presentation.model.AuthUiAction
 import com.ruparts.app.features.authorization.presentation.model.AuthUiEffect
 import com.ruparts.app.features.authorization.presentation.model.AuthUiState
+import com.ruparts.app.ui.theme.RupartsTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -57,36 +58,38 @@ class AuthFragment : Fragment() {
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
-                val state = viewModel.uiState.collectAsStateWithLifecycle().value
-                val snackbarHostState = remember { SnackbarHostState() }
-                LaunchedEffect(Unit) {
-                    var snackBarJob: Job? = null
-                    viewModel.uiEffect.collect { effect ->
-                        when (effect) {
-                            is AuthUiEffect.NavigateToMenu -> {
-                                findNavController().navigate(R.id.action_authFragment_to_menuFragment)
-                            }
+                RupartsTheme {
+                    val state = viewModel.uiState.collectAsStateWithLifecycle().value
+                    val snackbarHostState = remember { SnackbarHostState() }
+                    LaunchedEffect(Unit) {
+                        var snackBarJob: Job? = null
+                        viewModel.uiEffect.collect { effect ->
+                            when (effect) {
+                                is AuthUiEffect.NavigateToMenu -> {
+                                    findNavController().navigate(R.id.action_authFragment_to_menuFragment)
+                                }
 
-                            is AuthUiEffect.ShowError -> {
-                                snackBarJob?.cancel()
-                                snackBarJob = launch {
-                                    snackbarHostState.showSnackbar(
-                                        message = getString(R.string.auth_error_message),
-                                    )
+                                is AuthUiEffect.ShowError -> {
+                                    snackBarJob?.cancel()
+                                    snackBarJob = launch {
+                                        snackbarHostState.showSnackbar(
+                                            message = getString(R.string.auth_error_message),
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
+                    AuthScreen(
+                        snackbarHostState = snackbarHostState,
+                        state = state,
+                        onDigitPressed = { digit ->
+                            viewModel.handleAction(AuthUiAction.DigitPressed(digit))
+                        },
+                        onClearPressed = { viewModel.handleAction(AuthUiAction.ClearPin) },
+                        onDeletePressed = { viewModel.handleAction(AuthUiAction.DeleteLastDigit) }
+                    )
                 }
-                AuthScreen(
-                    snackbarHostState = snackbarHostState,
-                    state = state,
-                    onDigitPressed = { digit ->
-                        viewModel.handleAction(AuthUiAction.DigitPressed(digit))
-                    },
-                    onClearPressed = { viewModel.handleAction(AuthUiAction.ClearPin) },
-                    onDeletePressed = { viewModel.handleAction(AuthUiAction.DeleteLastDigit) }
-                )
             }
         }
     }
@@ -261,7 +264,8 @@ private fun KeyboardButton(
         modifier = Modifier
             .size(64.dp)
             .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .background(MaterialTheme.colorScheme.surface)
+            .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.4f), CircleShape)
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
@@ -272,11 +276,13 @@ private fun KeyboardButton(
 @Preview(showBackground = true)
 @Composable
 private fun AuthScreenPreview() {
-    AuthScreen(
-        state = AuthUiState(pinCode = "123"),
-        onDigitPressed = {},
-        onClearPressed = {},
-        onDeletePressed = {},
-        snackbarHostState = SnackbarHostState()
-    )
+    RupartsTheme {
+        AuthScreen(
+            state = AuthUiState(pinCode = "123"),
+            onDigitPressed = {},
+            onClearPressed = {},
+            onDeletePressed = {},
+            snackbarHostState = SnackbarHostState()
+        )
+    }
 }

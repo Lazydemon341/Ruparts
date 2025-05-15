@@ -5,16 +5,26 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <androidx.appcompat.widget.SearchView
-        android:id="@+id/taskslist_searchview"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/tasks_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/blue_500"
+        android:elevation="4dp"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:titleTextColor="@color/white" />
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tasks_tablayout"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:background="@color/white">
+        android:background="@color/white"
+        android:paddingStart="0dp"
+        android:paddingEnd="8dp"
+        app:tabGravity="start"
+        app:tabIndicatorColor="@color/blue_500"
+        app:tabIndicatorFullWidth="true"
+        app:tabMode="scrollable">
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
@@ -43,15 +53,25 @@
 
     </com.google.android.material.tabs.TabLayout>
 
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/taskslist_searchview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:iconifiedByDefault="false"
+        android:paddingTop="8dp"
+        android:queryHint="@string/tasklist_search_hint"
+        app:iconifiedByDefault="false"
+        app:queryHint="@string/tasklist_search_hint" />
 
-    <ExpandableListView
-        android:id="@+id/taskslist_expandable_list_view"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/taskslist_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:choiceMode="singleChoice"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="8dp"
-        android:groupIndicator="@null"
+        android:clipToPadding="false"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="8dp"
         android:scrollbars="none" />
 
 </LinearLayout>
