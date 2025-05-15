@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Ruparts</string>
+    <string name="auth_required_title">Требуется авторизация</string>
+    <string name="auth_error_message">Ошибка авторизации</string>
+
+    <string name="logout_button">Выйти</string>
+    <string name="tasks_button">Задачи</string>
+    <string name="placement_button">Размещение</string>
+    <string name="work_with_product_button">Работа с товаром</string>
 </resources>

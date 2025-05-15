@@ -4,26 +4,38 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingHorizontal="16dp"
     tools:context=".features.menu.presentation.MenuFragment">
-
-    <!-- Empty layout as per requirements -->
-    <!-- Add your UI elements here when needed -->
 
     <LinearLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:orientation="horizontal"
+        android:gravity="center_vertical"
         tools:ignore="MissingConstraints">
 
         <TextView
             android:id="@+id/user"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="15dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="16dp"
             android:gravity="center_vertical"
             android:text="Петров АВ"
             android:textSize="20sp" />
+            
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/logout_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:textSize="20sp"
+            android:textColor="@color/black"
+            android:text="@string/logout_button"
+            app:cornerRadius="8dp"
+            style="@style/Widget.Material3.Button.TextButton" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -33,46 +45,68 @@
         android:orientation="vertical"
         app:layout_constraintTop_toBottomOf="@+id/header">
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/tasks"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
             android:gravity="center_vertical"
-            android:text="Задачи"
+            android:text="@string/tasks_button"
             android:textSize="16sp"
             android:backgroundTint="@color/white"
-            android:drawableStart="@drawable/baseline_home_24"
             android:textColor="@color/black"
+            app:icon="@drawable/baseline_home_24"
             app:iconGravity="textStart"
             app:iconSize="25dp"
+            app:iconPadding="16dp"
+            app:iconTint="@color/black"
+            app:cornerRadius="8dp"
+            style="@style/Widget.Material3.Button.TextButton"
             />
 
-        <Button
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E0E0E0" />
+            
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/placement"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
             android:gravity="center_vertical"
-            android:text="Размещение"
+            android:text="@string/placement_button"
             android:textSize="16sp"
             android:backgroundTint="@color/white"
-            android:drawableStart="@drawable/baseline_home_24"
             android:textColor="@color/black"
+            app:icon="@drawable/baseline_home_24"
             app:iconGravity="textStart"
             app:iconSize="25dp"
+            app:iconPadding="16dp"
+            app:iconTint="@color/black"
+            app:cornerRadius="8dp"
+            style="@style/Widget.Material3.Button.TextButton"
             />
 
-        <Button
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E0E0E0" />
+            
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/work_with_product"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
             android:gravity="center_vertical"
-            android:text="Работа с товаром"
+            android:text="@string/work_with_product_button"
             android:textSize="16sp"
             android:backgroundTint="@color/white"
-            android:drawableStart="@drawable/baseline_home_24"
             android:textColor="@color/black"
+            app:icon="@drawable/baseline_home_24"
             app:iconGravity="textStart"
-            app:iconSize="25dp" />
+            app:iconSize="25dp"
+            app:iconPadding="16dp"
+            app:iconTint="@color/black"
+            app:cornerRadius="8dp"
+            style="@style/Widget.Material3.Button.TextButton" />
 
     </LinearLayout>
 
