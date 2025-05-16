@@ -40,6 +40,15 @@ class ExpandableTaskAdapter : ListAdapter<Any, RecyclerView.ViewHolder>(TaskDiff
         }
     }
 
+    override fun getItemId(position: Int): Long {
+        val item = getItem(position)
+        return when (item) {
+            is TaskListGroup -> item.id
+            is TaskListItem -> item.id
+            else -> super.getItemId(position)
+        }
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             TYPE_GROUP -> {
@@ -86,6 +95,7 @@ class ExpandableTaskAdapter : ListAdapter<Any, RecyclerView.ViewHolder>(TaskDiff
                 } else {
                     expandedGroupIds.add(groupId)
                 }
+                notifyItemChanged(position)
                 updateItemList()
             }
         }
@@ -146,13 +156,8 @@ class ExpandableTaskAdapter : ListAdapter<Any, RecyclerView.ViewHolder>(TaskDiff
 
         override fun areContentsTheSame(oldItem: Any, newItem: Any): Boolean {
             return when {
-                oldItem is TaskListGroup && newItem is TaskListGroup ->
-                    oldItem.title == newItem.title && oldItem.tasks.size == newItem.tasks.size
-                oldItem is TaskListItem && newItem is TaskListItem ->
-                    oldItem.title == newItem.title &&
-                            oldItem.date == newItem.date &&
-                            oldItem.description == newItem.description &&
-                            oldItem.priority == newItem.priority
+                oldItem is TaskListGroup && newItem is TaskListGroup -> oldItem == newItem
+                oldItem is TaskListItem && newItem is TaskListItem -> oldItem == newItem
                 else -> false
             }
         }
