@@ -57,7 +57,7 @@ private val mockTasksList = listOf(
         title = "Приёмка груза от поставщика",
         tasks = listOf(
             TaskListItem(
-                id = 0,
+                id = 100,
                 status = TaskStatus.IN_PROGRESS,
                 priority = TaskPriority.HIGH,
                 title = "Приёмка груза от МаксимумСПБ",
@@ -71,7 +71,7 @@ private val mockTasksList = listOf(
         title = "Сборка заказа",
         tasks = listOf(
             TaskListItem(
-                id = 1,
+                id = 101,
                 status = TaskStatus.TODO,
                 priority = TaskPriority.LOW,
                 title = "Сборка заказа для Автопитер",
@@ -85,7 +85,7 @@ private val mockTasksList = listOf(
         title = "Сборка возврата",
         tasks = listOf(
             TaskListItem(
-                id = 2,
+                id = 102,
                 status = TaskStatus.TODO,
                 priority = TaskPriority.MEDIUM,
                 title = "Сборка возврата 3301",
