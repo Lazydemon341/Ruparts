@@ -10,4 +10,11 @@
 
     <string name="tasklist_search_hint">Поиск</string>
     <string name="expand_collapse_indicator">Развернуть/свернуть группу</string>
+
+    <string-array name="priorities">
+        <item>Высокий</item>
+        <item>Средний</item>
+        <item>Низкий</item>
+    </string-array>
+
 </resources>

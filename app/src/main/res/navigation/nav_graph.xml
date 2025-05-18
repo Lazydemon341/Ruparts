@@ -55,6 +55,29 @@
             app:exitAnim="@anim/slide_out_right"
             app:popEnterAnim="@anim/slide_in_right"
             app:popExitAnim="@anim/slide_out_left" />
+
+        <action
+            android:id="@+id/action_taskslistFragment_to_taskFragment"
+            app:destination="@id/taskFragment"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_out_right"
+            app:popEnterAnim="@anim/slide_in_right"
+            app:popExitAnim="@anim/slide_out_left" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/taskFragment"
+        android:name="com.ruparts.app.features.task.presentation.TaskFragment"
+        android:label="Task"
+        tools:layout="@layout/fragment_task">
+
+        <action
+            android:id="@+id/action_taskFragment_to_taskslistFragment"
+            app:destination="@id/taskslistFragment"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_out_right"
+            app:popEnterAnim="@anim/slide_in_right"
+            app:popExitAnim="@anim/slide_out_left" />
     </fragment>
         
     <!-- Additional fragments can be added here later -->
