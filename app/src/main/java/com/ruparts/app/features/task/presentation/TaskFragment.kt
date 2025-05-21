@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.widget.doOnTextChanged
 import com.ruparts.app.R
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -25,6 +26,7 @@ class TaskFragment : Fragment() {
 
     private val viewModel: TaskViewModel by viewModels()
 
+    private lateinit var title: TextView
     private lateinit var description: EditText
     private lateinit var implementer: TextView
     private lateinit var finishAtDate: EditText
@@ -33,8 +35,6 @@ class TaskFragment : Fragment() {
     private lateinit var createdDate: TextView
     private lateinit var changedDate: TextView
     private lateinit var toolbar: Toolbar
-
-    private lateinit var task : TaskListItem
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,6 +47,8 @@ class TaskFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel.setTask(arguments?.getSerializable("task") as TaskListItem)
+
         toolbar = view.findViewById(R.id.task_toolbar)
         toolbar.setNavigationOnClickListener {
             findNavController().navigate(R.id.action_taskFragment_to_taskslistFragment)
@@ -54,9 +56,36 @@ class TaskFragment : Fragment() {
 
         (activity as? AppCompatActivity)?.supportActionBar?.hide()
 
-            description.setText(task.description)
+        title = view.findViewById(R.id.title_view)
+        description = view.findViewById(R.id.description_view)
+        implementer = view.findViewById(R.id.implementer_view)
+        finishAtDate = view.findViewById(R.id.finishAt_date_view)
+        priorityImage = view.findViewById(R.id.priority_imageview)
+        priority = view.findViewById(R.id.priority_material_tv)
+        createdDate = view.findViewById(R.id.date_view_created)
+        changedDate = view.findViewById(R.id.date_view_changed)
 
-        when (task.priority) { //это
+        description.doOnTextChanged { text, start, before, count ->
+            viewModel.setTaskDescription(text.toString())
+        }
+
+        observeScreenState()
+    }
+
+    private fun observeScreenState() {
+        viewModel.screenState.collectWhileStarted(viewLifecycleOwner) { state ->
+            updateUI(state)
+        }
+    }
+
+    private fun updateUI(state: TaskScreenState) {
+        val task = state.task
+        toolbar.title = state.title
+        title.text = task.title
+
+        description.setText(task.description)
+
+        when (task.priority) {
             TaskPriority.HIGH -> {
                 priorityImage.setImageResource(R.drawable.arrow_up)
                 priority.text = "Высокий"
@@ -74,28 +103,7 @@ class TaskFragment : Fragment() {
         }
         createdDate.text = task.date
 
-        description = view.findViewById(R.id.description_view)
-        implementer = view.findViewById(R.id.implementer_view)
-        finishAtDate = view.findViewById(R.id.finishAt_date_view)
-        priorityImage = view.findViewById(R.id.priority_image)
-        priority = view.findViewById(R.id.priority_material_tv)
-        createdDate = view.findViewById(R.id.date_view_created)
-        changedDate = view.findViewById(R.id.date_view_changed)
-
-
-
-        observeScreenState()
-    }
-
-
-
-    private fun observeScreenState() { //??
-        viewModel.screenState
-    }
-
-    private fun updateUI(state: TaskScreenState) {
-        task = state.task
-        toolbar.title = state.title
+        implementer.text = task.implementer
     }
 
 

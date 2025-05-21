@@ -13,7 +13,7 @@ import com.ruparts.app.features.taskslist.model.TaskListGroup
 import com.ruparts.app.features.taskslist.model.TaskListItem
 import com.ruparts.app.features.taskslist.model.TaskPriority
 
-class ExpandableTaskAdapter : ListAdapter<Any, RecyclerView.ViewHolder>(TaskDiffCallback()) {
+class ExpandableTaskAdapter(private val onTaskClick: (TaskListItem) -> Unit) : ListAdapter<Any, RecyclerView.ViewHolder>(TaskDiffCallback()) {
 
     companion object {
         const val TYPE_GROUP = 0
@@ -116,7 +116,7 @@ class ExpandableTaskAdapter : ListAdapter<Any, RecyclerView.ViewHolder>(TaskDiff
         }
     }
 
-    private class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    private inner class ItemViewHolder(private val itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val itemPriorityImage: ImageView = itemView.findViewById(R.id.item_priority)
         private val itemName: TextView = itemView.findViewById(R.id.item_name)
         private val itemDate: TextView = itemView.findViewById(R.id.item_date)
@@ -132,7 +132,11 @@ class ExpandableTaskAdapter : ListAdapter<Any, RecyclerView.ViewHolder>(TaskDiff
                 TaskPriority.LOW -> itemPriorityImage.setImageResource(R.drawable.arrow_down)
                 TaskPriority.MEDIUM -> itemPriorityImage.setImageResource(R.drawable.equal)
             }
+
+            itemView.setOnClickListener { onTaskClick(item) }
+
         }
+
     }
 
     private class TaskDiffCallback : DiffUtil.ItemCallback<Any>() {

@@ -1,5 +1,7 @@
 package com.ruparts.app.features.taskslist.model
 
+import java.io.Serializable
+
 data class TaskListItem(
     val id: Long,
     val status: TaskStatus,
@@ -7,4 +9,5 @@ data class TaskListItem(
     val title: String,
     val description: String,
     val date: String,
-)
+    val implementer: String,
+) : Serializable
