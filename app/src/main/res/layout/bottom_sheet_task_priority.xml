@@ -5,59 +5,50 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:id="@+id/layout_bs">
+    android:id="@+id/layout_bs_priority">
 
     <com.google.android.material.bottomsheet.BottomSheetDragHandleView
-        android:id="@+id/bottom_sheet_implementers_drag_handle_view"
+        android:id="@+id/bottom_sheet_priority_drag_handle_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <TextView
-        android:id="@+id/bottom_sheet_implementers_header"
+        android:id="@+id/bottom_sheet_priority_header"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:gravity="center_vertical"
         android:paddingLeft="35dp"
-        android:text="Выберите исполнителя:"
-        android:textSize="16dp"
-        android:textStyle="bold">
-
-    </TextView>
-
-<!--    <ListView-->
-<!--        android:id="@+id/bottom_sheet_implementers_list"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_below="@id/bottom_sheet_implementers_header"-->
-<!--        android:layout_marginStart="20dp" />-->
-
-    <TextView
-        android:id="@+id/implementer1"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:gravity="center_vertical"
-        android:paddingLeft="35dp"
-        android:text="Администратор"
-        android:textSize="16dp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/implementer2"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:gravity="center_vertical"
-        android:paddingLeft="35dp"
-        android:text="Кладовщик"
+        android:text="Выберите приоритет:"
         android:textSize="16dp"
         android:textStyle="bold"/>
 
     <TextView
-        android:id="@+id/implementer3"
+        android:id="@+id/high_priority"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:gravity="center_vertical"
         android:paddingLeft="35dp"
-        android:text="Работник склада"
+        android:text="Высокий"
+        android:textSize="16dp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/medium_priority"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:gravity="center_vertical"
+        android:paddingLeft="35dp"
+        android:text="Средний"
+        android:textSize="16dp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/low_priority"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:gravity="center_vertical"
+        android:paddingLeft="35dp"
+        android:text="Низкий"
         android:textSize="16dp"
         android:textStyle="bold"/>
 

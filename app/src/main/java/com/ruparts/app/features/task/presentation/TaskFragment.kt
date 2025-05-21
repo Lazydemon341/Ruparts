@@ -22,7 +22,7 @@ import com.ruparts.app.features.taskslist.model.TaskPriority
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class TaskFragment : Fragment(), OnItemSelectedListener {
+class TaskFragment : Fragment() {
 
     private val viewModel: TaskViewModel by viewModels()
 
@@ -70,23 +70,32 @@ class TaskFragment : Fragment(), OnItemSelectedListener {
         }
 
         implementer.setOnClickListener {
-            showBottomSheet()
+            showBottomSheetImplementer()
         }
 
-        implementer.doOnTextChanged { text, start, before, count ->
-            viewModel.setTaskImplementer(text.toString())
+        priority.setOnClickListener {
+            showBottomSheetPriority()
         }
 
         observeScreenState()
     }
 
-    private fun showBottomSheet() {
-        val sheet = BottomSheetImplementer.newInstance(this)
+    private fun showBottomSheetImplementer() {
+        val sheet = BottomSheetImplementer.newInstance(object: OnItemSelectedListener {
+            override fun onItemSelected(item: String) {
+                viewModel.setTaskImplementer(item)
+            }
+        })
         sheet.show(childFragmentManager, "MyBottomSheet")
     }
 
-    override fun onItemSelected(item: String) {
-        implementer.text = item
+    private fun showBottomSheetPriority() {
+        val sheet = BottomSheetPriority.newInstance(object: OnItemSelectedListener {
+            override fun onItemSelected(item: String) {
+                viewModel.setTaskPriority(item)
+            }
+        })
+        sheet.show(childFragmentManager, "MyBottomSheet")
     }
 
     private fun observeScreenState() {
