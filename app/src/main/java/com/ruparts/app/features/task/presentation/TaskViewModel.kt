@@ -8,7 +8,6 @@ import com.ruparts.app.features.taskslist.model.TaskStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
@@ -22,6 +21,14 @@ class TaskViewModel @Inject constructor() : ViewModel(){
         _screenState.update { screenState ->
             val task = screenState.task
             val newTask = task.copy(description = text)
+            screenState.copy(task = newTask)
+        }
+    }
+
+    fun setTaskImplementer (text: String) {
+        _screenState.update { screenState ->
+            val task = screenState.task
+            val newTask = task.copy(implementer = text)
             screenState.copy(task = newTask)
         }
     }
