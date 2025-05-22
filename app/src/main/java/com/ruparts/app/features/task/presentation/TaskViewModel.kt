@@ -50,7 +50,7 @@ class TaskViewModel @Inject constructor() : ViewModel(){
     fun setFinishAtDate (item: String) {
         _screenState.update { screenState ->
             val task = screenState.task
-            val newTask = task.copy(date = item)
+            val newTask = task.copy(finishAtDate = item)
             screenState.copy(task = newTask)
         }
     }
