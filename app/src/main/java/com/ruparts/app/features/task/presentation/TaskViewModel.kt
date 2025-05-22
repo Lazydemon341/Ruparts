@@ -1,7 +1,6 @@
 package com.ruparts.app.features.task.presentation
 
 import androidx.lifecycle.ViewModel
-import com.ruparts.app.R
 import com.ruparts.app.features.task.presentation.model.TaskScreenState
 import com.ruparts.app.features.taskslist.model.TaskListItem
 import com.ruparts.app.features.taskslist.model.TaskPriority
@@ -34,25 +33,10 @@ class TaskViewModel @Inject constructor() : ViewModel(){
         }
     }
 
-    fun setTaskPriority (text: String) {
+    fun setTaskPriority (priority: TaskPriority) {
         _screenState.update { screenState ->
             val task = screenState.task
-            var newTask = task.copy()
-
-            when (text) {
-                "Высокий" -> {
-                   newTask.copy(priority = TaskPriority.HIGH)
-                }
-
-                "Низкий" -> {
-                    newTask = task.copy(priority = TaskPriority.LOW)
-                }
-
-                "Средний" -> {
-                    newTask = task.copy(priority = TaskPriority.MEDIUM)
-                }
-            }
-
+            val newTask = task.copy(priority = priority)
             screenState.copy(task = newTask)
         }
     }

@@ -90,8 +90,8 @@ class TaskFragment : Fragment() {
     }
 
     private fun showBottomSheetPriority() {
-        val sheet = BottomSheetPriority.newInstance(object: OnItemSelectedListener {
-            override fun onItemSelected(item: String) {
+        val sheet = BottomSheetPriority.newInstance(object: OnPrioritySelectedListener {
+            override fun onPrioritySelected(item: TaskPriority) {
                 viewModel.setTaskPriority(item)
             }
         })

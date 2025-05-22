@@ -7,8 +7,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.ruparts.app.R
+import com.ruparts.app.features.taskslist.model.TaskPriority
 
-class BottomSheetPriority(private var listener: OnItemSelectedListener?) : BottomSheetDialogFragment() {
+class BottomSheetPriority(private var listener: OnPrioritySelectedListener?) : BottomSheetDialogFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -22,16 +23,16 @@ class BottomSheetPriority(private var listener: OnItemSelectedListener?) : Botto
         val low = view.findViewById<TextView>(R.id.low_priority)
 
         high.setOnClickListener {
-            listener?.onItemSelected(high.text.toString())
+            listener?.onPrioritySelected(TaskPriority.HIGH)
             dismiss()
         }
         medium.setOnClickListener {
-            listener?.onItemSelected(medium.text.toString())
+            listener?.onPrioritySelected(TaskPriority.MEDIUM)
             dismiss()
         }
 
         low.setOnClickListener {
-            listener?.onItemSelected(low.text.toString())
+            listener?.onPrioritySelected(TaskPriority.LOW)
             dismiss()
         }
 
@@ -40,7 +41,7 @@ class BottomSheetPriority(private var listener: OnItemSelectedListener?) : Botto
 
     companion object {
         @JvmStatic
-        fun newInstance(listener: OnItemSelectedListener): BottomSheetPriority {
+        fun newInstance(listener: OnPrioritySelectedListener): BottomSheetPriority {
             return BottomSheetPriority(listener)
         }
     }
