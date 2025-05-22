@@ -46,6 +46,14 @@ class TaskViewModel @Inject constructor() : ViewModel(){
             screenState.copy(task = item)
         }
     }
+
+    fun setFinishAtDate (item: String) {
+        _screenState.update { screenState ->
+            val task = screenState.task
+            val newTask = task.copy(date = item)
+            screenState.copy(task = newTask)
+        }
+    }
 }
 
 private val mockTask = TaskListItem(
@@ -55,7 +63,8 @@ private val mockTask = TaskListItem(
     title = "Приёмка груза от МаксимумСПБ",
     description = "Номер заказа: 3321\nДоставка: ТК деловые линии",
     date = "10 июн 23",
-    implementer = "Кладовщик"
+    implementer = "Кладовщик",
+    finishAtDate =""
 )
 
 private val mockScreenState = TaskScreenState(

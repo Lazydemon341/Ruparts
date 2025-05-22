@@ -9,6 +9,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import android.app.DatePickerDialog
+import android.widget.DatePicker
 import androidx.core.widget.doOnTextChanged
 import com.ruparts.app.R
 import androidx.fragment.app.Fragment
@@ -20,6 +22,9 @@ import com.ruparts.app.features.task.presentation.model.TaskScreenState
 import com.ruparts.app.features.taskslist.model.TaskListItem
 import com.ruparts.app.features.taskslist.model.TaskPriority
 import dagger.hilt.android.AndroidEntryPoint
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 @AndroidEntryPoint
 class TaskFragment : Fragment() {
@@ -35,6 +40,10 @@ class TaskFragment : Fragment() {
     private lateinit var createdDate: TextView
     private lateinit var changedDate: TextView
     private lateinit var toolbar: Toolbar
+
+    private val listener = DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
+        // Ваш код обработки выбранной даты
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -77,6 +86,12 @@ class TaskFragment : Fragment() {
             showBottomSheetPriority()
         }
 
+        finishAtDate.setOnClickListener {
+            showDatePickerDialog()
+        }
+
+
+
         observeScreenState()
     }
 
@@ -111,6 +126,9 @@ class TaskFragment : Fragment() {
 
         description.setText(task.description)
 
+//        toolbar.setSubtitle(title.text)
+//        toolbar.setSubtitleTextColor(R.color.white)
+
         when (task.priority) {
             TaskPriority.HIGH -> {
                 priorityImage.setImageResource(R.drawable.arrow_up)
@@ -130,6 +148,32 @@ class TaskFragment : Fragment() {
         createdDate.text = task.date
 
         implementer.text = task.implementer
+
+        finishAtDate.setText(task.finishAtDate)
+    }
+
+    private fun showDatePickerDialog() {
+        val calendar = Calendar.getInstance()
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
+
+        val datePickerDialog = DatePickerDialog(
+            requireContext(),
+            { _: DatePicker?, year: Int, month: Int, dayOfMonth: Int ->
+                val sdf = SimpleDateFormat("dd MMM yy", Locale.getDefault())
+                val selectedDate = Calendar.getInstance().apply {
+                    set(Calendar.YEAR, year)
+                    set(Calendar.MONTH, month)
+                    set(Calendar.DAY_OF_MONTH, dayOfMonth)
+                }.time
+                val formattedDate = sdf.format(selectedDate)
+                viewModel.setFinishAtDate(formattedDate)
+            },
+            year, month, dayOfMonth
+        )
+
+        datePickerDialog.show()
     }
 
 

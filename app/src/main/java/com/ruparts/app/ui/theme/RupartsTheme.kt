@@ -13,7 +13,7 @@ fun RupartsTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val primary = colorResource(id = R.color.blue_500)
+    val primary = colorResource(id = R.color.purple)
     val primaryContainer = Color(primary.value).copy(alpha = 0.1f)
     val onPrimaryContainer = primary
     val secondary = colorResource(id = R.color.blue_700)

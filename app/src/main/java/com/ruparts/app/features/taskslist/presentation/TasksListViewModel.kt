@@ -63,7 +63,8 @@ private val mockTasksList = listOf(
                 title = "Приёмка груза от МаксимумСПБ",
                 description = "Номер заказа: 3321\nДоставка: ТК деловые линии",
                 date = "10 июн 23",
-                implementer = "Кладовщик"
+                implementer = "Кладовщик",
+                finishAtDate = ""
             )
         ),
         id = 1
@@ -78,7 +79,8 @@ private val mockTasksList = listOf(
                 title = "Сборка заказа для Автопитер",
                 description = "Номер заказа: 3512\nСумма: 34512 руб., кол-во позиций: 35",
                 date = "9 июн 23",
-                implementer = "Администратор"
+                implementer = "Администратор",
+                finishAtDate = ""
             )
         ),
         id = 2
@@ -93,7 +95,8 @@ private val mockTasksList = listOf(
                 title = "Сборка возврата 3301",
                 description = "Клиент: ООО Лидер",
                 date = "9 июн 23",
-                implementer = "Работник склада"
+                implementer = "Работник склада",
+                finishAtDate = ""
             )
         ),
         id = 3

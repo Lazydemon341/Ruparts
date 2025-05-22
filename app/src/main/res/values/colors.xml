@@ -18,7 +18,9 @@
     <color name="light_gray">#E0E0E0</color>
 
     <color name="purple">#7F67BE</color>
+    <color name="purple_middle">#EADDFF</color>
     <color name="gray">#AEA9B1</color>
     <color name="light_purple">#F6EDFF</color>
     <color name="red">#EA3323</color>
+    <color name="based_background">#e6e0e9</color>
 </resources>

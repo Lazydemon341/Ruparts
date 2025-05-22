@@ -10,4 +10,5 @@ data class TaskListItem(
     val description: String,
     val date: String,
     val implementer: String,
+    val finishAtDate: String
 ) : Serializable
