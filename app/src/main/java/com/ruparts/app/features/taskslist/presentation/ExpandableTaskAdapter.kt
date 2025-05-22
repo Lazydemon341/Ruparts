@@ -21,13 +21,13 @@ class ExpandableTaskAdapter(private val onTaskClick: (TaskListItem) -> Unit) : L
     }
 
     private val originalGroups = mutableListOf<TaskListGroup>()
-    private val expandedGroupIds = mutableSetOf<Long>()
+    private val expandedGroups = mutableSetOf<TaskListGroup>()
 
     fun setTaskGroups(groups: List<TaskListGroup>) {
         originalGroups.clear()
         originalGroups.addAll(groups)
-        if (expandedGroupIds.isEmpty() && groups.isNotEmpty()) {
-            expandedGroupIds.addAll(groups.map { it.id })
+        if (expandedGroups.isEmpty() && groups.isNotEmpty()) {
+            expandedGroups.addAll(groups)
         }
         updateItemList()
     }
@@ -37,15 +37,6 @@ class ExpandableTaskAdapter(private val onTaskClick: (TaskListItem) -> Unit) : L
             is TaskListGroup -> TYPE_GROUP
             is TaskListItem -> TYPE_ITEM
             else -> throw IllegalArgumentException("Unknown view type at position $position")
-        }
-    }
-
-    override fun getItemId(position: Int): Long {
-        val item = getItem(position)
-        return when (item) {
-            is TaskListGroup -> item.id
-            is TaskListItem -> item.id
-            else -> super.getItemId(position)
         }
     }
 
@@ -78,7 +69,7 @@ class ExpandableTaskAdapter(private val onTaskClick: (TaskListItem) -> Unit) : L
         val newItems = mutableListOf<Any>()
         originalGroups.forEach { group ->
             newItems.add(group)
-            if (expandedGroupIds.contains(group.id)) {
+            if (expandedGroups.contains(group)) {
                 newItems.addAll(group.tasks)
             }
         }
@@ -89,11 +80,10 @@ class ExpandableTaskAdapter(private val onTaskClick: (TaskListItem) -> Unit) : L
         if (position >= 0 && position < itemCount) {
             val item = getItem(position)
             if (item is TaskListGroup) {
-                val groupId = item.id
-                if (expandedGroupIds.contains(groupId)) {
-                    expandedGroupIds.remove(groupId)
+                if (expandedGroups.contains(item)) {
+                    expandedGroups.remove(item)
                 } else {
-                    expandedGroupIds.add(groupId)
+                    expandedGroups.add(item)
                 }
                 notifyItemChanged(position)
                 updateItemList()
@@ -118,7 +108,7 @@ class ExpandableTaskAdapter(private val onTaskClick: (TaskListItem) -> Unit) : L
         fun bind(group: TaskListGroup) {
             titleTextView.text = group.title
 
-            if (expandedGroupIds.contains(group.id)) {
+            if (expandedGroups.contains(group)) {
                 indicatorView.setImageResource(R.drawable.ic_expand_more)
             } else {
                 indicatorView.setImageResource(R.drawable.ic_expand_less)
@@ -152,7 +142,7 @@ class ExpandableTaskAdapter(private val onTaskClick: (TaskListItem) -> Unit) : L
     private class TaskDiffCallback : DiffUtil.ItemCallback<Any>() {
         override fun areItemsTheSame(oldItem: Any, newItem: Any): Boolean {
             return when {
-                oldItem is TaskListGroup && newItem is TaskListGroup -> oldItem.id == newItem.id
+                oldItem is TaskListGroup && newItem is TaskListGroup -> oldItem.title == newItem.title
                 oldItem is TaskListItem && newItem is TaskListItem -> oldItem.id == newItem.id
                 else -> false
             }

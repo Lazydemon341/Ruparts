@@ -10,7 +10,7 @@ import javax.inject.Inject
 
 class AuthRepository @Inject constructor(
     private val authRetrofitService: AuthRetrofitService,
-    private val tokenStorage: TokenStorage
+    private val tokenStorage: TokenStorage,
 ) {
     suspend fun loginWithPinCode(pinCode: String): Result<Unit> = withContext(Dispatchers.IO) {
         try {

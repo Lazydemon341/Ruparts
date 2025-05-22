@@ -1,12 +1,10 @@
 package com.ruparts.app.features.authorization.data.network.model
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import com.google.gson.annotations.SerializedName
 
 /**
  * Response model for login by code API
  */
-@JsonClass(generateAdapter = true)
 data class AuthResponse(
-    @Json(name = "token") val token: String
+    @SerializedName("token") val token: String
 )

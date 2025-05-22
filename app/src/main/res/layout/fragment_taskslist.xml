@@ -13,46 +13,63 @@
         android:background="@color/purple"
         android:elevation="4dp"
         app:navigationIcon="@drawable/ic_arrow_back"
+        app:title="@string/tasks_list_title"
         app:titleTextColor="@color/white" />
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tasks_tablayout"
+    <HorizontalScrollView
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:background="@color/based_background"
-        android:paddingStart="0dp"
-        android:paddingEnd="8dp"
-        app:tabGravity="start"
-        app:tabIndicatorColor="@color/purple"
-        app:tabIndicatorFullWidth="true"
-        app:tabMode="scrollable">
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp"
+        android:scrollbars="none">
 
-        <com.google.android.material.tabs.TabItem
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/tasks_chip_group"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Все" />
+            app:singleSelection="true"
+            app:selectionRequired="true"
+            app:chipSpacingHorizontal="8dp">
 
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Ожидающие" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_all"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="Все" />
 
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Начатые" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_todo"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ожидающие" />
 
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Завершенные" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_in_progress"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Начатые" />
 
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Отмененные" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_completed"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Завершенные" />
 
-    </com.google.android.material.tabs.TabLayout>
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_cancelled"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Отмененные" />
+
+        </com.google.android.material.chip.ChipGroup>
+    </HorizontalScrollView>
 
     <androidx.appcompat.widget.SearchView
         android:id="@+id/taskslist_searchview"

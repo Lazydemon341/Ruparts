@@ -13,7 +13,8 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.tabs.TabLayout
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.ruparts.app.R
 import com.ruparts.app.core.extensions.collectWhileStarted
 import com.ruparts.app.features.taskslist.model.TaskStatus
@@ -28,7 +29,7 @@ class TasksListFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ExpandableTaskAdapter
     private lateinit var searchView: SearchView
-    private lateinit var tabLayout: TabLayout
+    private lateinit var chipGroup: ChipGroup
     private lateinit var toolbar: Toolbar
 
     override fun onCreateView(
@@ -51,19 +52,15 @@ class TasksListFragment : Fragment() {
 
         recyclerView = view.findViewById(R.id.taskslist_recycler_view)
         adapter = ExpandableTaskAdapter(
-            onTaskClick = {task ->
+            onTaskClick = { task ->
                 val bundle = bundleOf("task" to task)
                 findNavController().navigate(R.id.action_taskslistFragment_to_taskFragment, bundle)}
-        ).apply {
-            setHasStableIds(true)
-        }
+        )
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.addItemDecoration(TaskItemDecoration(requireContext()))
 
         searchView = view.findViewById(R.id.taskslist_searchview)
-        tabLayout = view.findViewById(R.id.tasks_tablayout)
-
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 viewModel.onSearchQueryChange(query)
@@ -75,22 +72,23 @@ class TasksListFragment : Fragment() {
                 return true
             }
         })
-        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                viewModel.onTaskStatusFilterChange(
-                    when (tab?.position) {
-                        1 -> TaskStatus.TODO
-                        2 -> TaskStatus.IN_PROGRESS
-                        3 -> TaskStatus.COMPLETED
-                        4 -> TaskStatus.CANCELLED
-                        else -> null
-                    }
-                )
-            }
 
-            override fun onTabReselected(tab: TabLayout.Tab?) {}
-            override fun onTabUnselected(tab: TabLayout.Tab?) {}
-        })
+        chipGroup = view.findViewById(R.id.tasks_chip_group)
+        chipGroup.findViewById<Chip>(R.id.chip_all).setOnClickListener {
+            viewModel.onTaskStatusFilterChange(null)
+        }
+        chipGroup.findViewById<Chip>(R.id.chip_todo).setOnClickListener {
+            viewModel.onTaskStatusFilterChange(TaskStatus.TODO)
+        }
+        chipGroup.findViewById<Chip>(R.id.chip_in_progress).setOnClickListener {
+            viewModel.onTaskStatusFilterChange(TaskStatus.IN_PROGRESS)
+        }
+        chipGroup.findViewById<Chip>(R.id.chip_completed).setOnClickListener {
+            viewModel.onTaskStatusFilterChange(TaskStatus.COMPLETED)
+        }
+        chipGroup.findViewById<Chip>(R.id.chip_cancelled).setOnClickListener {
+            viewModel.onTaskStatusFilterChange(TaskStatus.CANCELLED)
+        }
 
         observeScreenState()
     }
@@ -103,6 +101,5 @@ class TasksListFragment : Fragment() {
 
     private fun updateUI(state: TasksListScreenState) {
         adapter.setTaskGroups(state.groups)
-        toolbar.title = state.title
     }
 }

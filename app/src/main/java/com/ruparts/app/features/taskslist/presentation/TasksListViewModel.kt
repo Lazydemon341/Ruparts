@@ -1,25 +1,45 @@
 package com.ruparts.app.features.taskslist.presentation
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.ruparts.app.features.taskslist.data.repository.TaskListRepository
 import com.ruparts.app.features.taskslist.model.TaskListGroup
-import com.ruparts.app.features.taskslist.model.TaskListItem
-import com.ruparts.app.features.taskslist.model.TaskPriority
 import com.ruparts.app.features.taskslist.model.TaskStatus
 import com.ruparts.app.features.taskslist.presentation.model.TasksListScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
-class TasksListViewModel @Inject constructor() : ViewModel() {
+class TasksListViewModel @Inject constructor(
+    private val repository: TaskListRepository,
+) : ViewModel() {
 
     private val searchQuery = MutableStateFlow("")
     private val taskStatusFilter = MutableStateFlow<TaskStatus?>(null)
 
-    val screenState = combine(taskStatusFilter, searchQuery) { status, query ->
-        mockScreenState.copy(groups = performFilter(status, query))
-    }
+    val screenState: StateFlow<TasksListScreenState> = combine(
+        flow { emit(repository.getTaskList()) },
+        taskStatusFilter,
+        searchQuery.debounce(300L),
+    ) { taskList, status, query ->
+        TasksListScreenState(
+            groups = performFilter(taskList, status, query),
+        )
+    }.flowOn(Dispatchers.Default)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = initialScreenState,
+        )
 
     fun onSearchQueryChange(query: String) {
         searchQuery.value = query
@@ -29,10 +49,18 @@ class TasksListViewModel @Inject constructor() : ViewModel() {
         taskStatusFilter.value = status
     }
 
-    private fun performFilter(status: TaskStatus?, query: String): List<TaskListGroup> {
+    private fun performFilter(
+        taskList: List<TaskListGroup>,
+        status: TaskStatus?,
+        query: String
+    ): List<TaskListGroup> {
+        if (status == null && query.isEmpty()) {
+            return taskList
+        }
+
         val resultList = mutableListOf<TaskListGroup>()
-        for (group in mockTasksList) {
-            val filtered: List<TaskListItem> = group.tasks.filter {
+        for (group in taskList) {
+            val filtered = group.tasks.filter {
                 (status == null || it.status == status)
                         && it.title.containsNormalized(query)
             }
@@ -43,67 +71,14 @@ class TasksListViewModel @Inject constructor() : ViewModel() {
         return resultList
     }
 
-    fun String.containsNormalized(value: String): Boolean {
+    private fun String.containsNormalized(value: String): Boolean {
         fun normalize(input: String): String {
             return input.lowercase().replace('ё', 'е')
         }
-
         return normalize(this).contains(normalize(value))
     }
 }
 
-private val mockTasksList = listOf(
-    TaskListGroup(
-        title = "Приёмка груза от поставщика",
-        tasks = listOf(
-            TaskListItem(
-                id = 100,
-                status = TaskStatus.IN_PROGRESS,
-                priority = TaskPriority.HIGH,
-                title = "Приёмка груза от МаксимумСПБ",
-                description = "Номер заказа: 3321\nДоставка: ТК деловые линии",
-                date = "10 июн 23",
-                implementer = "Кладовщик",
-                finishAtDate = ""
-            )
-        ),
-        id = 1
-    ),
-    TaskListGroup(
-        title = "Сборка заказа",
-        tasks = listOf(
-            TaskListItem(
-                id = 101,
-                status = TaskStatus.TODO,
-                priority = TaskPriority.LOW,
-                title = "Сборка заказа для Автопитер",
-                description = "Номер заказа: 3512\nСумма: 34512 руб., кол-во позиций: 35",
-                date = "9 июн 23",
-                implementer = "Администратор",
-                finishAtDate = ""
-            )
-        ),
-        id = 2
-    ),
-    TaskListGroup(
-        title = "Сборка возврата",
-        tasks = listOf(
-            TaskListItem(
-                id = 102,
-                status = TaskStatus.TODO,
-                priority = TaskPriority.MEDIUM,
-                title = "Сборка возврата 3301",
-                description = "Клиент: ООО Лидер",
-                date = "9 июн 23",
-                implementer = "Работник склада",
-                finishAtDate = ""
-            )
-        ),
-        id = 3
-    )
-)
-
-private val mockScreenState = TasksListScreenState(
-    title = "Задачи",
-    groups = mockTasksList,
+private val initialScreenState = TasksListScreenState(
+    groups = emptyList(),
 )

@@ -1,5 +1,6 @@
 package com.ruparts.app.core.network.interceptor
 
+import android.util.Log
 import com.ruparts.app.core.data.local.TokenStorage
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
@@ -14,6 +15,7 @@ class AuthInterceptor @Inject constructor(
 ) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
+        Log.d("MY_TAG", "HEllo from interceptor")
         val originalRequest = chain.request()
 
         // If no token is available, proceed with the original request
