@@ -62,7 +62,9 @@ private val mockTasksList = listOf(
                 priority = TaskPriority.HIGH,
                 title = "Приёмка груза от МаксимумСПБ",
                 description = "Номер заказа: 3321\nДоставка: ТК деловые линии",
-                date = "10 июн 23"
+                date = "10 июн 23",
+                implementer = "Кладовщик",
+                finishAtDate = ""
             )
         ),
         id = 1
@@ -76,7 +78,9 @@ private val mockTasksList = listOf(
                 priority = TaskPriority.LOW,
                 title = "Сборка заказа для Автопитер",
                 description = "Номер заказа: 3512\nСумма: 34512 руб., кол-во позиций: 35",
-                date = "9 июн 23"
+                date = "9 июн 23",
+                implementer = "Администратор",
+                finishAtDate = ""
             )
         ),
         id = 2
@@ -90,7 +94,9 @@ private val mockTasksList = listOf(
                 priority = TaskPriority.MEDIUM,
                 title = "Сборка возврата 3301",
                 description = "Клиент: ООО Лидер",
-                date = "9 июн 23"
+                date = "9 июн 23",
+                implementer = "Работник склада",
+                finishAtDate = ""
             )
         ),
         id = 3

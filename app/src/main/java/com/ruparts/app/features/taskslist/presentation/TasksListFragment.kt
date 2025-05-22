@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -49,7 +50,11 @@ class TasksListFragment : Fragment() {
         (activity as? AppCompatActivity)?.supportActionBar?.hide()
 
         recyclerView = view.findViewById(R.id.taskslist_recycler_view)
-        adapter = ExpandableTaskAdapter().apply {
+        adapter = ExpandableTaskAdapter(
+            onTaskClick = {task ->
+                val bundle = bundleOf("task" to task)
+                findNavController().navigate(R.id.action_taskslistFragment_to_taskFragment, bundle)}
+        ).apply {
             setHasStableIds(true)
         }
         recyclerView.adapter = adapter
