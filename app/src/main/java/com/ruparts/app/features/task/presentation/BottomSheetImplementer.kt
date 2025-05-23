@@ -7,8 +7,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.ruparts.app.R
+import com.ruparts.app.features.taskslist.model.TaskImplementer
 
-class BottomSheetImplementer(private var listener: OnItemSelectedListener?) : BottomSheetDialogFragment() {
+class BottomSheetImplementer(private var listener: OnImplementerSelectedListener?) :
+    BottomSheetDialogFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -22,15 +24,15 @@ class BottomSheetImplementer(private var listener: OnItemSelectedListener?) : Bo
         val impl3 = view.findViewById<TextView>(R.id.implementer3)
 
         impl1.setOnClickListener {
-            listener?.onItemSelected(impl1.text.toString())
+            listener?.onItemSelected(TaskImplementer.PURCHASES_MANAGER)
             dismiss()
         }
         impl2.setOnClickListener {
-            listener?.onItemSelected(impl2.text.toString())
+            listener?.onItemSelected(TaskImplementer.STOREKEEPER)
             dismiss()
         }
         impl3.setOnClickListener {
-            listener?.onItemSelected(impl3.text.toString())
+            listener?.onItemSelected(TaskImplementer.USER)
             dismiss()
         }
 
@@ -39,7 +41,7 @@ class BottomSheetImplementer(private var listener: OnItemSelectedListener?) : Bo
 
     companion object {
         @JvmStatic
-        fun newInstance(listener: OnItemSelectedListener): BottomSheetImplementer {
+        fun newInstance(listener: OnImplementerSelectedListener): BottomSheetImplementer {
             return BottomSheetImplementer(listener)
         }
     }

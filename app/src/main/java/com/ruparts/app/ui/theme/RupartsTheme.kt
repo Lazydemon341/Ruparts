@@ -13,27 +13,52 @@ fun RupartsTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
+    // Primary colors
     val primary = colorResource(id = R.color.purple)
-    val primaryContainer = Color(primary.value).copy(alpha = 0.1f)
-    val onPrimaryContainer = primary
-    val secondary = colorResource(id = R.color.blue_700)
-    val tertiary = colorResource(id = R.color.blue_900)
-    val background = colorResource(id = R.color.background_color)
-    val surface = colorResource(id = R.color.surface_color)
-    val onSurface = colorResource(id = R.color.text_color)
-    val outline = colorResource(id = R.color.light_gray)
+    val primaryDark = colorResource(id = R.color.purple_dark)
+    val primaryContainer = colorResource(id = R.color.purple_middle)
+    val onPrimaryContainer = primaryDark
+    
+    // Secondary colors
+    val secondary = colorResource(id = R.color.purple)
+    val secondaryContainer = colorResource(id = R.color.light_purple)
+    val onSecondaryContainer = primaryDark
+    
+    // Tertiary colors
+    val tertiary = colorResource(id = R.color.purple_middle)
+    val tertiaryContainer = colorResource(id = R.color.light_purple)
+    val onTertiaryContainer = primaryDark
+    
+    // Background and surface colors
+    val background = colorResource(id = R.color.based_background)
+    val surface = Color.White
+    val surfaceVariant = colorResource(id = R.color.light_purple)
+    val onSurface = Color.Black
+    val onSurfaceVariant = primaryDark
+    
+    // Other colors
+    val outline = colorResource(id = R.color.purple)
     
     val colorScheme = lightColorScheme(
         primary = primary,
+        onPrimary = Color.White,
         primaryContainer = primaryContainer,
         onPrimaryContainer = onPrimaryContainer,
         secondary = secondary,
+        onSecondary = Color.White,
+        secondaryContainer = secondaryContainer,
+        onSecondaryContainer = onSecondaryContainer,
         tertiary = tertiary,
+        onTertiary = primaryDark,
+        tertiaryContainer = tertiaryContainer,
+        onTertiaryContainer = onTertiaryContainer,
         background = background,
+        onBackground = Color.Black,
         surface = surface,
         onSurface = onSurface,
-        outline = outline,
-        surfaceVariant = Color.White
+        surfaceVariant = surfaceVariant,
+        onSurfaceVariant = onSurfaceVariant,
+        outline = outline
     )
 
     MaterialTheme(

@@ -7,35 +7,19 @@
     android:orientation="vertical"
     android:background = "@drawable/border_child_layout">
 
-    <LinearLayout
-        android:id="@+id/ll_title"
+    <TextView
+        android:id="@+id/item_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="10dp">
-
-        <ImageView
-            android:id="@+id/item_priority"
-            android:layout_width="20dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:layout_gravity="center_vertical" />
-
-        <TextView
-            android:id="@+id/item_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="5dp"
-            android:layout_toRightOf="@id/item_priority"
-            android:ellipsize="end"
-            android:maxLines="2"
-            android:text="Приемка груза от поставщика 3412"
-            android:textSize="19sp"
-            android:textStyle="bold"
-            android:textColor="@color/black"/>
-
-    </LinearLayout>
+        android:layout_marginHorizontal="10dp"
+        android:drawableStart="@null"
+        android:drawablePadding="5dp"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:text="Приемка груза от поставщика 3412"
+        android:textSize="19sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"/>
 
 
     <LinearLayout
@@ -81,8 +65,7 @@
         android:paddingHorizontal="10dp"
         android:text="Клиент: ООО Улитка"
         android:textSize="15sp"
-        android:background = "@drawable/border_layout_description"
-        app:layout_constraintTop_toBottomOf="@+id/ll_date" />
+        android:background = "@drawable/border_layout_description" />
 
 
 </LinearLayout>

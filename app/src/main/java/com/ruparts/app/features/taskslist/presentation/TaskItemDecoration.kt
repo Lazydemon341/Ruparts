@@ -23,6 +23,7 @@ class TaskItemDecoration(context: Context) : RecyclerView.ItemDecoration() {
     
     private val dividerHeight = context.resources.getDimension(R.dimen.divider_height).toInt()
     private val groupSpacing = context.resources.getDimensionPixelSize(R.dimen.group_spacing)
+    private val itemSpacing = context.resources.getDimensionPixelSize(R.dimen.task_list_item_spacing)
     
     override fun getItemOffsets(
         outRect: Rect,
@@ -35,8 +36,16 @@ class TaskItemDecoration(context: Context) : RecyclerView.ItemDecoration() {
         
         val adapter = parent.adapter as? ExpandableTaskAdapter ?: return
 
-        if (position > 0 && adapter.getItemViewType(position) == ExpandableTaskAdapter.TYPE_GROUP) {
-            outRect.top = groupSpacing
+        when (adapter.getItemViewType(position)) {
+            ExpandableTaskAdapter.TYPE_GROUP -> {
+                if (position > 0) {
+                    outRect.top = groupSpacing
+                }
+            }
+            ExpandableTaskAdapter.TYPE_ITEM -> {
+                // Add spacing between tasks
+                outRect.top = itemSpacing
+            }
         }
     }
     

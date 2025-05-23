@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Standard Material colors (kept for compatibility) -->
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
@@ -8,19 +9,26 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     
-    <!-- New colors for the updated theme -->
+    <!-- Ruparts App Color Palette -->
+    <!-- Primary Purple Colors -->
+    <color name="purple">#7F67BE</color>      <!-- Primary purple color -->
+    <color name="purple_dark">#5D4A9C</color> <!-- Darker variant for status bar, etc. -->
+    <color name="purple_middle">#EADDFF</color> <!-- Medium purple for containers -->
+    <color name="light_purple">#F6EDFF</color> <!-- Light purple for backgrounds -->
+    <color name="based_background">#E6E0E9</color> <!-- Base background color -->
+    
+    <!-- Supporting Colors -->
+    <color name="gray">#AEA9B1</color>
+    <color name="light_gray">#E0E0E0</color>
+    <color name="red">#EA3323</color>
+    <color name="green">#4CAF50</color>
+    <color name="yellow">#FFC107</color>
+    
+    <!-- Legacy colors (kept for compatibility) -->
     <color name="blue_500">#2196F3</color>
     <color name="blue_700">#1976D2</color>
     <color name="blue_900">#0D47A1</color>
     <color name="background_color">#FFFFFF</color>
     <color name="text_color">#000000</color>
     <color name="surface_color">#FFFFFF</color>
-    <color name="light_gray">#E0E0E0</color>
-
-    <color name="purple">#7F67BE</color>
-    <color name="purple_middle">#EADDFF</color>
-    <color name="gray">#AEA9B1</color>
-    <color name="light_purple">#F6EDFF</color>
-    <color name="red">#EA3323</color>
-    <color name="based_background">#e6e0e9</color>
 </resources>

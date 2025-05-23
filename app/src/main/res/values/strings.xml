@@ -17,4 +17,7 @@
         <item>Низкий</item>
     </string-array>
 
+
+    <string name="tasks_list_title">Задачи</string>
+    <string name="task_title">Задача</string>
 </resources>

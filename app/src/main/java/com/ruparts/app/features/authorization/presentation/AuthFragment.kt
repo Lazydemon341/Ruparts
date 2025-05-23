@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -31,7 +32,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -155,6 +158,7 @@ private fun PinCodeDisplay(pinCode: String) {
     ) {
         repeat(6) { index ->
             PinDigitBox(
+                modifier = Modifier.weight(1f),
                 isFilled = index < pinCode.length,
                 digit = if (index < pinCode.length) pinCode[index] else null,
             )
@@ -163,10 +167,14 @@ private fun PinCodeDisplay(pinCode: String) {
 }
 
 @Composable
-private fun PinDigitBox(isFilled: Boolean, digit: Char?) {
+private fun PinDigitBox(
+    isFilled: Boolean,
+    digit: Char?,
+    modifier: Modifier = Modifier,
+) {
     Box(
-        modifier = Modifier
-            .size(48.dp)
+        modifier = modifier
+            .height(48.dp)
             .border(
                 width = 1.dp,
                 color = MaterialTheme.colorScheme.outline,
@@ -175,7 +183,8 @@ private fun PinDigitBox(isFilled: Boolean, digit: Char?) {
             .background(
                 color = if (isFilled) MaterialTheme.colorScheme.primaryContainer
                 else MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(8.dp)
-            ), contentAlignment = Alignment.Center
+            ),
+        contentAlignment = Alignment.Center
     ) {
         if (isFilled && digit != null) {
             Text(
@@ -260,13 +269,17 @@ private fun KeyboardButton(
     onClick: () -> Unit,
     content: @Composable () -> Unit,
 ) {
+    val haptic = LocalHapticFeedback.current
     Box(
         modifier = Modifier
             .size(64.dp)
             .clip(CircleShape)
             .background(MaterialTheme.colorScheme.surface)
             .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.4f), CircleShape)
-            .clickable(onClick = onClick),
+            .clickable {
+                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                onClick()
+            },
         contentAlignment = Alignment.Center
     ) {
         content()

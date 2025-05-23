@@ -1,25 +1,25 @@
 package com.ruparts.app.features.task.presentation
 
+import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.DatePicker
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import android.app.DatePickerDialog
-import android.widget.DatePicker
 import androidx.core.widget.doOnTextChanged
-import com.ruparts.app.R
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.textview.MaterialTextView
+import com.ruparts.app.R
 import com.ruparts.app.core.extensions.collectWhileStarted
 import com.ruparts.app.features.task.presentation.model.TaskScreenState
-import com.ruparts.app.features.taskslist.model.TaskListItem
+import com.ruparts.app.features.taskslist.model.TaskImplementer
 import com.ruparts.app.features.taskslist.model.TaskPriority
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
@@ -41,10 +41,6 @@ class TaskFragment : Fragment() {
     private lateinit var changedDate: TextView
     private lateinit var toolbar: Toolbar
 
-    private val listener = DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
-        // Ваш код обработки выбранной даты
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -56,11 +52,11 @@ class TaskFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.setTask(arguments?.getSerializable("task") as TaskListItem)
+        viewModel.setTask(requireNotNull(arguments?.getParcelable(ARG_TASK_KEY)))
 
         toolbar = view.findViewById(R.id.task_toolbar)
         toolbar.setNavigationOnClickListener {
-            findNavController().navigate(R.id.action_taskFragment_to_taskslistFragment)
+            findNavController().popBackStack()
         }
 
         (activity as? AppCompatActivity)?.supportActionBar?.hide()
@@ -96,16 +92,16 @@ class TaskFragment : Fragment() {
     }
 
     private fun showBottomSheetImplementer() {
-        val sheet = BottomSheetImplementer.newInstance(object: OnItemSelectedListener {
-            override fun onItemSelected(item: String) {
-                viewModel.setTaskImplementer(item)
+        val sheet = BottomSheetImplementer.newInstance(object : OnImplementerSelectedListener {
+            override fun onItemSelected(implementer: TaskImplementer) {
+                viewModel.setTaskImplementer(implementer)
             }
         })
         sheet.show(childFragmentManager, "MyBottomSheet")
     }
 
     private fun showBottomSheetPriority() {
-        val sheet = BottomSheetPriority.newInstance(object: OnPrioritySelectedListener {
+        val sheet = BottomSheetPriority.newInstance(object : OnPrioritySelectedListener {
             override fun onPrioritySelected(item: TaskPriority) {
                 viewModel.setTaskPriority(item)
             }
@@ -121,7 +117,6 @@ class TaskFragment : Fragment() {
 
     private fun updateUI(state: TaskScreenState) {
         val task = state.task
-        toolbar.title = state.title
         title.text = task.title
 
         description.setText(task.description)
@@ -145,9 +140,14 @@ class TaskFragment : Fragment() {
                 priority.text = "Средний"
             }
         }
-        createdDate.text = task.date
+        createdDate.text = task.createdAtDate
 
-        implementer.text = task.implementer
+        implementer.text = when (task.implementer) {
+            TaskImplementer.USER -> "Пользователь"
+            TaskImplementer.PURCHASES_MANAGER -> "Администратор"
+            TaskImplementer.STOREKEEPER -> "Работник склада"
+            TaskImplementer.UNKNOWN -> ""
+        }
 
         finishAtDate.setText(task.finishAtDate)
     }
@@ -176,5 +176,7 @@ class TaskFragment : Fragment() {
         datePickerDialog.show()
     }
 
-
+    companion object {
+        const val ARG_TASK_KEY = "task"
+    }
 }
