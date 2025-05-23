@@ -13,6 +13,7 @@ import com.ruparts.app.R
 import com.ruparts.app.features.taskslist.model.TaskListGroup
 import com.ruparts.app.features.taskslist.model.TaskListItem
 import com.ruparts.app.features.taskslist.model.TaskPriority
+import java.text.SimpleDateFormat
 
 class ExpandableTaskAdapter(private val onTaskClick: (TaskListItem) -> Unit) : ListAdapter<Any, RecyclerView.ViewHolder>(TaskDiffCallback()) {
 
@@ -123,8 +124,17 @@ class ExpandableTaskAdapter(private val onTaskClick: (TaskListItem) -> Unit) : L
 
         fun bind(item: TaskListItem) {
             itemName.text = item.title
-            itemDate.text = item.createdAtDate
             itemDescription.text = item.description
+
+            val originalDateString = item.createdAtDate
+            val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss XXX")
+            val outputFormat = SimpleDateFormat("dd MMM yyyy")
+            try {
+                val dateObject = inputFormat.parse(originalDateString)
+                itemDate.text = outputFormat.format(dateObject)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
 
             // Set the compound drawable based on priority
             val priorityDrawable = when (item.priority) {
