@@ -86,8 +86,6 @@ class TaskFragment : Fragment() {
             showDatePickerDialog()
         }
 
-
-
         observeScreenState()
     }
 
@@ -143,9 +141,9 @@ class TaskFragment : Fragment() {
         createdDate.text = task.createdAtDate
 
         implementer.text = when (task.implementer) {
-            TaskImplementer.USER -> "Пользователь"
+            TaskImplementer.USER -> "Работник склада"
             TaskImplementer.PURCHASES_MANAGER -> "Администратор"
-            TaskImplementer.STOREKEEPER -> "Работник склада"
+            TaskImplementer.STOREKEEPER -> "Кладовщик"
             TaskImplementer.UNKNOWN -> ""
         }
 
