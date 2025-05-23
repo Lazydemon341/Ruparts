@@ -17,6 +17,7 @@ import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.ruparts.app.R
 import com.ruparts.app.core.extensions.collectWhileStarted
+import com.ruparts.app.features.task.presentation.TaskFragment
 import com.ruparts.app.features.taskslist.model.TaskStatus
 import com.ruparts.app.features.taskslist.presentation.model.TasksListScreenState
 import dagger.hilt.android.AndroidEntryPoint
@@ -53,8 +54,9 @@ class TasksListFragment : Fragment() {
         recyclerView = view.findViewById(R.id.taskslist_recycler_view)
         adapter = ExpandableTaskAdapter(
             onTaskClick = { task ->
-                val bundle = bundleOf("task" to task)
-                findNavController().navigate(R.id.action_taskslistFragment_to_taskFragment, bundle)}
+                val bundle = bundleOf(TaskFragment.ARG_TASK_KEY to task)
+                findNavController().navigate(R.id.action_taskslistFragment_to_taskFragment, bundle)
+            }
         )
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext())

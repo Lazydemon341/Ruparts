@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -20,15 +21,14 @@ class ExpandableTaskAdapter(private val onTaskClick: (TaskListItem) -> Unit) : L
         const val TYPE_ITEM = 1
     }
 
-    private val originalGroups = mutableListOf<TaskListGroup>()
+    private val originalGroups = mutableSetOf<TaskListGroup>()
     private val expandedGroups = mutableSetOf<TaskListGroup>()
 
     fun setTaskGroups(groups: List<TaskListGroup>) {
         originalGroups.clear()
         originalGroups.addAll(groups)
-        if (expandedGroups.isEmpty() && groups.isNotEmpty()) {
-            expandedGroups.addAll(groups)
-        }
+        expandedGroups.clear()
+        expandedGroups.addAll(groups)
         updateItemList()
     }
 
@@ -117,7 +117,6 @@ class ExpandableTaskAdapter(private val onTaskClick: (TaskListItem) -> Unit) : L
     }
 
     private inner class ItemViewHolder(private val itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val itemPriorityImage: ImageView = itemView.findViewById(R.id.item_priority)
         private val itemName: TextView = itemView.findViewById(R.id.item_name)
         private val itemDate: TextView = itemView.findViewById(R.id.item_date)
         private val itemDescription: TextView = itemView.findViewById(R.id.item_comment)
@@ -127,14 +126,19 @@ class ExpandableTaskAdapter(private val onTaskClick: (TaskListItem) -> Unit) : L
             itemDate.text = item.date
             itemDescription.text = item.description
 
-            when (item.priority) {
-                TaskPriority.HIGH -> itemPriorityImage.setImageResource(R.drawable.arrow_up)
-                TaskPriority.LOW -> itemPriorityImage.setImageResource(R.drawable.arrow_down)
-                TaskPriority.MEDIUM -> itemPriorityImage.setImageResource(R.drawable.equal)
+            // Set the compound drawable based on priority
+            val priorityDrawable = when (item.priority) {
+                TaskPriority.HIGH -> R.drawable.arrow_up
+                TaskPriority.LOW -> R.drawable.arrow_down
+                TaskPriority.MEDIUM -> R.drawable.equal
             }
+            
+            // Set the drawable to the start of the TextView
+            val drawable = ContextCompat.getDrawable(itemView.context, priorityDrawable)
+            drawable?.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
+            itemName.setCompoundDrawables(drawable, null, null, null)
 
             itemView.setOnClickListener { onTaskClick(item) }
-
         }
 
     }

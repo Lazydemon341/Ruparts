@@ -6,6 +6,8 @@ import com.ruparts.app.core.data.network.request
 import com.ruparts.app.features.taskslist.data.network.model.TaskListRequestDataDto
 import com.ruparts.app.features.taskslist.data.network.model.TaskListRequestDto
 import com.ruparts.app.features.taskslist.data.network.model.TaskListResponseDto
+import com.ruparts.app.features.taskslist.data.network.model.TaskPriorityDto
+import com.ruparts.app.features.taskslist.data.network.model.TaskStatusDto
 import com.ruparts.app.features.taskslist.model.TaskListGroup
 import com.ruparts.app.features.taskslist.model.TaskListItem
 import com.ruparts.app.features.taskslist.model.TaskPriority
@@ -37,12 +39,31 @@ class TaskListRepository @Inject constructor(
                             id = task.id,
                             title = task.title,
                             description = task.description,
-                            status = TaskStatus.TODO,
-                            priority = TaskPriority.LOW,
-                            date = "TODO()",
+                            status = toDomain(task.status),
+                            priority = toDomain(task.priority),
+                            date = "", // TODO
+                            implementer = task.implementer,
+                            finishAtDate = task.finishAt,
                         )
                     }
                 )
             }
+    }
+
+    private fun toDomain(taskStatus: TaskStatusDto): TaskStatus {
+        return when (taskStatus) {
+            TaskStatusDto.TO_DO -> TaskStatus.TODO
+            TaskStatusDto.IN_PROGRESS -> TaskStatus.IN_PROGRESS
+            TaskStatusDto.COMPLETED -> TaskStatus.COMPLETED
+            TaskStatusDto.CANCELLED -> TaskStatus.CANCELLED
+        }
+    }
+
+    private fun toDomain(taskPriority: TaskPriorityDto): TaskPriority {
+        return when (taskPriority) {
+            TaskPriorityDto.HIGH -> TaskPriority.HIGH
+            TaskPriorityDto.MEDIUM -> TaskPriority.MEDIUM
+            TaskPriorityDto.LOW -> TaskPriority.LOW
+        }
     }
 }

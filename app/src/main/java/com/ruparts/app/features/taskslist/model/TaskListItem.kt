@@ -8,7 +8,7 @@ data class TaskListItem(
     val priority: TaskPriority,
     val title: String,
     val description: String,
-    val date: String,
-    val implementer: String,
-    val finishAtDate: String
+    val date: String?,
+    val implementer: String?,
+    val finishAtDate: String?
 ) : Serializable

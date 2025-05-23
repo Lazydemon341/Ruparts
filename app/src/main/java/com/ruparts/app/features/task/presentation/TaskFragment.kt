@@ -1,22 +1,22 @@
 package com.ruparts.app.features.task.presentation
 
+import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.DatePicker
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import android.app.DatePickerDialog
-import android.widget.DatePicker
 import androidx.core.widget.doOnTextChanged
-import com.ruparts.app.R
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.textview.MaterialTextView
+import com.ruparts.app.R
 import com.ruparts.app.core.extensions.collectWhileStarted
 import com.ruparts.app.features.task.presentation.model.TaskScreenState
 import com.ruparts.app.features.taskslist.model.TaskListItem
@@ -56,7 +56,7 @@ class TaskFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.setTask(arguments?.getSerializable("task") as TaskListItem)
+        viewModel.setTask(arguments?.getSerializable(ARG_TASK_KEY) as TaskListItem)
 
         toolbar = view.findViewById(R.id.task_toolbar)
         toolbar.setNavigationOnClickListener {
@@ -96,7 +96,7 @@ class TaskFragment : Fragment() {
     }
 
     private fun showBottomSheetImplementer() {
-        val sheet = BottomSheetImplementer.newInstance(object: OnItemSelectedListener {
+        val sheet = BottomSheetImplementer.newInstance(object : OnItemSelectedListener {
             override fun onItemSelected(item: String) {
                 viewModel.setTaskImplementer(item)
             }
@@ -105,7 +105,7 @@ class TaskFragment : Fragment() {
     }
 
     private fun showBottomSheetPriority() {
-        val sheet = BottomSheetPriority.newInstance(object: OnPrioritySelectedListener {
+        val sheet = BottomSheetPriority.newInstance(object : OnPrioritySelectedListener {
             override fun onPrioritySelected(item: TaskPriority) {
                 viewModel.setTaskPriority(item)
             }
@@ -176,5 +176,7 @@ class TaskFragment : Fragment() {
         datePickerDialog.show()
     }
 
-
+    companion object {
+        const val ARG_TASK_KEY = "task"
+    }
 }
