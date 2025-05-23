@@ -32,7 +32,7 @@ class TaskDto(
     @SerializedName("priority")
     val priority: TaskPriorityDto,
     @SerializedName("implementer")
-    val implementer: String?,
+    val implementer: TaskImplementerDto?,
     @SerializedName("created_at")
     val createdAt: String,
     @SerializedName("updated_at")
@@ -75,4 +75,15 @@ enum class TaskPriorityDto(val value: String) {
 
     @SerializedName("low")
     LOW("low")
+}
+
+enum class TaskImplementerDto {
+    @SerializedName("ROLE_USER")
+    USER,
+
+    @SerializedName("ROLE_PurchasesManager")
+    PURCHASES_MANAGER,
+
+    @SerializedName("ROLE_Storekeeper")
+    STOREKEEPER
 }

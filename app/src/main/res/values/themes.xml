@@ -3,35 +3,58 @@
     <style name="Theme.Ruparts" parent="Theme.Material3.Light.NoActionBar">
         <!-- Primary brand color (buttons) -->
         <item name="colorPrimary">@color/purple</item>
-        <item name="colorPrimaryVariant">@color/blue_700</item>
-        <item name="colorPrimaryContainer">@color/blue_700</item>
+        <item name="colorPrimaryVariant">@color/purple_dark</item>
+        <item name="colorPrimaryContainer">@color/purple_middle</item>
         <item name="colorOnPrimary">@color/white</item>
+        <item name="colorOnPrimaryContainer">@color/purple_dark</item>
         
         <!-- Secondary brand color -->
-        <item name="colorSecondary">@color/blue_700</item>
-        <item name="colorSecondaryVariant">@color/blue_900</item>
+        <item name="colorSecondary">@color/purple</item>
+        <item name="colorSecondaryVariant">@color/purple_dark</item>
+        <item name="colorSecondaryContainer">@color/light_purple</item>
         <item name="colorOnSecondary">@color/white</item>
+        <item name="colorOnSecondaryContainer">@color/purple_dark</item>
         
         <!-- Background colors -->
-        <item name="android:colorBackground">@color/white</item>
+        <item name="android:colorBackground">@color/based_background</item>
         <item name="colorSurface">@color/white</item>
         <item name="colorOnSurface">@color/black</item>
-        <item name="colorOnSurfaceVariant">@color/black</item>
+        <item name="colorOnSurfaceVariant">@color/purple_dark</item>
         <item name="colorOnBackground">@color/black</item>
         
         <!-- Text colors -->
         <item name="android:textColorPrimary">@color/black</item>
-        <item name="android:textColorSecondary">@color/black</item>
+        <item name="android:textColorSecondary">@color/purple_dark</item>
         
         <!-- Status bar color -->
-        <item name="android:statusBarColor">@color/blue_700</item>
+        <item name="android:statusBarColor">@color/purple_dark</item>
+        <item name="android:windowLightStatusBar">false</item>
         
         <!-- Other Material3 colors -->
-        <item name="colorTertiary">@color/blue_500</item>
-        <item name="colorOnTertiary">@color/white</item>
-        <item name="colorTertiaryContainer">@color/blue_700</item>
-        <item name="colorOnTertiaryContainer">@color/white</item>
-        <item name="colorSurfaceVariant">@color/white</item>
-        <item name="colorOutline">@color/blue_500</item>
+        <item name="colorTertiary">@color/purple_middle</item>
+        <item name="colorOnTertiary">@color/purple_dark</item>
+        <item name="colorTertiaryContainer">@color/light_purple</item>
+        <item name="colorOnTertiaryContainer">@color/purple_dark</item>
+        <item name="colorSurfaceVariant">@color/light_purple</item>
+        <item name="colorOutline">@color/purple</item>
+        
+        <!-- Component styles -->
+        <item name="materialCardViewStyle">@style/Widget.Ruparts.CardView</item>
+        <item name="chipStyle">@style/Widget.Ruparts.Chip</item>
+    </style>
+    
+    <style name="Widget.Ruparts.CardView" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardBackgroundColor">@color/white</item>
+        <item name="cardElevation">2dp</item>
+        <item name="cardCornerRadius">12dp</item>
+    </style>
+    
+    <style name="Widget.Ruparts.Chip" parent="Widget.Material3.Chip.Filter">
+        <item name="chipBackgroundColor">@color/light_purple</item>
+        <item name="chipStrokeColor">@color/purple</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="chipIconTint">@color/purple</item>
+        <item name="chipSurfaceColor">@color/light_purple</item>
+        <item name="android:textColor">@color/purple_dark</item>
     </style>
 </resources>

@@ -123,7 +123,7 @@ class ExpandableTaskAdapter(private val onTaskClick: (TaskListItem) -> Unit) : L
 
         fun bind(item: TaskListItem) {
             itemName.text = item.title
-            itemDate.text = item.date
+            itemDate.text = item.createdAtDate
             itemDescription.text = item.description
 
             // Set the compound drawable based on priority

@@ -46,7 +46,7 @@ class TasksListFragment : Fragment() {
 
         toolbar = view.findViewById(R.id.tasks_toolbar)
         toolbar.setNavigationOnClickListener {
-            findNavController().navigate(R.id.action_taskslistFragment_to_menuFragment)
+            findNavController().popBackStack()
         }
 
         (activity as? AppCompatActivity)?.supportActionBar?.hide()
