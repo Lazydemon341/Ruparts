@@ -64,7 +64,6 @@
             android:backgroundTint="@android:color/transparent"
             android:editable="true"
             android:ellipsize="end"
-            android:ems="10"
             android:gravity="top"
             android:hint="Добавить комментарий"
             android:inputType="textMultiLine"
@@ -261,10 +260,11 @@
         android:id="@+id/three_buttons_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:orientation="vertical"
         android:paddingHorizontal="12dp"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_cancelled"

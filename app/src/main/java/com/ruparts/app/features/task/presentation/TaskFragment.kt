@@ -74,6 +74,12 @@ class TaskFragment : Fragment() {
 
         description.doOnTextChanged { text, start, before, count ->
             viewModel.setTaskDescription(text.toString())
+            description.setSelection(description.text.length)
+            /*поместила курсор в конец строки, тк он всегда попадал в начало,
+            и не удавалось удалять текст комментария просто бекспейсом,
+            теперь сломалось редактирование в центре строки, не понимаю, как исправить,
+            чтобы курсор был в том месте, куда его поместил юзер.
+            применить более сложный способ с TextWatcher? или есть более простой путь?*/
         }
 
         implementer.setOnClickListener {
@@ -194,7 +200,7 @@ class TaskFragment : Fragment() {
     }
 
     private fun removeBorder(view: View) {
-        view.background = null // Удаляем фон/границу
+        view.background = null
     }
 
     private fun addBorder(view: View) {
