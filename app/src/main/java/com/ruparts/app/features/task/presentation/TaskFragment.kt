@@ -2,6 +2,8 @@ package com.ruparts.app.features.task.presentation
 
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -72,6 +74,12 @@ class TaskFragment : Fragment() {
 
         description.doOnTextChanged { text, start, before, count ->
             viewModel.setTaskDescription(text.toString())
+            description.setSelection(description.text.length)
+            /*поместила курсор в конец строки, тк он всегда попадал в начало,
+            и не удавалось удалять текст комментария просто бекспейсом,
+            теперь сломалось редактирование в центре строки, не понимаю, как исправить,
+            чтобы курсор был в том месте, куда его поместил юзер.
+            применить более сложный способ с TextWatcher? или есть более простой путь?*/
         }
 
         implementer.setOnClickListener {
@@ -138,7 +146,6 @@ class TaskFragment : Fragment() {
                 priority.text = "Средний"
             }
         }
-        createdDate.text = task.createdAtDate
 
         implementer.text = when (task.implementer) {
             TaskImplementer.USER -> "Работник склада"
@@ -146,6 +153,20 @@ class TaskFragment : Fragment() {
             TaskImplementer.STOREKEEPER -> "Кладовщик"
             TaskImplementer.UNKNOWN -> ""
         }
+
+        finishAtDate.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (s.isNullOrEmpty()) {
+                    removeBorder(finishAtDate)
+                } else {
+                    addBorder(finishAtDate)
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
 
         finishAtDate.setText(task.finishAtDate)
     }
@@ -159,7 +180,7 @@ class TaskFragment : Fragment() {
         val datePickerDialog = DatePickerDialog(
             requireContext(),
             { _: DatePicker?, year: Int, month: Int, dayOfMonth: Int ->
-                val sdf = SimpleDateFormat("dd MMM yy", Locale.getDefault())
+                val sdf = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
                 val selectedDate = Calendar.getInstance().apply {
                     set(Calendar.YEAR, year)
                     set(Calendar.MONTH, month)
@@ -176,5 +197,13 @@ class TaskFragment : Fragment() {
 
     companion object {
         const val ARG_TASK_KEY = "task"
+    }
+
+    private fun removeBorder(view: View) {
+        view.background = null
+    }
+
+    private fun addBorder(view: View) {
+        view.setBackgroundResource(R.drawable.border_rectangle_radius5dp)
     }
 }
