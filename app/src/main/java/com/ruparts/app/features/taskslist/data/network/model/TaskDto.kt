@@ -12,7 +12,7 @@ class TaskDto(
     @SerializedName("description")
     val description: String,
     @SerializedName("type")
-    val type: String,
+    val type: TaskTypeDto,
     @SerializedName("status")
     val status: TaskStatusDto,
     @SerializedName("priority")

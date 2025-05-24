@@ -282,11 +282,11 @@ class TaskFragment : Fragment() {
     }
 
     private fun showEnabledState(button: MaterialButton, @DrawableRes iconRes: Int) {
-        statusButton.isEnabled = true
-        statusButton.setIconResource(iconRes)
-        statusButton.setBackgroundColor(resources.getColor(R.color.light_purple, null))
-        statusButton.setTextColor(resources.getColor(R.color.black, null))
-        statusButton.iconTint = resources.getColorStateList(R.color.black, null)
+        button.isEnabled = true
+        button.setIconResource(iconRes)
+        button.setBackgroundColor(resources.getColor(R.color.light_purple, null))
+        button.setTextColor(resources.getColor(R.color.black, null))
+        button.iconTint = resources.getColorStateList(R.color.black, null)
     }
 
     private fun showDisabledState(button: MaterialButton) {

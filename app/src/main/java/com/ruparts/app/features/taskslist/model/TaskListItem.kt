@@ -12,6 +12,7 @@ data class TaskListItem(
     val title: String,
     val description: String,
     val implementer: TaskImplementer,
+    val type: TaskType = TaskType.CUSTOM,
     val createdAtDate: LocalDate?,
     val finishAtDate: LocalDate?,
     val updatedAtDate: LocalDate?,

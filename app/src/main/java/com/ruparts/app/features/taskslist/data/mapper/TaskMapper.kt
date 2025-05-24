@@ -1,14 +1,10 @@
 package com.ruparts.app.features.taskslist.data.mapper
 
 import com.ruparts.app.features.taskslist.data.network.model.TaskDto
-import com.ruparts.app.features.taskslist.data.network.model.TaskImplementerDto
-import com.ruparts.app.features.taskslist.data.network.model.TaskPriorityDto
-import com.ruparts.app.features.taskslist.data.network.model.TaskStatusDto
+import com.ruparts.app.features.taskslist.data.network.model.toDomain
 import com.ruparts.app.features.taskslist.model.TaskImplementer
 import com.ruparts.app.features.taskslist.model.TaskListGroup
 import com.ruparts.app.features.taskslist.model.TaskListItem
-import com.ruparts.app.features.taskslist.model.TaskPriority
-import com.ruparts.app.features.taskslist.model.TaskStatus
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
@@ -27,7 +23,7 @@ class TaskMapper @Inject constructor() {
             .groupBy { it.type }
             .map { (type, tasks) ->
                 TaskListGroup(
-                    title = type,
+                    title = type.toDomain().displayName,
                     tasks = tasks.map { task ->
                         mapTask(task, dateFormatter)
                     }
@@ -44,40 +40,17 @@ class TaskMapper @Inject constructor() {
             id = task.id,
             title = task.title,
             description = task.description,
-            status = mapTaskStatus(task.status),
-            priority = mapTaskPriority(task.priority),
-            implementer = mapTaskImplementer(task.implementer),
+            status = task.status.toDomain(),
+            priority = task.priority.toDomain(),
+            implementer = task.implementer?.toDomain() ?: TaskImplementer.UNKNOWN,
+            type = task.type.toDomain(),
             createdAtDate = mapLocalDate(task.createdAt, dateFormatter),
             finishAtDate = mapLocalDate(task.finishAt, dateFormatter),
             updatedAtDate = mapLocalDate(task.updatedAt, dateFormatter)
         )
     }
 
-    private fun mapTaskStatus(taskStatus: TaskStatusDto): TaskStatus {
-        return when (taskStatus) {
-            TaskStatusDto.TO_DO -> TaskStatus.TODO
-            TaskStatusDto.IN_PROGRESS -> TaskStatus.IN_PROGRESS
-            TaskStatusDto.COMPLETED -> TaskStatus.COMPLETED
-            TaskStatusDto.CANCELLED -> TaskStatus.CANCELLED
-        }
-    }
 
-    private fun mapTaskPriority(taskPriority: TaskPriorityDto): TaskPriority {
-        return when (taskPriority) {
-            TaskPriorityDto.HIGH -> TaskPriority.HIGH
-            TaskPriorityDto.MEDIUM -> TaskPriority.MEDIUM
-            TaskPriorityDto.LOW -> TaskPriority.LOW
-        }
-    }
-
-    private fun mapTaskImplementer(taskImplementer: TaskImplementerDto?): TaskImplementer {
-        return when (taskImplementer) {
-            TaskImplementerDto.USER -> TaskImplementer.USER
-            TaskImplementerDto.PURCHASES_MANAGER -> TaskImplementer.PURCHASES_MANAGER
-            TaskImplementerDto.STOREKEEPER -> TaskImplementer.STOREKEEPER
-            null -> TaskImplementer.UNKNOWN
-        }
-    }
 
     private fun mapLocalDate(
         dateString: String?,

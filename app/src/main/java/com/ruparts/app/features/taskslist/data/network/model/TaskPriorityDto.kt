@@ -14,10 +14,14 @@ enum class TaskPriorityDto(val value: String) {
     LOW("low")
 }
 
-fun TaskPriority.toDto(): TaskPriorityDto? {
-    return when (this) {
-        TaskPriority.HIGH -> TaskPriorityDto.HIGH
-        TaskPriority.MEDIUM -> TaskPriorityDto.MEDIUM
-        TaskPriority.LOW -> TaskPriorityDto.LOW
-    }
+fun TaskPriorityDto.toDomain(): TaskPriority = when (this) {
+    TaskPriorityDto.HIGH -> TaskPriority.HIGH
+    TaskPriorityDto.MEDIUM -> TaskPriority.MEDIUM
+    TaskPriorityDto.LOW -> TaskPriority.LOW
+}
+
+fun TaskPriority.toDto(): TaskPriorityDto = when (this) {
+    TaskPriority.HIGH -> TaskPriorityDto.HIGH
+    TaskPriority.MEDIUM -> TaskPriorityDto.MEDIUM
+    TaskPriority.LOW -> TaskPriorityDto.LOW
 }

@@ -17,11 +17,16 @@ enum class TaskStatusDto(val value: String) {
     CANCELLED("canceled")
 }
 
-fun TaskStatus.toDto(): TaskStatusDto? {
-    return when (this) {
-        TaskStatus.TODO -> TaskStatusDto.TO_DO
-        TaskStatus.IN_PROGRESS -> TaskStatusDto.IN_PROGRESS
-        TaskStatus.COMPLETED -> TaskStatusDto.COMPLETED
-        TaskStatus.CANCELLED -> TaskStatusDto.CANCELLED
-    }
+fun TaskStatusDto.toDomain(): TaskStatus = when (this) {
+    TaskStatusDto.TO_DO -> TaskStatus.TODO
+    TaskStatusDto.IN_PROGRESS -> TaskStatus.IN_PROGRESS
+    TaskStatusDto.COMPLETED -> TaskStatus.COMPLETED
+    TaskStatusDto.CANCELLED -> TaskStatus.CANCELLED
+}
+
+fun TaskStatus.toDto(): TaskStatusDto = when (this) {
+    TaskStatus.TODO -> TaskStatusDto.TO_DO
+    TaskStatus.IN_PROGRESS -> TaskStatusDto.IN_PROGRESS
+    TaskStatus.COMPLETED -> TaskStatusDto.COMPLETED
+    TaskStatus.CANCELLED -> TaskStatusDto.CANCELLED
 }
