@@ -9,6 +9,7 @@ import com.ruparts.app.features.task.presentation.model.TaskUiEffect
 import com.ruparts.app.features.taskslist.model.TaskImplementer
 import com.ruparts.app.features.taskslist.model.TaskListItem
 import com.ruparts.app.features.taskslist.model.TaskPriority
+import com.ruparts.app.features.taskslist.model.TaskStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -94,7 +95,7 @@ class TaskViewModel @Inject constructor(
                     _screenState.update {
                         it.copy(
                             task = updatedTask,
-                            isLoading = false
+                            isLoading = false,
                         )
                     }
                     _uiEffect.emit(TaskUiEffect.TaskUpdateSuccess)
@@ -104,6 +105,16 @@ class TaskViewModel @Inject constructor(
                     _uiEffect.emit(TaskUiEffect.TaskUpdateError)
                 }
             )
+        }
+    }
+
+    fun changeTaskStatus(newStatus: TaskStatus) {
+        if (_screenState.value.isLoading) return
+
+        viewModelScope.launch {
+            // TODO: здесь реализовать смену статуса по аналогии с updateTask
+            // repository.changeTaskStatus(...))
+            // ...
         }
     }
 }

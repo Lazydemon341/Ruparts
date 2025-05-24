@@ -9,6 +9,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.os.bundleOf
@@ -149,7 +150,7 @@ class TaskFragment : Fragment() {
                     Snackbar.make(
                         requireView(),
                         "Не удалось обновить задачу",
-                        Snackbar.LENGTH_SHORT
+                        Snackbar.LENGTH_SHORT,
                     ).show()
                 }
             }
@@ -205,40 +206,44 @@ class TaskFragment : Fragment() {
         when (taskStatus) {
             TaskStatus.TODO -> {
                 statusButton.text = "В работу"
-                statusButton.isEnabled = true
-                statusButton.setIconResource(R.drawable.play_arrow)
-                statusButton.setBackgroundColor(resources.getColor(R.color.light_purple, null))
-                statusButton.setTextColor(resources.getColor(R.color.black, null))
-                statusButton.iconTint = resources.getColorStateList(R.color.black, null)
+                showEnabledState(statusButton, R.drawable.play_arrow)
+                statusButton.setOnClickListener {
+                    viewModel.changeTaskStatus(TaskStatus.IN_PROGRESS)
+                }
+
                 cancelButton.isVisible = true
+                cancelButton.setOnClickListener {
+                    viewModel.changeTaskStatus(TaskStatus.CANCELLED)
+                }
             }
 
             TaskStatus.IN_PROGRESS -> {
                 statusButton.text = "Закрыть"
-                statusButton.isEnabled = true
-                statusButton.setIconResource(R.drawable.baseline_close_24)
-                statusButton.setBackgroundColor(resources.getColor(R.color.light_purple, null))
-                statusButton.setTextColor(resources.getColor(R.color.black, null))
-                statusButton.iconTint = resources.getColorStateList(R.color.black, null)
+                showEnabledState(statusButton, R.drawable.baseline_close_24)
+                statusButton.setOnClickListener {
+                    viewModel.changeTaskStatus(TaskStatus.COMPLETED)
+                }
+
                 cancelButton.isVisible = true
+                cancelButton.setOnClickListener {
+                    viewModel.changeTaskStatus(TaskStatus.CANCELLED)
+                }
             }
 
             TaskStatus.COMPLETED -> {
                 statusButton.text = "Завершена"
-                statusButton.isEnabled = false
-                statusButton.setIconResource(0)
-                statusButton.setBackgroundColor(resources.getColor(R.color.gray, null))
-                statusButton.setTextColor(resources.getColor(R.color.white, null))
+                showDisabledState(statusButton)
+
                 cancelButton.isVisible = false
+                cancelButton.setOnClickListener(null)
             }
 
             TaskStatus.CANCELLED -> {
                 statusButton.text = "Отменена"
-                statusButton.isEnabled = false
-                statusButton.setIconResource(0)
-                statusButton.setBackgroundColor(resources.getColor(R.color.gray, null))
-                statusButton.setTextColor(resources.getColor(R.color.white, null))
+                showDisabledState(statusButton)
+
                 cancelButton.isVisible = false
+                cancelButton.setOnClickListener(null)
             }
         }
     }
@@ -274,6 +279,22 @@ class TaskFragment : Fragment() {
     private fun formatLocalDate(date: LocalDate?): String {
         if (date == null) return ""
         return date.format(dateFormatter)
+    }
+
+    private fun showEnabledState(button: MaterialButton, @DrawableRes iconRes: Int) {
+        statusButton.isEnabled = true
+        statusButton.setIconResource(iconRes)
+        statusButton.setBackgroundColor(resources.getColor(R.color.light_purple, null))
+        statusButton.setTextColor(resources.getColor(R.color.black, null))
+        statusButton.iconTint = resources.getColorStateList(R.color.black, null)
+    }
+
+    private fun showDisabledState(button: MaterialButton) {
+        button.isEnabled = false
+        button.setIconResource(0)
+        button.setBackgroundColor(resources.getColor(R.color.gray, null))
+        button.setTextColor(resources.getColor(R.color.white, null))
+        button.setOnClickListener(null)
     }
 
     companion object {

@@ -4,7 +4,7 @@ import com.google.gson.Gson
 import com.ruparts.app.core.data.network.EndpointRetrofitService
 import com.ruparts.app.core.data.network.request
 import com.ruparts.app.core.utils.runCoroutineCatching
-import com.ruparts.app.features.taskslist.data.mapper.TaskListMapper
+import com.ruparts.app.features.taskslist.data.mapper.TaskMapper
 import com.ruparts.app.features.taskslist.data.network.model.TaskListRequestDataDto
 import com.ruparts.app.features.taskslist.data.network.model.TaskListRequestDto
 import com.ruparts.app.features.taskslist.data.network.model.TaskListResponseDto
@@ -16,7 +16,7 @@ import javax.inject.Inject
 class TaskListRepository @Inject constructor(
     private val endpointService: EndpointRetrofitService,
     private val gson: Gson,
-    private val mapper: TaskListMapper,
+    private val mapper: TaskMapper,
 ) {
 
     suspend fun getTaskList(): Result<List<TaskListGroup>> = withContext(Dispatchers.Default) {

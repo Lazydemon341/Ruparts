@@ -4,9 +4,8 @@ import com.google.gson.annotations.SerializedName
 import com.ruparts.app.core.data.network.EndpointRequestDto
 import com.ruparts.app.features.taskslist.data.network.model.TaskImplementerDto
 import com.ruparts.app.features.taskslist.data.network.model.TaskPriorityDto
-import com.ruparts.app.features.taskslist.model.TaskImplementer
+import com.ruparts.app.features.taskslist.data.network.model.toDto
 import com.ruparts.app.features.taskslist.model.TaskListItem
-import com.ruparts.app.features.taskslist.model.TaskPriority
 import java.time.format.DateTimeFormatter
 
 class TaskUpdateRequestDto(
@@ -36,30 +35,16 @@ class TaskUpdateRequestDataDto(
     val implementer: TaskImplementerDto?
 ) {
     companion object {
-        fun fromTaskListItem(task: TaskListItem): TaskUpdateRequestDataDto {
-            val priorityString = when (task.priority) {
-                TaskPriority.HIGH -> TaskPriorityDto.HIGH
-                TaskPriority.MEDIUM -> TaskPriorityDto.MEDIUM
-                TaskPriority.LOW -> TaskPriorityDto.LOW
-            }
-
-            val implementerString = when (task.implementer) {
-                TaskImplementer.USER -> TaskImplementerDto.USER
-                TaskImplementer.PURCHASES_MANAGER -> TaskImplementerDto.PURCHASES_MANAGER
-                TaskImplementer.STOREKEEPER -> TaskImplementerDto.STOREKEEPER
-                TaskImplementer.UNKNOWN -> null
-            }
-
+        fun fromTask(task: TaskListItem): TaskUpdateRequestDataDto {
             val formattedFinishDate = task.finishAtDate?.let { date ->
                 DateTimeFormatter.ofPattern("yyyy-MM-dd").format(date)
             }
-
             return TaskUpdateRequestDataDto(
                 id = task.id,
                 title = task.title,
                 description = task.description,
-                priority = priorityString,
-                implementer = implementerString,
+                priority = task.priority.toDto(),
+                implementer = task.implementer.toDto(),
                 finishAt = formattedFinishDate,
             )
         }

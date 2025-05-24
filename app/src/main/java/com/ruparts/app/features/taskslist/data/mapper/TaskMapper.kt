@@ -15,7 +15,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import javax.inject.Inject
 
-class TaskListMapper @Inject constructor() {
+class TaskMapper @Inject constructor() {
 
     private val dateFormatterLazy = lazy {
         DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss xxx")
