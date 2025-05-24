@@ -16,7 +16,7 @@
         android:layout_toStartOf="@+id/group_indicator"
         android:gravity="center_vertical"
         android:textColor="@color/black"
-        android:textSize="16sp"
+        android:textSize="20sp"
         android:textStyle="bold" />
 
     <ImageView

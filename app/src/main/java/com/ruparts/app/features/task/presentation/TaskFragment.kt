@@ -5,26 +5,34 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.DatePicker
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.progressindicator.CircularProgressIndicator
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textview.MaterialTextView
 import com.ruparts.app.R
-import com.ruparts.app.core.extensions.collectWhileStarted
+import com.ruparts.app.core.utils.collectWhileStarted
 import com.ruparts.app.features.task.presentation.model.TaskScreenState
+import com.ruparts.app.features.task.presentation.model.TaskUiEffect
 import com.ruparts.app.features.taskslist.model.TaskImplementer
 import com.ruparts.app.features.taskslist.model.TaskPriority
+import com.ruparts.app.features.taskslist.model.TaskStatus
 import dagger.hilt.android.AndroidEntryPoint
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @AndroidEntryPoint
 class TaskFragment : Fragment() {
@@ -40,6 +48,14 @@ class TaskFragment : Fragment() {
     private lateinit var createdDate: TextView
     private lateinit var changedDate: TextView
     private lateinit var toolbar: Toolbar
+    private lateinit var saveButton: Button
+    private lateinit var statusButton: MaterialButton
+    private lateinit var cancelButton: Button
+    private lateinit var progressIndicator: CircularProgressIndicator
+
+    private val dateFormatter by lazy(LazyThreadSafetyMode.NONE) {
+        DateTimeFormatter.ofPattern(DATE_FORMAT_PATTERN)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -69,6 +85,10 @@ class TaskFragment : Fragment() {
         priority = view.findViewById(R.id.priority_material_tv)
         createdDate = view.findViewById(R.id.date_view_created)
         changedDate = view.findViewById(R.id.date_view_changed)
+        saveButton = view.findViewById(R.id.button_save)
+        statusButton = view.findViewById(R.id.button_in_work)
+        cancelButton = view.findViewById(R.id.button_cancelled)
+        progressIndicator = view.findViewById(R.id.progress_indicator)
 
         description.doOnTextChanged { text, start, before, count ->
             viewModel.setTaskDescription(text.toString())
@@ -86,7 +106,12 @@ class TaskFragment : Fragment() {
             showDatePickerDialog()
         }
 
+        saveButton.setOnClickListener {
+            viewModel.updateTask()
+        }
+
         observeScreenState()
+        collectUiEffects()
     }
 
     private fun showBottomSheetImplementer() {
@@ -113,6 +138,25 @@ class TaskFragment : Fragment() {
         }
     }
 
+    private fun collectUiEffects() {
+        viewModel.uiEffect.collectWhileStarted(viewLifecycleOwner) { effect ->
+            when (effect) {
+                is TaskUiEffect.TaskUpdateSuccess -> {
+                    Snackbar.make(requireView(), "Задача обновлена", Snackbar.LENGTH_SHORT).show()
+                    setFragmentResult(TASK_UPDATED_REQUEST_KEY, bundleOf())
+                }
+
+                is TaskUiEffect.TaskUpdateError -> {
+                    Snackbar.make(
+                        requireView(),
+                        "Не удалось обновить задачу",
+                        Snackbar.LENGTH_SHORT,
+                    ).show()
+                }
+            }
+        }
+    }
+
     private fun updateUI(state: TaskScreenState) {
         val task = state.task
         title.text = task.title
@@ -122,7 +166,25 @@ class TaskFragment : Fragment() {
 //        toolbar.setSubtitle(title.text)
 //        toolbar.setSubtitleTextColor(R.color.white)
 
-        when (task.priority) {
+        updatePriority(task.priority)
+        updateStatus(task.status)
+
+        createdDate.text = formatLocalDate(task.createdAtDate)
+        changedDate.text = formatLocalDate(task.updatedAtDate)
+        finishAtDate.setText(formatLocalDate(task.finishAtDate))
+
+        implementer.text = when (task.implementer) {
+            TaskImplementer.USER -> "Работник склада"
+            TaskImplementer.PURCHASES_MANAGER -> "Администратор"
+            TaskImplementer.STOREKEEPER -> "Кладовщик"
+            TaskImplementer.UNKNOWN -> ""
+        }
+
+        updateLoadingState(state.isLoading)
+    }
+
+    private fun updatePriority(taskPriority: TaskPriority) {
+        when (taskPriority) {
             TaskPriority.HIGH -> {
                 priorityImage.setImageResource(R.drawable.arrow_up)
                 priority.text = "Высокий"
@@ -138,35 +200,75 @@ class TaskFragment : Fragment() {
                 priority.text = "Средний"
             }
         }
-        createdDate.text = task.createdAtDate
+    }
 
-        implementer.text = when (task.implementer) {
-            TaskImplementer.USER -> "Работник склада"
-            TaskImplementer.PURCHASES_MANAGER -> "Администратор"
-            TaskImplementer.STOREKEEPER -> "Кладовщик"
-            TaskImplementer.UNKNOWN -> ""
+    private fun updateStatus(taskStatus: TaskStatus) {
+        when (taskStatus) {
+            TaskStatus.TODO -> {
+                statusButton.text = "В работу"
+                showEnabledState(statusButton, R.drawable.play_arrow)
+                statusButton.setOnClickListener {
+                    viewModel.changeTaskStatus(TaskStatus.IN_PROGRESS)
+                }
+
+                cancelButton.isVisible = true
+                cancelButton.setOnClickListener {
+                    viewModel.changeTaskStatus(TaskStatus.CANCELLED)
+                }
+            }
+
+            TaskStatus.IN_PROGRESS -> {
+                statusButton.text = "Закрыть"
+                showEnabledState(statusButton, R.drawable.baseline_close_24)
+                statusButton.setOnClickListener {
+                    viewModel.changeTaskStatus(TaskStatus.COMPLETED)
+                }
+
+                cancelButton.isVisible = true
+                cancelButton.setOnClickListener {
+                    viewModel.changeTaskStatus(TaskStatus.CANCELLED)
+                }
+            }
+
+            TaskStatus.COMPLETED -> {
+                statusButton.text = "Завершена"
+                showDisabledState(statusButton)
+
+                cancelButton.isVisible = false
+                cancelButton.setOnClickListener(null)
+            }
+
+            TaskStatus.CANCELLED -> {
+                statusButton.text = "Отменена"
+                showDisabledState(statusButton)
+
+                cancelButton.isVisible = false
+                cancelButton.setOnClickListener(null)
+            }
         }
+    }
 
-        finishAtDate.setText(task.finishAtDate)
+    private fun updateLoadingState(isLoading: Boolean) {
+        progressIndicator.isVisible = isLoading
+        saveButton.isEnabled = !isLoading
+        description.isEnabled = !isLoading
+        implementer.isEnabled = !isLoading
+        priority.isEnabled = !isLoading
+        finishAtDate.isEnabled = !isLoading
     }
 
     private fun showDatePickerDialog() {
-        val calendar = Calendar.getInstance()
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
+        val currentDate = viewModel.screenState.value.task.finishAtDate
+            ?: LocalDate.now()
+        val year = currentDate.year
+        val month = currentDate.monthValue - 1 // DatePickerDialog uses 0-based months
+        val dayOfMonth = currentDate.dayOfMonth
 
         val datePickerDialog = DatePickerDialog(
             requireContext(),
-            { _: DatePicker?, year: Int, month: Int, dayOfMonth: Int ->
-                val sdf = SimpleDateFormat("dd MMM yy", Locale.getDefault())
-                val selectedDate = Calendar.getInstance().apply {
-                    set(Calendar.YEAR, year)
-                    set(Calendar.MONTH, month)
-                    set(Calendar.DAY_OF_MONTH, dayOfMonth)
-                }.time
-                val formattedDate = sdf.format(selectedDate)
-                viewModel.setFinishAtDate(formattedDate)
+            { _, year, month, dayOfMonth ->
+                val selectedDate = LocalDate.of(year, month + 1, dayOfMonth)
+                viewModel.setFinishAtDate(selectedDate)
             },
             year, month, dayOfMonth
         )
@@ -174,7 +276,30 @@ class TaskFragment : Fragment() {
         datePickerDialog.show()
     }
 
+    private fun formatLocalDate(date: LocalDate?): String {
+        if (date == null) return ""
+        return date.format(dateFormatter)
+    }
+
+    private fun showEnabledState(button: MaterialButton, @DrawableRes iconRes: Int) {
+        button.isEnabled = true
+        button.setIconResource(iconRes)
+        button.setBackgroundColor(resources.getColor(R.color.light_purple, null))
+        button.setTextColor(resources.getColor(R.color.black, null))
+        button.iconTint = resources.getColorStateList(R.color.black, null)
+    }
+
+    private fun showDisabledState(button: MaterialButton) {
+        button.isEnabled = false
+        button.setIconResource(0)
+        button.setBackgroundColor(resources.getColor(R.color.gray, null))
+        button.setTextColor(resources.getColor(R.color.white, null))
+        button.setOnClickListener(null)
+    }
+
     companion object {
         const val ARG_TASK_KEY = "task"
+        const val TASK_UPDATED_REQUEST_KEY = "task_updated_request_key"
+        private const val DATE_FORMAT_PATTERN = "dd MMM yy"
     }
 }

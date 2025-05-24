@@ -1,4 +1,4 @@
-package com.ruparts.app.core.extensions
+package com.ruparts.app.core.utils
 
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner

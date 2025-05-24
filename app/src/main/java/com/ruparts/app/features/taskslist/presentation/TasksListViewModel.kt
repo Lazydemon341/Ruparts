@@ -8,14 +8,17 @@ import com.ruparts.app.features.taskslist.model.TaskStatus
 import com.ruparts.app.features.taskslist.presentation.model.TasksListScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,18 +28,25 @@ class TasksListViewModel @Inject constructor(
 
     private val searchQuery = MutableStateFlow("")
     private val taskStatusFilter = MutableStateFlow<TaskStatus?>(null)
+    private val isLoading = MutableStateFlow(false)
+    private val taskGroups = MutableStateFlow<List<TaskListGroup>>(emptyList())
 
+    private var loadTasksJob: Job? = null
+
+    @OptIn(FlowPreview::class)
     val screenState: StateFlow<TasksListScreenState> = combine(
-        flow { emit(repository.getTaskList()) },
+        taskGroups,
         taskStatusFilter,
         searchQuery.debounce(300L),
-    ) { taskList, status, query ->
+        isLoading,
+    ) { taskList, status, query, loading ->
         TasksListScreenState(
             groups = performFilter(taskList, status, query),
+            isLoading = loading
         )
-    }.flowOn(Dispatchers.Default)
+    }.onStart { loadTasks() }
         .stateIn(
-            scope = viewModelScope,
+            scope = viewModelScope + Dispatchers.Default,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = initialScreenState,
         )
@@ -47,6 +57,20 @@ class TasksListViewModel @Inject constructor(
 
     fun onTaskStatusFilterChange(status: TaskStatus?) {
         taskStatusFilter.value = status
+    }
+
+    fun refreshTasks() {
+        loadTasks()
+    }
+
+    private fun loadTasks() {
+        loadTasksJob?.cancel()
+        loadTasksJob = viewModelScope.launch {
+            isLoading.value = true
+            taskGroups.value = repository.getTaskList()
+                .getOrDefault(emptyList())
+            isLoading.value = false
+        }
     }
 
     private fun performFilter(
@@ -68,6 +92,7 @@ class TasksListViewModel @Inject constructor(
                 resultList.add(group.copy(tasks = filtered))
             }
         }
+
         return resultList
     }
 
@@ -81,4 +106,5 @@ class TasksListViewModel @Inject constructor(
 
 private val initialScreenState = TasksListScreenState(
     groups = emptyList(),
+    isLoading = true
 )
