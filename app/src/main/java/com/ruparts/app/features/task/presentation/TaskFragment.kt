@@ -11,14 +11,18 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.progressindicator.CircularProgressIndicator
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textview.MaterialTextView
 import com.ruparts.app.R
-import com.ruparts.app.core.extensions.collectWhileStarted
+import com.ruparts.app.core.utils.collectWhileStarted
 import com.ruparts.app.features.task.presentation.model.TaskScreenState
+import com.ruparts.app.features.task.presentation.model.TaskUiEffect
 import com.ruparts.app.features.taskslist.model.TaskImplementer
 import com.ruparts.app.features.taskslist.model.TaskPriority
 import dagger.hilt.android.AndroidEntryPoint
@@ -40,6 +44,7 @@ class TaskFragment : Fragment() {
     private lateinit var changedDate: TextView
     private lateinit var toolbar: Toolbar
     private lateinit var saveButton: Button
+    private lateinit var progressIndicator: CircularProgressIndicator
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -70,6 +75,7 @@ class TaskFragment : Fragment() {
         createdDate = view.findViewById(R.id.date_view_created)
         changedDate = view.findViewById(R.id.date_view_changed)
         saveButton = view.findViewById(R.id.button_save)
+        progressIndicator = view.findViewById(R.id.progress_indicator)
 
         description.doOnTextChanged { text, start, before, count ->
             viewModel.setTaskDescription(text.toString())
@@ -92,6 +98,7 @@ class TaskFragment : Fragment() {
         }
 
         observeScreenState()
+        collectUiEffects()
     }
 
     private fun showBottomSheetImplementer() {
@@ -115,6 +122,19 @@ class TaskFragment : Fragment() {
     private fun observeScreenState() {
         viewModel.screenState.collectWhileStarted(viewLifecycleOwner) { state ->
             updateUI(state)
+        }
+    }
+    
+    private fun collectUiEffects() {
+        viewModel.uiEffect.collectWhileStarted(viewLifecycleOwner) { effect ->
+            when (effect) {
+                is TaskUiEffect.TaskUpdateSuccess -> {
+                    Snackbar.make(requireView(), "Задача обновлена", Snackbar.LENGTH_SHORT).show()
+                }
+                is TaskUiEffect.TaskUpdateError -> {
+                    Snackbar.make(requireView(), "Не удалось обновить задачу", Snackbar.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 
@@ -154,6 +174,17 @@ class TaskFragment : Fragment() {
             TaskImplementer.STOREKEEPER -> "Кладовщик"
             TaskImplementer.UNKNOWN -> ""
         }
+
+        updateLoadingState(state.isLoading)
+    }
+
+    private fun updateLoadingState(isLoading: Boolean) {
+        progressIndicator.isVisible = isLoading
+        saveButton.isEnabled = !isLoading
+        description.isEnabled = !isLoading
+        implementer.isEnabled = !isLoading
+        priority.isEnabled = !isLoading
+        finishAtDate.isEnabled = !isLoading
     }
 
     private fun showDatePickerDialog() {

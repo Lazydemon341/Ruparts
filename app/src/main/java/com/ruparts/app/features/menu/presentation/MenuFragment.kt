@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.ruparts.app.R
-import com.ruparts.app.core.extensions.collectWhileStarted
+import com.ruparts.app.core.utils.collectWhileStarted
 import com.ruparts.app.features.menu.presentation.model.MenuUiEffect
 import dagger.hilt.android.AndroidEntryPoint
 

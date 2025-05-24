@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.ruparts.app.R
-import com.ruparts.app.core.extensions.collectWhileStarted
+import com.ruparts.app.core.utils.collectWhileStarted
 import com.ruparts.app.features.task.presentation.TaskFragment
 import com.ruparts.app.features.taskslist.model.TaskStatus
 import com.ruparts.app.features.taskslist.presentation.model.TasksListScreenState
