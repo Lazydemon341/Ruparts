@@ -3,6 +3,7 @@ package com.ruparts.app.features.taskslist.data.repository
 import com.google.gson.Gson
 import com.ruparts.app.core.data.network.EndpointRetrofitService
 import com.ruparts.app.core.data.network.request
+import com.ruparts.app.core.utils.runCoroutineCatching
 import com.ruparts.app.features.taskslist.data.mapper.TaskListMapper
 import com.ruparts.app.features.taskslist.data.network.model.TaskListRequestDataDto
 import com.ruparts.app.features.taskslist.data.network.model.TaskListRequestDto
@@ -18,13 +19,15 @@ class TaskListRepository @Inject constructor(
     private val mapper: TaskListMapper,
 ) {
 
-    suspend fun getTaskList(): List<TaskListGroup> = withContext(Dispatchers.Default) {
-        val response = endpointService.request<TaskListRequestDto, TaskListResponseDto>(
-            body = TaskListRequestDto(
-                data = TaskListRequestDataDto(),
-            ),
-            gson = gson,
-        )
-        mapper.mapTasks(response.data.list)
+    suspend fun getTaskList(): Result<List<TaskListGroup>> = withContext(Dispatchers.Default) {
+        runCoroutineCatching {
+            val response = endpointService.request<TaskListRequestDto, TaskListResponseDto>(
+                body = TaskListRequestDto(
+                    data = TaskListRequestDataDto(),
+                ),
+                gson = gson,
+            )
+            mapper.mapTasks(response.data.list)
+        }
     }
 }

@@ -8,13 +8,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.ruparts.app.R
 import com.ruparts.app.core.utils.collectWhileStarted
 import com.ruparts.app.features.task.presentation.TaskFragment
@@ -32,6 +35,7 @@ class TasksListFragment : Fragment() {
     private lateinit var searchView: SearchView
     private lateinit var chipGroup: ChipGroup
     private lateinit var toolbar: Toolbar
+    private lateinit var progressIndicator: CircularProgressIndicator
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -61,6 +65,8 @@ class TasksListFragment : Fragment() {
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.addItemDecoration(TaskItemDecoration(requireContext()))
+
+        progressIndicator = view.findViewById(R.id.tasks_progress_indicator)
 
         searchView = view.findViewById(R.id.taskslist_searchview)
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -93,6 +99,7 @@ class TasksListFragment : Fragment() {
         }
 
         observeScreenState()
+        setupTaskUpdateListener()
     }
 
     private fun observeScreenState() {
@@ -103,5 +110,16 @@ class TasksListFragment : Fragment() {
 
     private fun updateUI(state: TasksListScreenState) {
         adapter.setTaskGroups(state.groups)
+        updateLoadingState(state.isLoading)
+    }
+    
+    private fun updateLoadingState(isLoading: Boolean) {
+        progressIndicator.isVisible = isLoading
+    }
+    
+    private fun setupTaskUpdateListener() {
+        setFragmentResultListener(TaskFragment.TASK_UPDATED_REQUEST_KEY) { _, _ ->
+            viewModel.refreshTasks()
+        }
     }
 }

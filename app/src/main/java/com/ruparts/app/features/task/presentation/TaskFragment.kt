@@ -11,9 +11,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.progressindicator.CircularProgressIndicator
@@ -45,6 +47,10 @@ class TaskFragment : Fragment() {
     private lateinit var toolbar: Toolbar
     private lateinit var saveButton: Button
     private lateinit var progressIndicator: CircularProgressIndicator
+
+    private val dateFormatter by lazy(LazyThreadSafetyMode.NONE) {
+        DateTimeFormatter.ofPattern(DATE_FORMAT_PATTERN)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -124,15 +130,21 @@ class TaskFragment : Fragment() {
             updateUI(state)
         }
     }
-    
+
     private fun collectUiEffects() {
         viewModel.uiEffect.collectWhileStarted(viewLifecycleOwner) { effect ->
             when (effect) {
                 is TaskUiEffect.TaskUpdateSuccess -> {
                     Snackbar.make(requireView(), "Задача обновлена", Snackbar.LENGTH_SHORT).show()
+                    setFragmentResult(TASK_UPDATED_REQUEST_KEY, bundleOf())
                 }
+
                 is TaskUiEffect.TaskUpdateError -> {
-                    Snackbar.make(requireView(), "Не удалось обновить задачу", Snackbar.LENGTH_SHORT).show()
+                    Snackbar.make(
+                        requireView(),
+                        "Не удалось обновить задачу",
+                        Snackbar.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
@@ -208,11 +220,12 @@ class TaskFragment : Fragment() {
 
     private fun formatLocalDate(date: LocalDate?): String {
         if (date == null) return ""
-        val formatter = DateTimeFormatter.ofPattern("dd MMM yy")
-        return date.format(formatter)
+        return date.format(dateFormatter)
     }
 
     companion object {
         const val ARG_TASK_KEY = "task"
+        const val TASK_UPDATED_REQUEST_KEY = "task_updated_request_key"
+        private const val DATE_FORMAT_PATTERN = "dd MMM yy"
     }
 }
