@@ -9,6 +9,7 @@ import com.ruparts.app.features.taskslist.presentation.model.TasksListScreenStat
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -29,6 +30,8 @@ class TasksListViewModel @Inject constructor(
     private val taskStatusFilter = MutableStateFlow<TaskStatus?>(null)
     private val isLoading = MutableStateFlow(false)
     private val taskGroups = MutableStateFlow<List<TaskListGroup>>(emptyList())
+
+    private var loadTasksJob: Job? = null
 
     @OptIn(FlowPreview::class)
     val screenState: StateFlow<TasksListScreenState> = combine(
@@ -61,7 +64,8 @@ class TasksListViewModel @Inject constructor(
     }
 
     private fun loadTasks() {
-        viewModelScope.launch {
+        loadTasksJob?.cancel()
+        loadTasksJob = viewModelScope.launch {
             isLoading.value = true
             taskGroups.value = repository.getTaskList()
                 .getOrDefault(emptyList())

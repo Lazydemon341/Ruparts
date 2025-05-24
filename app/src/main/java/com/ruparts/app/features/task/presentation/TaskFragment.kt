@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textview.MaterialTextView
@@ -27,6 +28,7 @@ import com.ruparts.app.features.task.presentation.model.TaskScreenState
 import com.ruparts.app.features.task.presentation.model.TaskUiEffect
 import com.ruparts.app.features.taskslist.model.TaskImplementer
 import com.ruparts.app.features.taskslist.model.TaskPriority
+import com.ruparts.app.features.taskslist.model.TaskStatus
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -46,6 +48,8 @@ class TaskFragment : Fragment() {
     private lateinit var changedDate: TextView
     private lateinit var toolbar: Toolbar
     private lateinit var saveButton: Button
+    private lateinit var statusButton: MaterialButton
+    private lateinit var cancelButton: Button
     private lateinit var progressIndicator: CircularProgressIndicator
 
     private val dateFormatter by lazy(LazyThreadSafetyMode.NONE) {
@@ -81,6 +85,8 @@ class TaskFragment : Fragment() {
         createdDate = view.findViewById(R.id.date_view_created)
         changedDate = view.findViewById(R.id.date_view_changed)
         saveButton = view.findViewById(R.id.button_save)
+        statusButton = view.findViewById(R.id.button_in_work)
+        cancelButton = view.findViewById(R.id.button_cancelled)
         progressIndicator = view.findViewById(R.id.progress_indicator)
 
         description.doOnTextChanged { text, start, before, count ->
@@ -159,7 +165,25 @@ class TaskFragment : Fragment() {
 //        toolbar.setSubtitle(title.text)
 //        toolbar.setSubtitleTextColor(R.color.white)
 
-        when (task.priority) {
+        updatePriority(task.priority)
+        updateStatus(task.status)
+
+        createdDate.text = formatLocalDate(task.createdAtDate)
+        changedDate.text = formatLocalDate(task.updatedAtDate)
+        finishAtDate.setText(formatLocalDate(task.finishAtDate))
+
+        implementer.text = when (task.implementer) {
+            TaskImplementer.USER -> "Работник склада"
+            TaskImplementer.PURCHASES_MANAGER -> "Администратор"
+            TaskImplementer.STOREKEEPER -> "Кладовщик"
+            TaskImplementer.UNKNOWN -> ""
+        }
+
+        updateLoadingState(state.isLoading)
+    }
+
+    private fun updatePriority(taskPriority: TaskPriority) {
+        when (taskPriority) {
             TaskPriority.HIGH -> {
                 priorityImage.setImageResource(R.drawable.arrow_up)
                 priority.text = "Высокий"
@@ -175,19 +199,48 @@ class TaskFragment : Fragment() {
                 priority.text = "Средний"
             }
         }
+    }
 
-        createdDate.text = formatLocalDate(task.createdAtDate)
-        changedDate.text = formatLocalDate(task.updatedAtDate)
-        finishAtDate.setText(formatLocalDate(task.finishAtDate))
+    private fun updateStatus(taskStatus: TaskStatus) {
+        when (taskStatus) {
+            TaskStatus.TODO -> {
+                statusButton.text = "В работу"
+                statusButton.isEnabled = true
+                statusButton.setIconResource(R.drawable.play_arrow)
+                statusButton.setBackgroundColor(resources.getColor(R.color.light_purple, null))
+                statusButton.setTextColor(resources.getColor(R.color.black, null))
+                statusButton.iconTint = resources.getColorStateList(R.color.black, null)
+                cancelButton.isVisible = true
+            }
 
-        implementer.text = when (task.implementer) {
-            TaskImplementer.USER -> "Работник склада"
-            TaskImplementer.PURCHASES_MANAGER -> "Администратор"
-            TaskImplementer.STOREKEEPER -> "Кладовщик"
-            TaskImplementer.UNKNOWN -> ""
+            TaskStatus.IN_PROGRESS -> {
+                statusButton.text = "Закрыть"
+                statusButton.isEnabled = true
+                statusButton.setIconResource(R.drawable.baseline_close_24)
+                statusButton.setBackgroundColor(resources.getColor(R.color.light_purple, null))
+                statusButton.setTextColor(resources.getColor(R.color.black, null))
+                statusButton.iconTint = resources.getColorStateList(R.color.black, null)
+                cancelButton.isVisible = true
+            }
+
+            TaskStatus.COMPLETED -> {
+                statusButton.text = "Завершена"
+                statusButton.isEnabled = false
+                statusButton.setIconResource(0)
+                statusButton.setBackgroundColor(resources.getColor(R.color.gray, null))
+                statusButton.setTextColor(resources.getColor(R.color.white, null))
+                cancelButton.isVisible = false
+            }
+
+            TaskStatus.CANCELLED -> {
+                statusButton.text = "Отменена"
+                statusButton.isEnabled = false
+                statusButton.setIconResource(0)
+                statusButton.setBackgroundColor(resources.getColor(R.color.gray, null))
+                statusButton.setTextColor(resources.getColor(R.color.white, null))
+                cancelButton.isVisible = false
+            }
         }
-
-        updateLoadingState(state.isLoading)
     }
 
     private fun updateLoadingState(isLoading: Boolean) {
