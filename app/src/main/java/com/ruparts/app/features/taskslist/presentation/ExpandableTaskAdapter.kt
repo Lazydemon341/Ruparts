@@ -123,17 +123,15 @@ class ExpandableTaskAdapter(private val onTaskClick: (TaskListItem) -> Unit) : L
 
         fun bind(item: TaskListItem) {
             itemName.text = item.title
-            itemDate.text = item.createdAtDate
+            //itemDate.text = item.createdAtDate
             itemDescription.text = item.description
 
-            // Set the compound drawable based on priority
             val priorityDrawable = when (item.priority) {
                 TaskPriority.HIGH -> R.drawable.arrow_up
                 TaskPriority.LOW -> R.drawable.arrow_down
                 TaskPriority.MEDIUM -> R.drawable.equal
             }
-            
-            // Set the drawable to the start of the TextView
+
             val drawable = ContextCompat.getDrawable(itemView.context, priorityDrawable)
             drawable?.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
             itemName.setCompoundDrawables(drawable, null, null, null)

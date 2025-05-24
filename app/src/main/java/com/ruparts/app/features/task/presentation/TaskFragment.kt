@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.DatePicker
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -22,9 +22,8 @@ import com.ruparts.app.features.task.presentation.model.TaskScreenState
 import com.ruparts.app.features.taskslist.model.TaskImplementer
 import com.ruparts.app.features.taskslist.model.TaskPriority
 import dagger.hilt.android.AndroidEntryPoint
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @AndroidEntryPoint
 class TaskFragment : Fragment() {
@@ -40,6 +39,7 @@ class TaskFragment : Fragment() {
     private lateinit var createdDate: TextView
     private lateinit var changedDate: TextView
     private lateinit var toolbar: Toolbar
+    private lateinit var saveButton: Button
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -69,6 +69,7 @@ class TaskFragment : Fragment() {
         priority = view.findViewById(R.id.priority_material_tv)
         createdDate = view.findViewById(R.id.date_view_created)
         changedDate = view.findViewById(R.id.date_view_changed)
+        saveButton = view.findViewById(R.id.button_save)
 
         description.doOnTextChanged { text, start, before, count ->
             viewModel.setTaskDescription(text.toString())
@@ -84,6 +85,10 @@ class TaskFragment : Fragment() {
 
         finishAtDate.setOnClickListener {
             showDatePickerDialog()
+        }
+
+        saveButton.setOnClickListener {
+            viewModel.updateTask()
         }
 
         observeScreenState()
@@ -138,7 +143,10 @@ class TaskFragment : Fragment() {
                 priority.text = "Средний"
             }
         }
-        createdDate.text = task.createdAtDate
+
+        createdDate.text = formatLocalDate(task.createdAtDate)
+        changedDate.text = formatLocalDate(task.updatedAtDate)
+        finishAtDate.setText(formatLocalDate(task.finishAtDate))
 
         implementer.text = when (task.implementer) {
             TaskImplementer.USER -> "Работник склада"
@@ -146,32 +154,31 @@ class TaskFragment : Fragment() {
             TaskImplementer.STOREKEEPER -> "Кладовщик"
             TaskImplementer.UNKNOWN -> ""
         }
-
-        finishAtDate.setText(task.finishAtDate)
     }
 
     private fun showDatePickerDialog() {
-        val calendar = Calendar.getInstance()
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
+        val currentDate = viewModel.screenState.value.task.finishAtDate
+            ?: LocalDate.now()
+        val year = currentDate.year
+        val month = currentDate.monthValue - 1 // DatePickerDialog uses 0-based months
+        val dayOfMonth = currentDate.dayOfMonth
 
         val datePickerDialog = DatePickerDialog(
             requireContext(),
-            { _: DatePicker?, year: Int, month: Int, dayOfMonth: Int ->
-                val sdf = SimpleDateFormat("dd MMM yy", Locale.getDefault())
-                val selectedDate = Calendar.getInstance().apply {
-                    set(Calendar.YEAR, year)
-                    set(Calendar.MONTH, month)
-                    set(Calendar.DAY_OF_MONTH, dayOfMonth)
-                }.time
-                val formattedDate = sdf.format(selectedDate)
-                viewModel.setFinishAtDate(formattedDate)
+            { _, year, month, dayOfMonth ->
+                val selectedDate = LocalDate.of(year, month + 1, dayOfMonth)
+                viewModel.setFinishAtDate(selectedDate)
             },
             year, month, dayOfMonth
         )
 
         datePickerDialog.show()
+    }
+
+    private fun formatLocalDate(date: LocalDate?): String {
+        if (date == null) return ""
+        val formatter = DateTimeFormatter.ofPattern("dd MMM yy")
+        return date.format(formatter)
     }
 
     companion object {

@@ -34,9 +34,9 @@ class TaskDto(
     @SerializedName("implementer")
     val implementer: TaskImplementerDto?,
     @SerializedName("created_at")
-    val createdAt: String,
+    val createdAt: String?,
     @SerializedName("updated_at")
-    val updatedAt: String,
+    val updatedAt: String?,
     @SerializedName("finish_at")
     val finishAt: String?,
     @SerializedName("created_at_diff")

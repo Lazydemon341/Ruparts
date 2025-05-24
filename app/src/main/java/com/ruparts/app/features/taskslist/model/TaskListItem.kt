@@ -2,6 +2,7 @@ package com.ruparts.app.features.taskslist.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import java.time.LocalDate
 
 @Parcelize
 data class TaskListItem(
@@ -11,6 +12,7 @@ data class TaskListItem(
     val title: String,
     val description: String,
     val implementer: TaskImplementer,
-    val createdAtDate: String?,
-    val finishAtDate: String?
+    val createdAtDate: LocalDate?,
+    val finishAtDate: LocalDate?,
+    val updatedAtDate: LocalDate?,
 ) : Parcelable

@@ -215,7 +215,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:text="10 авг 2024"
+            android:text=""
             android:textSize="16sp" />
 
     </LinearLayout>
@@ -253,7 +253,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:text="11 авг 2024"
+            android:text=""
             android:textSize="16sp" />
 
     </LinearLayout>

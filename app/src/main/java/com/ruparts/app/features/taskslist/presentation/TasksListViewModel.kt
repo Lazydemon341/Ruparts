@@ -8,6 +8,7 @@ import com.ruparts.app.features.taskslist.model.TaskStatus
 import com.ruparts.app.features.taskslist.presentation.model.TasksListScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -26,6 +27,7 @@ class TasksListViewModel @Inject constructor(
     private val searchQuery = MutableStateFlow("")
     private val taskStatusFilter = MutableStateFlow<TaskStatus?>(null)
 
+    @OptIn(FlowPreview::class)
     val screenState: StateFlow<TasksListScreenState> = combine(
         flow { emit(repository.getTaskList()) },
         taskStatusFilter,
@@ -68,6 +70,7 @@ class TasksListViewModel @Inject constructor(
                 resultList.add(group.copy(tasks = filtered))
             }
         }
+
         return resultList
     }
 
