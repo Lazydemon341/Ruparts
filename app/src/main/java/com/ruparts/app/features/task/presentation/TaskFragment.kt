@@ -36,12 +36,15 @@ class TaskFragment : Fragment() {
     private lateinit var title: TextView
     private lateinit var description: EditText
     private lateinit var implementer: TextView
-    private lateinit var finishAtDate: EditText
+    private lateinit var finishAtDate: TextView
     private lateinit var priorityImage: ImageView
     private lateinit var priority: MaterialTextView
     private lateinit var createdDate: TextView
     private lateinit var changedDate: TextView
     private lateinit var toolbar: Toolbar
+
+    private val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss XXX")
+    private val outputFormat = SimpleDateFormat("dd MMM yyyy")
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -74,12 +77,6 @@ class TaskFragment : Fragment() {
 
         description.doOnTextChanged { text, start, before, count ->
             viewModel.setTaskDescription(text.toString())
-            description.setSelection(description.text.length)
-            /*поместила курсор в конец строки, тк он всегда попадал в начало,
-            и не удавалось удалять текст комментария просто бекспейсом,
-            теперь сломалось редактирование в центре строки, не понимаю, как исправить,
-            чтобы курсор был в том месте, куда его поместил юзер.
-            применить более сложный способ с TextWatcher? или есть более простой путь?*/
         }
 
         implementer.setOnClickListener {
@@ -125,8 +122,6 @@ class TaskFragment : Fragment() {
         val task = state.task
         title.text = task.title
 
-        description.setText(task.description)
-
 //        toolbar.setSubtitle(title.text)
 //        toolbar.setSubtitleTextColor(R.color.white)
 
@@ -147,6 +142,18 @@ class TaskFragment : Fragment() {
             }
         }
 
+//        description.setText(task.description)
+        //если я убираю эту строку, описание задачи в таск не переносится
+
+        val originalDateString = task.createdAtDate
+        try {
+            val dateObject = inputFormat.parse(originalDateString)
+            createdDate.text = outputFormat.format(dateObject)
+        } catch (e: Exception) {
+            createdDate.text = ""
+        }
+//        changedDate.text = task.updatedAt
+
         implementer.text = when (task.implementer) {
             TaskImplementer.USER -> "Работник склада"
             TaskImplementer.PURCHASES_MANAGER -> "Администратор"
@@ -154,21 +161,13 @@ class TaskFragment : Fragment() {
             TaskImplementer.UNKNOWN -> ""
         }
 
-        finishAtDate.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (s.isNullOrEmpty()) {
-                    removeBorder(finishAtDate)
-                } else {
-                    addBorder(finishAtDate)
-                }
-            }
-
-            override fun afterTextChanged(s: Editable?) {}
-        })
-
         finishAtDate.setText(task.finishAtDate)
+        if (task.finishAtDate.isNullOrEmpty()) {
+            removeBorder(finishAtDate)
+        } else {
+            addBorder(finishAtDate)
+        }
+
     }
 
     private fun showDatePickerDialog() {

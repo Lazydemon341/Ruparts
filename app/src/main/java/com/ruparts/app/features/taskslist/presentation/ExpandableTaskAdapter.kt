@@ -25,6 +25,9 @@ class ExpandableTaskAdapter(private val onTaskClick: (TaskListItem) -> Unit) : L
     private val originalGroups = mutableSetOf<TaskListGroup>()
     private val expandedGroups = mutableSetOf<TaskListGroup>()
 
+    val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss XXX")
+    val outputFormat = SimpleDateFormat("dd MMM yyyy")
+
     fun setTaskGroups(groups: List<TaskListGroup>) {
         originalGroups.clear()
         originalGroups.addAll(groups)
@@ -127,13 +130,12 @@ class ExpandableTaskAdapter(private val onTaskClick: (TaskListItem) -> Unit) : L
             itemDescription.text = item.description
 
             val originalDateString = item.createdAtDate
-            val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss XXX")
-            val outputFormat = SimpleDateFormat("dd MMM yyyy")
+
             try {
                 val dateObject = inputFormat.parse(originalDateString)
                 itemDate.text = outputFormat.format(dateObject)
             } catch (e: Exception) {
-                e.printStackTrace()
+                itemDate.text = ""
             }
 
             // Set the compound drawable based on priority
