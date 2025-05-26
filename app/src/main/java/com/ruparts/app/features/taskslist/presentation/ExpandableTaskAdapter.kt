@@ -10,12 +10,16 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.ruparts.app.R
+import com.ruparts.app.core.utils.formatSafely
 import com.ruparts.app.features.taskslist.model.TaskListGroup
 import com.ruparts.app.features.taskslist.model.TaskListItem
 import com.ruparts.app.features.taskslist.model.TaskPriority
-import java.text.SimpleDateFormat
+import java.time.format.DateTimeFormatter
 
-class ExpandableTaskAdapter(private val onTaskClick: (TaskListItem) -> Unit) : ListAdapter<Any, RecyclerView.ViewHolder>(TaskDiffCallback()) {
+private const val DATE_FORMAT_PATTERN = "dd MMM yyyy"
+
+class ExpandableTaskAdapter(private val onTaskClick: (TaskListItem) -> Unit) :
+    ListAdapter<Any, RecyclerView.ViewHolder>(TaskDiffCallback()) {
 
     companion object {
         const val TYPE_GROUP = 0
@@ -25,8 +29,9 @@ class ExpandableTaskAdapter(private val onTaskClick: (TaskListItem) -> Unit) : L
     private val originalGroups = mutableSetOf<TaskListGroup>()
     private val expandedGroups = mutableSetOf<TaskListGroup>()
 
-    val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss XXX")
-    val outputFormat = SimpleDateFormat("dd MMM yyyy")
+    private val dateFormatter by lazy(LazyThreadSafetyMode.NONE) {
+        DateTimeFormatter.ofPattern(DATE_FORMAT_PATTERN)
+    }
 
     fun setTaskGroups(groups: List<TaskListGroup>) {
         originalGroups.clear()
@@ -55,7 +60,11 @@ class ExpandableTaskAdapter(private val onTaskClick: (TaskListItem) -> Unit) : L
             TYPE_ITEM -> {
                 val view = LayoutInflater.from(parent.context)
                     .inflate(R.layout.expandable_list_child, parent, false)
-                ItemViewHolder(view)
+                ItemViewHolder(
+                    itemView = view,
+                    dateFormatter = dateFormatter,
+                    onTaskClick = onTaskClick,
+                )
             }
 
             else -> throw IllegalArgumentException("Unknown view type: $viewType")
@@ -120,7 +129,12 @@ class ExpandableTaskAdapter(private val onTaskClick: (TaskListItem) -> Unit) : L
         }
     }
 
-    private inner class ItemViewHolder(private val itemView: View) : RecyclerView.ViewHolder(itemView) {
+    private class ItemViewHolder(
+        private val itemView: View,
+        private val dateFormatter: DateTimeFormatter,
+        private val onTaskClick: (TaskListItem) -> Unit,
+    ) :
+        RecyclerView.ViewHolder(itemView) {
         private val itemName: TextView = itemView.findViewById(R.id.item_name)
         private val itemDate: TextView = itemView.findViewById(R.id.item_date)
         private val itemDescription: TextView = itemView.findViewById(R.id.item_comment)
@@ -129,23 +143,14 @@ class ExpandableTaskAdapter(private val onTaskClick: (TaskListItem) -> Unit) : L
             itemName.text = item.title
             itemDescription.text = item.description
 
-            val originalDateString = item.createdAtDate
+            itemDate.text = item.createdAtDate?.formatSafely(dateFormatter)
 
-            try {
-                val dateObject = inputFormat.parse(originalDateString)
-                itemDate.text = outputFormat.format(dateObject)
-            } catch (e: Exception) {
-                itemDate.text = ""
-            }
-
-            // Set the compound drawable based on priority
             val priorityDrawable = when (item.priority) {
                 TaskPriority.HIGH -> R.drawable.arrow_up
                 TaskPriority.LOW -> R.drawable.arrow_down
                 TaskPriority.MEDIUM -> R.drawable.equal
             }
-            
-            // Set the drawable to the start of the TextView
+
             val drawable = ContextCompat.getDrawable(itemView.context, priorityDrawable)
             drawable?.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
             itemName.setCompoundDrawables(drawable, null, null, null)

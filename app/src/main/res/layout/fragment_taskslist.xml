@@ -81,15 +81,28 @@
         app:iconifiedByDefault="false"
         app:queryHint="@string/tasklist_search_hint" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/taskslist_recycler_view"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/based_background"
-        android:clipToPadding="false"
-        android:paddingHorizontal="16dp"
-        android:paddingTop="16dp"
-        android:paddingBottom="8dp"
-        android:scrollbars="none" />
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/taskslist_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/based_background"
+            android:clipToPadding="false"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="8dp"
+            android:scrollbars="none" />
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/tasks_progress_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:visibility="gone" />
+    </FrameLayout>
 
 </LinearLayout>

@@ -43,10 +43,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.fragment.findNavController
 import com.ruparts.app.R
+import com.ruparts.app.core.ui.theme.RupartsTheme
 import com.ruparts.app.features.authorization.presentation.model.AuthUiAction
 import com.ruparts.app.features.authorization.presentation.model.AuthUiEffect
 import com.ruparts.app.features.authorization.presentation.model.AuthUiState
-import com.ruparts.app.ui.theme.RupartsTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
