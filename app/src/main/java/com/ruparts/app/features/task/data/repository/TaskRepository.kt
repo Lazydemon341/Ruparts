@@ -4,6 +4,9 @@ import com.google.gson.Gson
 import com.ruparts.app.core.data.network.EndpointRetrofitService
 import com.ruparts.app.core.data.network.request
 import com.ruparts.app.core.utils.runCoroutineCatching
+import com.ruparts.app.features.task.data.network.model.TaskChangeStatusRequestDataDto
+import com.ruparts.app.features.task.data.network.model.TaskChangeStatusRequestDto
+import com.ruparts.app.features.task.data.network.model.TaskChangeStatusResponseDto
 import com.ruparts.app.features.task.data.network.model.TaskUpdateRequestDataDto
 import com.ruparts.app.features.task.data.network.model.TaskUpdateRequestDto
 import com.ruparts.app.features.task.data.network.model.TaskUpdateResponseDto
@@ -35,10 +38,13 @@ class TaskRepository @Inject constructor(
     suspend fun changeTaskStatus(id: Long, newStatus: TaskStatus): Result<TaskListItem> =
         withContext(Dispatchers.IO) {
             runCoroutineCatching {
-                // TODO: здесь зделать запрос на обновление статуса
-                // endpointService.request<TaskChangeStatusRequestDto, TaskChangeStatusResponseDto>(...)
-                // ...
+                val response = endpointService.request<TaskChangeStatusRequestDto, TaskChangeStatusResponseDto>(
+                    body = TaskChangeStatusRequestDto(
+                        data = TaskChangeStatusRequestDataDto.fromTask(id, newStatus),
+                    ),
+                    gson = gson,
+                )
+                mapper.mapTask(response.data)
             }
-            Result.failure(Throwable()) // TODO: эту строку удалить (сейчас нужна, чтобы компилировался код)
         }
 }
