@@ -113,7 +113,7 @@ class TaskViewModel @Inject constructor(
 
         viewModelScope.launch {
             _screenState.update { it.copy(isLoading = true) }
-            taskRepository.changeTaskStatus(screenState.value.task.id, screenState.value.task.status).fold(
+            taskRepository.changeTaskStatus(screenState.value.task.id, newStatus).fold(
                 onSuccess = { updatedTask ->
                     _screenState.update {
                         it.copy(
