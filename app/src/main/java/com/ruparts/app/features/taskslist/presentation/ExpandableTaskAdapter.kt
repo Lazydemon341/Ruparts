@@ -13,6 +13,7 @@ import com.ruparts.app.R
 import com.ruparts.app.features.taskslist.model.TaskListGroup
 import com.ruparts.app.features.taskslist.model.TaskListItem
 import com.ruparts.app.features.taskslist.model.TaskPriority
+import java.text.SimpleDateFormat
 
 class ExpandableTaskAdapter(private val onTaskClick: (TaskListItem) -> Unit) : ListAdapter<Any, RecyclerView.ViewHolder>(TaskDiffCallback()) {
 
@@ -23,6 +24,8 @@ class ExpandableTaskAdapter(private val onTaskClick: (TaskListItem) -> Unit) : L
 
     private val originalGroups = mutableSetOf<TaskListGroup>()
     private val expandedGroups = mutableSetOf<TaskListGroup>()
+
+    val outputFormat = SimpleDateFormat("dd MMM yyyy")
 
     fun setTaskGroups(groups: List<TaskListGroup>) {
         originalGroups.clear()
@@ -123,8 +126,13 @@ class ExpandableTaskAdapter(private val onTaskClick: (TaskListItem) -> Unit) : L
 
         fun bind(item: TaskListItem) {
             itemName.text = item.title
-            //itemDate.text = item.createdAtDate
             itemDescription.text = item.description
+
+            try {
+                itemDate.text = outputFormat.format(item.createdAtDate)
+            } catch (_: Exception) {
+                itemDate.text = ""
+            }
 
             val priorityDrawable = when (item.priority) {
                 TaskPriority.HIGH -> R.drawable.arrow_up

@@ -2,6 +2,8 @@ package com.ruparts.app.features.task.presentation
 
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -42,7 +44,7 @@ class TaskFragment : Fragment() {
     private lateinit var title: TextView
     private lateinit var description: EditText
     private lateinit var implementer: TextView
-    private lateinit var finishAtDate: EditText
+    private lateinit var finishAtDate: TextView
     private lateinit var priorityImage: ImageView
     private lateinit var priority: MaterialTextView
     private lateinit var createdDate: TextView
@@ -161,8 +163,6 @@ class TaskFragment : Fragment() {
         val task = state.task
         title.text = task.title
 
-        description.setText(task.description)
-
 //        toolbar.setSubtitle(title.text)
 //        toolbar.setSubtitleTextColor(R.color.white)
 
@@ -171,7 +171,12 @@ class TaskFragment : Fragment() {
 
         createdDate.text = formatLocalDate(task.createdAtDate)
         changedDate.text = formatLocalDate(task.updatedAtDate)
-        finishAtDate.setText(formatLocalDate(task.finishAtDate))
+        finishAtDate.text = formatLocalDate(task.finishAtDate)
+        if (finishAtDate.text.isNullOrEmpty()) {
+            removeBorder(finishAtDate)
+        } else {
+            addBorder(finishAtDate)
+        }
 
         implementer.text = when (task.implementer) {
             TaskImplementer.USER -> "Работник склада"
@@ -297,9 +302,17 @@ class TaskFragment : Fragment() {
         button.setOnClickListener(null)
     }
 
+    private fun removeBorder(view: View) {
+        view.background = null
+    }
+
+    private fun addBorder(view: View) {
+        view.setBackgroundResource(R.drawable.border_rectangle_radius5dp)
+    }
+
     companion object {
         const val ARG_TASK_KEY = "task"
         const val TASK_UPDATED_REQUEST_KEY = "task_updated_request_key"
-        private const val DATE_FORMAT_PATTERN = "dd MMM yy"
+        private const val DATE_FORMAT_PATTERN = "dd MMM yyyy"
     }
 }
