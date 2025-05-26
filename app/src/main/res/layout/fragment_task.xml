@@ -64,7 +64,6 @@
             android:backgroundTint="@android:color/transparent"
             android:editable="true"
             android:ellipsize="end"
-            android:ems="10"
             android:gravity="top"
             android:hint="Добавить комментарий"
             android:inputType="textMultiLine"
@@ -120,13 +119,13 @@
             android:paddingHorizontal="6dp"
             app:srcCompat="@drawable/clock_image"></ImageView>
 
-        <EditText
+        <TextView
             android:id="@+id/finishAt_date_view"
             android:layout_width="146dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="6dp"
-            android:background="@drawable/border_rectangle_radius5dp"
+            android:background="@android:color/transparent"
             android:cursorVisible="false"
             android:ems="10"
             android:focusable="false"
@@ -215,7 +214,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:text="10 авг 2024"
             android:textSize="16sp" />
 
     </LinearLayout>
@@ -253,7 +251,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:text="11 авг 2024"
             android:textSize="16sp" />
 
     </LinearLayout>
@@ -262,10 +259,11 @@
         android:id="@+id/three_buttons_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:orientation="vertical"
         android:paddingHorizontal="12dp"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_cancelled"

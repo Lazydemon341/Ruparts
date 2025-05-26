@@ -2,6 +2,8 @@ package com.ruparts.app.features.task.presentation
 
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,12 +36,15 @@ class TaskFragment : Fragment() {
     private lateinit var title: TextView
     private lateinit var description: EditText
     private lateinit var implementer: TextView
-    private lateinit var finishAtDate: EditText
+    private lateinit var finishAtDate: TextView
     private lateinit var priorityImage: ImageView
     private lateinit var priority: MaterialTextView
     private lateinit var createdDate: TextView
     private lateinit var changedDate: TextView
     private lateinit var toolbar: Toolbar
+
+    private val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss XXX")
+    private val outputFormat = SimpleDateFormat("dd MMM yyyy")
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -117,8 +122,6 @@ class TaskFragment : Fragment() {
         val task = state.task
         title.text = task.title
 
-        description.setText(task.description)
-
 //        toolbar.setSubtitle(title.text)
 //        toolbar.setSubtitleTextColor(R.color.white)
 
@@ -138,7 +141,18 @@ class TaskFragment : Fragment() {
                 priority.text = "Средний"
             }
         }
-        createdDate.text = task.createdAtDate
+
+//        description.setText(task.description)
+        //если я убираю эту строку, описание задачи в таск не переносится
+
+        val originalDateString = task.createdAtDate
+        try {
+            val dateObject = inputFormat.parse(originalDateString)
+            createdDate.text = outputFormat.format(dateObject)
+        } catch (e: Exception) {
+            createdDate.text = ""
+        }
+//        changedDate.text = task.updatedAt
 
         implementer.text = when (task.implementer) {
             TaskImplementer.USER -> "Работник склада"
@@ -148,6 +162,12 @@ class TaskFragment : Fragment() {
         }
 
         finishAtDate.setText(task.finishAtDate)
+        if (task.finishAtDate.isNullOrEmpty()) {
+            removeBorder(finishAtDate)
+        } else {
+            addBorder(finishAtDate)
+        }
+
     }
 
     private fun showDatePickerDialog() {
@@ -159,7 +179,7 @@ class TaskFragment : Fragment() {
         val datePickerDialog = DatePickerDialog(
             requireContext(),
             { _: DatePicker?, year: Int, month: Int, dayOfMonth: Int ->
-                val sdf = SimpleDateFormat("dd MMM yy", Locale.getDefault())
+                val sdf = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
                 val selectedDate = Calendar.getInstance().apply {
                     set(Calendar.YEAR, year)
                     set(Calendar.MONTH, month)
@@ -176,5 +196,13 @@ class TaskFragment : Fragment() {
 
     companion object {
         const val ARG_TASK_KEY = "task"
+    }
+
+    private fun removeBorder(view: View) {
+        view.background = null
+    }
+
+    private fun addBorder(view: View) {
+        view.setBackgroundResource(R.drawable.border_rectangle_radius5dp)
     }
 }
