@@ -2,8 +2,6 @@ package com.ruparts.app.features.task.presentation
 
 import android.app.DatePickerDialog
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,6 +25,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textview.MaterialTextView
 import com.ruparts.app.R
 import com.ruparts.app.core.utils.collectWhileStarted
+import com.ruparts.app.core.utils.formatSafely
 import com.ruparts.app.features.task.presentation.model.TaskScreenState
 import com.ruparts.app.features.task.presentation.model.TaskUiEffect
 import com.ruparts.app.features.taskslist.model.TaskImplementer
@@ -92,6 +91,7 @@ class TaskFragment : Fragment() {
         cancelButton = view.findViewById(R.id.button_cancelled)
         progressIndicator = view.findViewById(R.id.progress_indicator)
 
+        description.setText(viewModel.screenState.value.task.description)
         description.doOnTextChanged { text, start, before, count ->
             viewModel.setTaskDescription(text.toString())
         }
@@ -163,29 +163,19 @@ class TaskFragment : Fragment() {
         val task = state.task
         title.text = task.title
 
-//        toolbar.setSubtitle(title.text)
-//        toolbar.setSubtitleTextColor(R.color.white)
-
+        updateLoadingState(state.isLoading)
         updatePriority(task.priority)
         updateStatus(task.status)
+        updateImplementer(task.implementer)
 
-        createdDate.text = formatLocalDate(task.createdAtDate)
-        changedDate.text = formatLocalDate(task.updatedAtDate)
-        finishAtDate.text = formatLocalDate(task.finishAtDate)
+        createdDate.text = task.createdAtDate.formatSafely(dateFormatter)
+        changedDate.text = task.updatedAtDate.formatSafely(dateFormatter)
+        finishAtDate.text = task.finishAtDate.formatSafely(dateFormatter)
         if (finishAtDate.text.isNullOrEmpty()) {
             removeBorder(finishAtDate)
         } else {
             addBorder(finishAtDate)
         }
-
-        implementer.text = when (task.implementer) {
-            TaskImplementer.USER -> "Работник склада"
-            TaskImplementer.PURCHASES_MANAGER -> "Администратор"
-            TaskImplementer.STOREKEEPER -> "Кладовщик"
-            TaskImplementer.UNKNOWN -> ""
-        }
-
-        updateLoadingState(state.isLoading)
     }
 
     private fun updatePriority(taskPriority: TaskPriority) {
@@ -253,6 +243,15 @@ class TaskFragment : Fragment() {
         }
     }
 
+    private fun updateImplementer(taskImplementer: TaskImplementer) {
+        implementer.text = when (taskImplementer) {
+            TaskImplementer.USER -> "Работник склада"
+            TaskImplementer.PURCHASES_MANAGER -> "Администратор"
+            TaskImplementer.STOREKEEPER -> "Кладовщик"
+            TaskImplementer.UNKNOWN -> ""
+        }
+    }
+
     private fun updateLoadingState(isLoading: Boolean) {
         progressIndicator.isVisible = isLoading
         saveButton.isEnabled = !isLoading
@@ -279,11 +278,6 @@ class TaskFragment : Fragment() {
         )
 
         datePickerDialog.show()
-    }
-
-    private fun formatLocalDate(date: LocalDate?): String {
-        if (date == null) return ""
-        return date.format(dateFormatter)
     }
 
     private fun showEnabledState(button: MaterialButton, @DrawableRes iconRes: Int) {
@@ -313,6 +307,7 @@ class TaskFragment : Fragment() {
     companion object {
         const val ARG_TASK_KEY = "task"
         const val TASK_UPDATED_REQUEST_KEY = "task_updated_request_key"
+
         private const val DATE_FORMAT_PATTERN = "dd MMM yyyy"
     }
 }
