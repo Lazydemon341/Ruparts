@@ -2,6 +2,8 @@ package com.ruparts.app.features.taskslist.presentation
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
@@ -32,7 +34,6 @@ class TasksListFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ExpandableTaskAdapter
-    private lateinit var searchView: SearchView
     private lateinit var chipGroup: ChipGroup
     private lateinit var toolbar: Toolbar
     private lateinit var progressIndicator: CircularProgressIndicator
@@ -68,18 +69,8 @@ class TasksListFragment : Fragment() {
 
         progressIndicator = view.findViewById(R.id.tasks_progress_indicator)
 
-        searchView = view.findViewById(R.id.taskslist_searchview)
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String): Boolean {
-                viewModel.onSearchQueryChange(query)
-                return true
-            }
 
-            override fun onQueryTextChange(query: String): Boolean {
-                viewModel.onSearchQueryChange(query)
-                return true
-            }
-        })
+
 
         chipGroup = view.findViewById(R.id.tasks_chip_group)
         chipGroup.findViewById<Chip>(R.id.chip_all).setOnClickListener {
@@ -112,14 +103,34 @@ class TasksListFragment : Fragment() {
         adapter.setTaskGroups(state.groups)
         updateLoadingState(state.isLoading)
     }
-    
+
     private fun updateLoadingState(isLoading: Boolean) {
         progressIndicator.isVisible = isLoading
     }
-    
+
     private fun setupTaskUpdateListener() {
         setFragmentResultListener(TaskFragment.TASK_UPDATED_REQUEST_KEY) { _, _ ->
             viewModel.refreshTasks()
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.search_menu, menu)
+        val searchItem = menu.findItem(R.id.search_bar)
+        val searchView = searchItem?.actionView as SearchView
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                if (!query.isNullOrEmpty()) {
+                    viewModel.onSearchQueryChange(query)
+                }
+                return true
+            }
+
+            override fun onQueryTextChange(query: String): Boolean {
+                viewModel.onSearchQueryChange(query)
+                return false
+            }
+        })
     }
 }

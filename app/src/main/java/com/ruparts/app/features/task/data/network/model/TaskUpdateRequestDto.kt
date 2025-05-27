@@ -26,8 +26,8 @@ class TaskUpdateRequestDataDto(
     @SerializedName("description")
     val description: String?,
 
-    @SerializedName("type")
-    val type: TaskTypeDto?,
+//    @SerializedName("type")
+//    val type: TaskTypeDto?,
 
     @SerializedName("priority")
     val priority: TaskPriorityDto?,
@@ -47,7 +47,7 @@ class TaskUpdateRequestDataDto(
                 id = task.id,
                 title = task.title,
                 description = task.description,
-                type = task.type.toDto(),
+//                type = task.type.toDto(),
                 priority = task.priority.toDto(),
                 implementer = task.implementer.toDto(),
                 finishAt = formattedFinishDate,

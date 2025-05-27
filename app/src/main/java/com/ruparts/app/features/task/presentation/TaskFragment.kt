@@ -76,6 +76,9 @@ class TaskFragment : Fragment() {
             findNavController().popBackStack()
         }
 
+        toolbar.setSubtitle(viewModel.screenState.value.task.type.displayName)
+        toolbar.setSubtitleTextColor(resources.getColor(R.color.white))
+
         (activity as? AppCompatActivity)?.supportActionBar?.hide()
 
         title = view.findViewById(R.id.title_view)

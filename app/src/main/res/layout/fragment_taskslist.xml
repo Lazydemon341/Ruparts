@@ -70,16 +70,16 @@
         </com.google.android.material.chip.ChipGroup>
     </HorizontalScrollView>
 
-    <androidx.appcompat.widget.SearchView
-        android:id="@+id/taskslist_searchview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/based_background"
-        android:iconifiedByDefault="false"
-        android:paddingTop="8dp"
-        android:queryHint="@string/tasklist_search_hint"
-        app:iconifiedByDefault="false"
-        app:queryHint="@string/tasklist_search_hint" />
+<!--    <androidx.appcompat.widget.SearchView-->
+<!--        android:id="@+id/taskslist_searchview"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:background="@color/based_background"-->
+<!--        android:iconifiedByDefault="false"-->
+<!--        android:paddingTop="8dp"-->
+<!--        android:queryHint="@string/tasklist_search_hint"-->
+<!--        app:iconifiedByDefault="false"-->
+<!--        app:queryHint="@string/tasklist_search_hint" />-->
 
     <FrameLayout
         android:layout_width="match_parent"
