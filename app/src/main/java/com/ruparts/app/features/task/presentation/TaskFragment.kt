@@ -248,9 +248,13 @@ class TaskFragment : Fragment() {
 
     private fun updateImplementer(taskImplementer: TaskImplementer) {
         implementer.text = when (taskImplementer) {
-            TaskImplementer.USER -> "Работник склада"
-            TaskImplementer.PURCHASES_MANAGER -> "Администратор"
+            TaskImplementer.USER -> "Пользователь"
+            TaskImplementer.SUPPLIER -> "Поставщик"
+            TaskImplementer.HEAD_OF_WAREHOUSE -> "Руководитель склада"
             TaskImplementer.STOREKEEPER -> "Кладовщик"
+            TaskImplementer.LOGISTICS_CONTROL -> "Контроль логистики"
+            TaskImplementer.PURCHASES_MANAGER -> "Менеджер по закупкам"
+            TaskImplementer.FLAWS_PROCESSING_MANAGER -> "Менеджер по обработке брака"
             TaskImplementer.UNKNOWN -> ""
         }
     }
