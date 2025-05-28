@@ -4,7 +4,6 @@ import com.google.gson.annotations.SerializedName
 import com.ruparts.app.core.data.network.EndpointRequestDto
 import com.ruparts.app.features.taskslist.data.network.model.TaskImplementerDto
 import com.ruparts.app.features.taskslist.data.network.model.TaskPriorityDto
-import com.ruparts.app.features.taskslist.data.network.model.TaskTypeDto
 import com.ruparts.app.features.taskslist.data.network.model.toDto
 import com.ruparts.app.features.taskslist.model.TaskListItem
 import java.time.format.DateTimeFormatter
@@ -26,9 +25,6 @@ class TaskUpdateRequestDataDto(
     @SerializedName("description")
     val description: String?,
 
-    @SerializedName("type")
-    val type: TaskTypeDto?,
-
     @SerializedName("priority")
     val priority: TaskPriorityDto?,
 
@@ -47,7 +43,6 @@ class TaskUpdateRequestDataDto(
                 id = task.id,
                 title = task.title,
                 description = task.description,
-                type = task.type.toDto(),
                 priority = task.priority.toDto(),
                 implementer = task.implementer.toDto(),
                 finishAt = formattedFinishDate,
