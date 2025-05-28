@@ -1,15 +1,22 @@
 package com.ruparts.app.features.taskslist.presentation
 
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
+import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
@@ -49,12 +56,7 @@ class TasksListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        toolbar = view.findViewById(R.id.tasks_toolbar)
-        toolbar.setNavigationOnClickListener {
-            findNavController().popBackStack()
-        }
-
-        (activity as? AppCompatActivity)?.supportActionBar?.hide()
+        setupToolbar(view)
 
         recyclerView = view.findViewById(R.id.taskslist_recycler_view)
         adapter = ExpandableTaskAdapter(
@@ -68,9 +70,6 @@ class TasksListFragment : Fragment() {
         recyclerView.addItemDecoration(TaskItemDecoration(requireContext()))
 
         progressIndicator = view.findViewById(R.id.tasks_progress_indicator)
-
-
-
 
         chipGroup = view.findViewById(R.id.tasks_chip_group)
         chipGroup.findViewById<Chip>(R.id.chip_all).setOnClickListener {
@@ -91,6 +90,33 @@ class TasksListFragment : Fragment() {
 
         observeScreenState()
         setupTaskUpdateListener()
+    }
+
+    private fun setupToolbar(view: View) {
+        toolbar = view.findViewById(R.id.tasks_toolbar)
+
+        (activity as? AppCompatActivity)?.apply {
+            setSupportActionBar(toolbar)
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            supportActionBar?.setDisplayShowHomeEnabled(true)
+        }
+
+        toolbar.setNavigationOnClickListener {
+            findNavController().popBackStack()
+        }
+
+        val menuProvider = object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.search_menu, menu)
+                setupSearch(menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return false // We don't have any menu items that need to be handled here
+            }
+        }
+
+        requireActivity().addMenuProvider(menuProvider, viewLifecycleOwner)
     }
 
     private fun observeScreenState() {
@@ -114,23 +140,48 @@ class TasksListFragment : Fragment() {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.search_menu, menu)
+    private fun setupSearch(menu: Menu) {
         val searchItem = menu.findItem(R.id.search_bar)
         val searchView = searchItem?.actionView as SearchView
 
+        styleSearchView(searchView)
+
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                if (!query.isNullOrEmpty()) {
+                if (query != null) {
                     viewModel.onSearchQueryChange(query)
+                    return true
                 }
-                return true
+                return false
             }
 
-            override fun onQueryTextChange(query: String): Boolean {
-                viewModel.onSearchQueryChange(query)
+            override fun onQueryTextChange(query: String?): Boolean {
+                if (query != null) {
+                    viewModel.onSearchQueryChange(query)
+                    return true
+                }
                 return false
             }
         })
+    }
+
+    private fun styleSearchView(searchView: SearchView) {
+        searchView.queryHint = getString(R.string.tasklist_search_hint)
+
+        val searchIcon = searchView.findViewById<ImageView>(androidx.appcompat.R.id.search_mag_icon)
+        searchIcon?.setColorFilter(Color.WHITE)
+
+        val closeIcon = searchView.findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn)
+        closeIcon?.setColorFilter(Color.WHITE)
+
+        val searchText = searchView.findViewById<EditText>(androidx.appcompat.R.id.search_src_text)
+        searchText?.setTextColor(Color.WHITE)
+        searchText?.setHintTextColor(ContextCompat.getColor(requireContext(), R.color.white_40))
+
+        val searchFrame = searchView.findViewById<View>(androidx.appcompat.R.id.search_plate)
+        searchFrame.background = GradientDrawable().apply {
+            cornerRadius = resources.getDimension(R.dimen.search_corner_radius)
+            setColor(ContextCompat.getColor(requireContext(), R.color.white_40))
+        }
     }
 }
