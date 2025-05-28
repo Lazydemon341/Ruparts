@@ -112,9 +112,23 @@ class TaskViewModel @Inject constructor(
         if (_screenState.value.isLoading) return
 
         viewModelScope.launch {
-            // TODO: здесь реализовать смену статуса по аналогии с updateTask
-            // repository.changeTaskStatus(...))
-            // ...
+            _screenState.update { it.copy(isLoading = true) }
+            taskRepository.changeTaskStatus(screenState.value.task.id, newStatus).fold(
+                onSuccess = { updatedTask ->
+                    _screenState.update {
+                        it.copy(
+                            task = updatedTask,
+                            isLoading = false,
+                        )
+                    }
+                    _uiEffect.emit(TaskUiEffect.TaskUpdateSuccess)
+                },
+                onFailure = {
+                    _screenState.update { it.copy(isLoading = false) }
+                    _uiEffect.emit(TaskUiEffect.TaskUpdateError)
+                }
+            )
         }
     }
+
 }
