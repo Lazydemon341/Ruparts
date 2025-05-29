@@ -1,5 +1,6 @@
 package com.ruparts.app.features.authorization.presentation
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ruparts.app.features.authorization.data.repository.AuthRepository
@@ -20,7 +21,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AuthUiState())
@@ -29,6 +31,12 @@ class AuthViewModel @Inject constructor(
     private val _uiEffect = MutableSharedFlow<AuthUiEffect>()
     val uiEffect: SharedFlow<AuthUiEffect> = _uiEffect.asSharedFlow()
         .onSubscription {
+            // Check if we should show auth error
+            val showAuthError = savedStateHandle.get<Boolean>("showAuthError") ?: false
+            if (showAuthError) {
+                emit(AuthUiEffect.ShowError(Throwable("Ошибка авторизации")))
+            }
+            
             if (authRepository.isAuthenticated()) {
                 emit(AuthUiEffect.NavigateToMenu)
             }
