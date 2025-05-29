@@ -119,12 +119,17 @@
             android:paddingHorizontal="6dp"
             app:srcCompat="@drawable/clock_image"/>
 
+        <FrameLayout
+            android:layout_width="146dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="6dp">
+
         <TextView
             android:id="@+id/finishAt_date_view"
             android:layout_width="146dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="6dp"
             android:background="@android:color/transparent"
             android:cursorVisible="false"
             android:ems="10"
@@ -134,6 +139,26 @@
             android:inputType="date"
             android:onClick="setDate"
             android:textSize="16sp" />
+
+        <FrameLayout
+            android:id="@+id/close_btn_layout"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="right|center_vertical"
+            android:clickable="true"
+            >
+
+        <ImageButton
+            android:id="@+id/close_btn"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:src="@drawable/close"
+            android:backgroundTint="@android:color/transparent"
+            android:padding="-15dp"
+            />
+        </FrameLayout>
+        </FrameLayout>
     </LinearLayout>
 
 

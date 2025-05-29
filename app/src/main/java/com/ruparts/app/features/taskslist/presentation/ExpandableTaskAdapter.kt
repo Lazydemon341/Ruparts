@@ -4,8 +4,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -138,12 +140,17 @@ class ExpandableTaskAdapter(private val onTaskClick: (TaskListItem) -> Unit) :
         private val itemName: TextView = itemView.findViewById(R.id.item_name)
         private val itemDate: TextView = itemView.findViewById(R.id.item_date)
         private val itemDescription: TextView = itemView.findViewById(R.id.item_comment)
+        private val layoutDate: LinearLayout = itemView.findViewById(R.id.layout_date)
 
         fun bind(item: TaskListItem) {
             itemName.text = item.title
             itemDescription.text = item.description
 
-            itemDate.text = item.createdAtDate?.formatSafely(dateFormatter)
+            itemDate.text = item.finishAtDate?.formatSafely(dateFormatter)
+
+            if(itemDate.text.isNullOrEmpty()) {
+                layoutDate.isVisible = false
+            }
 
             val priorityDrawable = when (item.priority) {
                 TaskPriority.HIGH -> R.drawable.arrow_up
