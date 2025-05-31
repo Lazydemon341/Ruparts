@@ -75,7 +75,7 @@ class TaskViewModel @Inject constructor(
         }
     }
 
-    fun setFinishAtDate(date: LocalDate) {
+    fun setFinishAtDate(date: LocalDate?) {
         if (_screenState.value.isLoading) return
 
         _screenState.update { screenState ->

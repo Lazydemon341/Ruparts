@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.DrawableRes
@@ -44,6 +45,8 @@ class TaskFragment : Fragment() {
     private lateinit var description: EditText
     private lateinit var implementer: TextView
     private lateinit var finishAtDate: TextView
+    private lateinit var closeBtn: ImageView
+    private lateinit var closeBtnLayout: FrameLayout
     private lateinit var priorityImage: ImageView
     private lateinit var priority: MaterialTextView
     private lateinit var createdDate: TextView
@@ -85,6 +88,8 @@ class TaskFragment : Fragment() {
         description = view.findViewById(R.id.description_view)
         implementer = view.findViewById(R.id.implementer_view)
         finishAtDate = view.findViewById(R.id.finishAt_date_view)
+        closeBtnLayout = view.findViewById(R.id.close_btn_layout)
+        closeBtn = view.findViewById(R.id.close_btn)
         priorityImage = view.findViewById(R.id.priority_imageview)
         priority = view.findViewById(R.id.priority_material_tv)
         createdDate = view.findViewById(R.id.date_view_created)
@@ -113,6 +118,12 @@ class TaskFragment : Fragment() {
 
         saveButton.setOnClickListener {
             viewModel.updateTask()
+        }
+
+        closeBtnLayout.setOnClickListener {
+            removeBorder(finishAtDate)
+            closeBtn.isVisible = false
+            viewModel.setFinishAtDate(null)
         }
 
         observeScreenState()
@@ -171,15 +182,18 @@ class TaskFragment : Fragment() {
         updateStatus(task.status)
         updateImplementer(task.implementer)
 
+        finishAtDate.text = task.finishAtDate.formatSafely(dateFormatter)
         createdDate.text = task.createdAtDate.formatSafely(dateFormatter)
         changedDate.text = task.updatedAtDate.formatSafely(dateFormatter)
-        finishAtDate.text = task.finishAtDate.formatSafely(dateFormatter)
+
         if (finishAtDate.text.isNullOrEmpty()) {
             removeBorder(finishAtDate)
+            closeBtn.isVisible = false
         } else {
             addBorder(finishAtDate)
         }
     }
+
 
     private fun updatePriority(taskPriority: TaskPriority) {
         when (taskPriority) {
@@ -280,9 +294,12 @@ class TaskFragment : Fragment() {
             { _, year, month, dayOfMonth ->
                 val selectedDate = LocalDate.of(year, month + 1, dayOfMonth)
                 viewModel.setFinishAtDate(selectedDate)
+                closeBtn.isVisible = true
             },
             year, month, dayOfMonth
         )
+
+        datePickerDialog.datePicker.minDate = System.currentTimeMillis()
 
         datePickerDialog.show()
     }
