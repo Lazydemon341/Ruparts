@@ -150,7 +150,6 @@ class ExpandableTaskAdapter(private val onTaskClick: (TaskListItem) -> Unit) :
             itemDescription.text = item.description
 
             itemDate.text = item.finishAtDate?.formatSafely(dateFormatter)
-            itemDate.text = item.finishAtDate?.formatSafely(dateFormatter)
 
             if (itemDate.text.isNullOrEmpty()) {
                 layoutDate.isVisible = false
