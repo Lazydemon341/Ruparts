@@ -156,17 +156,25 @@ class ExpandableTaskAdapter(private val onTaskClick: (TaskListItem) -> Unit) :
                 layoutDate.isVisible = false
             } else {
                 layoutDate.isVisible = true
+            }
+
+            if (item.finishAtDate != null) {
                 val currentDate = LocalDate.now()
 
-                if (item.finishAtDate!!.isBefore(currentDate)) {
+                if (item.finishAtDate.isBefore(currentDate)) {
+                    itemNote.isVisible = true
                     itemNote.text = "просрочено"
                     itemNote.setBackgroundResource(R.drawable.border_item_note_red)
                 } else if (ChronoUnit.DAYS.between(currentDate, item.finishAtDate).toInt() == 0) {
+                    itemNote.isVisible = true
                     itemNote.text = "истекает сегодня"
                     itemNote.setBackgroundResource(R.drawable.border_item_note_yellow)
                 } else if (ChronoUnit.DAYS.between(currentDate, item.finishAtDate).toInt() == 1) {
+                    itemNote.isVisible = true
                     itemNote.text = "осталось 2 дня"
                     itemNote.setBackgroundResource(R.drawable.border_item_note_yellow)
+                } else {
+                    itemNote.isVisible = false
                 }
             }
 
