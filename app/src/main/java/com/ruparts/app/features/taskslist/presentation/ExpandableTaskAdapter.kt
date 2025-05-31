@@ -16,7 +16,9 @@ import com.ruparts.app.core.utils.formatSafely
 import com.ruparts.app.features.taskslist.model.TaskListGroup
 import com.ruparts.app.features.taskslist.model.TaskListItem
 import com.ruparts.app.features.taskslist.model.TaskPriority
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 private const val DATE_FORMAT_PATTERN = "dd MMM yyyy"
 
@@ -139,6 +141,7 @@ class ExpandableTaskAdapter(private val onTaskClick: (TaskListItem) -> Unit) :
         RecyclerView.ViewHolder(itemView) {
         private val itemName: TextView = itemView.findViewById(R.id.item_name)
         private val itemDate: TextView = itemView.findViewById(R.id.item_date)
+        private val itemNote: TextView = itemView.findViewById(R.id.item_note)
         private val itemDescription: TextView = itemView.findViewById(R.id.item_comment)
         private val layoutDate: LinearLayout = itemView.findViewById(R.id.layout_date)
 
@@ -148,8 +151,30 @@ class ExpandableTaskAdapter(private val onTaskClick: (TaskListItem) -> Unit) :
 
             itemDate.text = item.finishAtDate?.formatSafely(dateFormatter)
 
-            if(itemDate.text.isNullOrEmpty()) {
+            if (itemDate.text.isNullOrEmpty()) {
                 layoutDate.isVisible = false
+            } else {
+                layoutDate.isVisible = true
+            }
+
+            if (item.finishAtDate != null) {
+                val currentDate = LocalDate.now()
+
+                if (item.finishAtDate.isBefore(currentDate)) {
+                    itemNote.isVisible = true
+                    itemNote.text = "просрочено"
+                    itemNote.setBackgroundResource(R.drawable.border_item_note_red)
+                } else if (ChronoUnit.DAYS.between(currentDate, item.finishAtDate).toInt() == 0) {
+                    itemNote.isVisible = true
+                    itemNote.text = "истекает сегодня"
+                    itemNote.setBackgroundResource(R.drawable.border_item_note_yellow)
+                } else if (ChronoUnit.DAYS.between(currentDate, item.finishAtDate).toInt() == 1) {
+                    itemNote.isVisible = true
+                    itemNote.text = "осталось 2 дня"
+                    itemNote.setBackgroundResource(R.drawable.border_item_note_yellow)
+                } else {
+                    itemNote.isVisible = false
+                }
             }
 
             val priorityDrawable = when (item.priority) {

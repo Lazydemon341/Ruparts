@@ -121,8 +121,6 @@ class TaskFragment : Fragment() {
         }
 
         closeBtnLayout.setOnClickListener {
-            removeBorder(finishAtDate)
-            closeBtn.isVisible = false
             viewModel.setFinishAtDate(null)
         }
 
@@ -191,6 +189,7 @@ class TaskFragment : Fragment() {
             closeBtn.isVisible = false
         } else {
             addBorder(finishAtDate)
+            closeBtn.isVisible = true
         }
     }
 
@@ -294,7 +293,6 @@ class TaskFragment : Fragment() {
             { _, year, month, dayOfMonth ->
                 val selectedDate = LocalDate.of(year, month + 1, dayOfMonth)
                 viewModel.setFinishAtDate(selectedDate)
-                closeBtn.isVisible = true
             },
             year, month, dayOfMonth
         )
