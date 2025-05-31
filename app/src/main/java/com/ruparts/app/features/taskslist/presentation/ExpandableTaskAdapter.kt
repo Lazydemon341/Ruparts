@@ -155,6 +155,7 @@ class ExpandableTaskAdapter(private val onTaskClick: (TaskListItem) -> Unit) :
             if (itemDate.text.isNullOrEmpty()) {
                 layoutDate.isVisible = false
             } else {
+                layoutDate.isVisible = true
                 val currentDate = LocalDate.now()
 
                 if (item.finishAtDate!!.isBefore(currentDate)) {
