@@ -2,6 +2,10 @@ buildscript {
     repositories {
         mavenCentral()
         gradlePluginPortal()
+        google()
+    }
+    dependencies {
+        classpath(libs.androidx.navigation.safe.args.gradle.plugin)
     }
 }
 

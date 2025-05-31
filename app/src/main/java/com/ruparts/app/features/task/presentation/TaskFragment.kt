@@ -72,8 +72,6 @@ class TaskFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.setTask(requireNotNull(arguments?.getParcelable(ARG_TASK_KEY)))
-
         toolbar = view.findViewById(R.id.task_toolbar)
         toolbar.setNavigationOnClickListener {
             findNavController().popBackStack()
@@ -327,7 +325,6 @@ class TaskFragment : Fragment() {
     }
 
     companion object {
-        const val ARG_TASK_KEY = "task"
         const val TASK_UPDATED_REQUEST_KEY = "task_updated_request_key"
 
         private const val DATE_FORMAT_PATTERN = "dd MMM yyyy"

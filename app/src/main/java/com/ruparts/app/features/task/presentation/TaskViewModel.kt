@@ -7,7 +7,6 @@ import com.ruparts.app.features.task.data.repository.TaskRepository
 import com.ruparts.app.features.task.presentation.model.TaskScreenState
 import com.ruparts.app.features.task.presentation.model.TaskUiEffect
 import com.ruparts.app.features.taskslist.model.TaskImplementer
-import com.ruparts.app.features.taskslist.model.TaskListItem
 import com.ruparts.app.features.taskslist.model.TaskPriority
 import com.ruparts.app.features.taskslist.model.TaskStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,7 +28,7 @@ class TaskViewModel @Inject constructor(
 
     private val _screenState = MutableStateFlow(
         TaskScreenState(
-            task = requireNotNull(savedStateHandle[TaskFragment.ARG_TASK_KEY])
+            task = requireNotNull(savedStateHandle["task"])
         )
     )
     val screenState = _screenState.asStateFlow()
@@ -67,15 +66,7 @@ class TaskViewModel @Inject constructor(
         }
     }
 
-    fun setTask(item: TaskListItem) {
-        if (_screenState.value.isLoading) return
-
-        _screenState.update { screenState ->
-            screenState.copy(task = item)
-        }
-    }
-
-    fun setFinishAtDate(date: LocalDate?) {
+    fun setFinishAtDate(date: LocalDate) {
         if (_screenState.value.isLoading) return
 
         _screenState.update { screenState ->

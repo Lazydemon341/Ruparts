@@ -31,14 +31,15 @@ class AuthViewModel @Inject constructor(
     private val _uiEffect = MutableSharedFlow<AuthUiEffect>()
     val uiEffect: SharedFlow<AuthUiEffect> = _uiEffect.asSharedFlow()
         .onSubscription {
-            // Check if we should show auth error
-            val showAuthError = savedStateHandle.get<Boolean>("showAuthError") ?: false
-            if (showAuthError) {
-                emit(AuthUiEffect.ShowError(Throwable("Ошибка авторизации")))
-            }
-            
             if (authRepository.isAuthenticated()) {
                 emit(AuthUiEffect.NavigateToMenu)
+            }
+
+            val showAuthError = requireNotNull(
+                savedStateHandle.get<Boolean>("showAuthError")
+            )
+            if (showAuthError) {
+                emit(AuthUiEffect.ShowError(Throwable("Ошибка авторизации")))
             }
         }
 
