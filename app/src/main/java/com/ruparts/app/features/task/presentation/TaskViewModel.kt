@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ruparts.app.core.task.library.TaskLibraryInteractor
 import com.ruparts.app.features.task.data.repository.TaskRepository
+import com.ruparts.app.features.task.data.repository.TaskUpdateException
 import com.ruparts.app.features.task.presentation.model.TaskScreenState
 import com.ruparts.app.features.task.presentation.model.TaskUiEffect
 import com.ruparts.app.features.taskslist.model.TaskListItem
@@ -100,9 +101,13 @@ class TaskViewModel @Inject constructor(
                     loadingState.value = false
                     _uiEffect.emit(TaskUiEffect.TaskUpdateSuccess)
                 },
-                onFailure = {
+                onFailure = { exception ->
                     loadingState.value = false
-                    _uiEffect.emit(TaskUiEffect.TaskUpdateError)
+                    val errorMessages = when (exception) {
+                        is TaskUpdateException -> exception.errorMessages
+                        else -> exception.message?.let { listOf(it) } ?: emptyList()
+                    }
+                    _uiEffect.emit(TaskUiEffect.TaskUpdateError(errorMessages))
                 }
             )
         }
@@ -119,12 +124,15 @@ class TaskViewModel @Inject constructor(
                     loadingState.value = false
                     _uiEffect.emit(TaskUiEffect.TaskUpdateSuccess)
                 },
-                onFailure = {
+                onFailure = { exception ->
                     loadingState.value = false
-                    _uiEffect.emit(TaskUiEffect.TaskUpdateError)
+                    val errorMessages = when (exception) {
+                        is TaskUpdateException -> exception.errorMessages
+                        else -> exception.message?.let { listOf(it) } ?: emptyList()
+                    }
+                    _uiEffect.emit(TaskUiEffect.TaskUpdateError(errorMessages))
                 }
             )
         }
     }
-
 }

@@ -184,11 +184,12 @@ class TaskFragment : Fragment() {
                 }
 
                 is TaskUiEffect.TaskUpdateError -> {
-                    Snackbar.make(
-                        requireView(),
-                        "Не удалось обновить задачу",
-                        Snackbar.LENGTH_SHORT,
-                    ).show()
+                    val errorMessage = if (effect.errorMessages.isNotEmpty()) {
+                        effect.errorMessages.joinToString("\n")
+                    } else {
+                        "Не удалось обновить задачу"
+                    }
+                    Snackbar.make(requireView(), errorMessage, Snackbar.LENGTH_SHORT).show()
                 }
             }
         }

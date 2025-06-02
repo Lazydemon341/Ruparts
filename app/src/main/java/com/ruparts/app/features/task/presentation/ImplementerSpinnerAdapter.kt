@@ -41,6 +41,12 @@ class ImplementerSpinnerAdapter(
         } else {
             textView.setTypeface(null, Typeface.NORMAL)
             textView.textSize = 14f
+            textView.setPadding(
+                16 * context.resources.displayMetrics.density.toInt(),
+                textView.paddingTop,
+                textView.paddingRight,
+                textView.paddingBottom,
+            )
         }
     }
 }
