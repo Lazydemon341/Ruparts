@@ -11,7 +11,7 @@ data class TaskListItem(
     val priority: TaskPriority,
     val title: String,
     val description: String,
-    val implementer: TaskImplementer,
+    val implementer: String?,
     val type: TaskType,
     val createdAtDate: LocalDate?,
     val finishAtDate: LocalDate?,

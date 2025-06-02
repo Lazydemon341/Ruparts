@@ -16,12 +16,12 @@ interface EndpointRetrofitService {
     ): JsonObject
 }
 
-suspend inline fun <reified B : Any, reified T : Any> EndpointRetrofitService.request(
-    body: B,
+suspend inline fun <reified T : EndpointRequestDto<*>, reified R : Any> EndpointRetrofitService.request(
+    body: T,
     gson: Gson,
-): T {
+): R {
     val response = endpoint(
         body = gson.toJsonObject(body)
     )
-    return gson.fromJson<T>(response)
+    return gson.fromJson(response)
 }
