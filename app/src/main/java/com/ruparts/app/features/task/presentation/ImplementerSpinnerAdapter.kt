@@ -20,33 +20,39 @@ class ImplementerSpinnerAdapter(
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val view = super.getView(position, convertView, parent) as TextView
-        formatImplementerTextView(view, position)
+        formatImplementerTextView(view, position, false)
         return view
     }
 
     override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
         val view = super.getDropDownView(position, convertView, parent) as TextView
-        formatImplementerTextView(view, position)
+        formatImplementerTextView(view, position, true)
         return view
     }
 
-    private fun formatImplementerTextView(textView: TextView, position: Int) {
+    private fun formatImplementerTextView(
+        textView: TextView,
+        position: Int,
+        withPadding: Boolean,
+    ) {
         val implementer = implementers[position]
         val key = implementer.first
+
+        textView.textSize = 16f
 
         val isUserRole = UserRole.entries.any { it.key == key }
         if (isUserRole) {
             textView.setTypeface(textView.typeface, Typeface.BOLD)
-            textView.textSize = 16f
         } else {
             textView.setTypeface(null, Typeface.NORMAL)
-            textView.textSize = 14f
-            textView.setPadding(
-                16 * context.resources.displayMetrics.density.toInt(),
-                textView.paddingTop,
-                textView.paddingRight,
-                textView.paddingBottom,
-            )
+            if (withPadding) {
+                textView.setPadding(
+                    20 * context.resources.displayMetrics.density.toInt(),
+                    textView.paddingTop,
+                    textView.paddingRight,
+                    textView.paddingBottom,
+                )
+            }
         }
     }
 }
