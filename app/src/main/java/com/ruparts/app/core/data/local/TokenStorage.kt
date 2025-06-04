@@ -34,31 +34,22 @@ class TokenStorage @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     private val dispatcher = Dispatchers.IO.limitedParallelism(1)
 
-    /**
-     * Save the authentication token
-     */
     suspend fun saveToken(token: String) = withContext(dispatcher) {
-        sharedPreferences.edit() { putString(KEY_AUTH_TOKEN, token) }
+        sharedPreferences.edit(commit = true) {
+            putString(KEY_AUTH_TOKEN, token)
+        }
     }
 
-    /**
-     * Get the saved authentication token
-     * @return The token or null if not found
-     */
     suspend fun getToken(): String? = withContext(dispatcher) {
         sharedPreferences.getString(KEY_AUTH_TOKEN, null)
     }
 
-    /**
-     * Clear the saved authentication token
-     */
     suspend fun clearToken() = withContext(dispatcher) {
-        sharedPreferences.edit() { remove(KEY_AUTH_TOKEN) }
+        sharedPreferences.edit(commit = true) {
+            remove(KEY_AUTH_TOKEN)
+        }
     }
 
-    /**
-     * Check if a token exists
-     */
     suspend fun hasToken(): Boolean {
         return !getToken().isNullOrEmpty()
     }

@@ -103,11 +103,15 @@ class TaskViewModel @Inject constructor(
                 },
                 onFailure = { exception ->
                     loadingState.value = false
-                    val errorMessages = when (exception) {
-                        is TaskUpdateException -> exception.errorMessages
-                        else -> exception.message?.let { listOf(it) } ?: emptyList()
+                    when (exception) {
+                        is TaskUpdateException -> {
+                            _uiEffect.emit(TaskUiEffect.ValidationError(exception.errorMessages))
+                        }
+
+                        else -> {
+                            _uiEffect.emit(TaskUiEffect.TaskUpdateError(exception.message))
+                        }
                     }
-                    _uiEffect.emit(TaskUiEffect.TaskUpdateError(errorMessages))
                 }
             )
         }
@@ -126,11 +130,15 @@ class TaskViewModel @Inject constructor(
                 },
                 onFailure = { exception ->
                     loadingState.value = false
-                    val errorMessages = when (exception) {
-                        is TaskUpdateException -> exception.errorMessages
-                        else -> exception.message?.let { listOf(it) } ?: emptyList()
+                    when (exception) {
+                        is TaskUpdateException -> {
+                            _uiEffect.emit(TaskUiEffect.ValidationError(exception.errorMessages))
+                        }
+
+                        else -> {
+                            _uiEffect.emit(TaskUiEffect.TaskUpdateError(exception.message))
+                        }
                     }
-                    _uiEffect.emit(TaskUiEffect.TaskUpdateError(errorMessages))
                 }
             )
         }
