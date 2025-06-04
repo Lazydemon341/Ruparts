@@ -2,7 +2,6 @@ package com.ruparts.app.features.taskslist.data.mapper
 
 import com.ruparts.app.features.taskslist.data.network.model.TaskDto
 import com.ruparts.app.features.taskslist.data.network.model.toDomain
-import com.ruparts.app.features.taskslist.model.TaskImplementer
 import com.ruparts.app.features.taskslist.model.TaskListGroup
 import com.ruparts.app.features.taskslist.model.TaskListItem
 import java.time.LocalDate
@@ -42,7 +41,7 @@ class TaskMapper @Inject constructor() {
             description = task.description,
             status = task.status.toDomain(),
             priority = task.priority.toDomain(),
-            implementer = task.implementer?.toDomain() ?: TaskImplementer.UNKNOWN,
+            implementer = task.implementer,
             type = task.type.toDomain(),
             createdAtDate = mapLocalDate(task.createdAt, dateFormatter),
             finishAtDate = mapLocalDate(task.finishAt, dateFormatter),

@@ -9,6 +9,10 @@
         android:id="@+id/authFragment"
         android:name="com.ruparts.app.features.authorization.presentation.AuthFragment"
         android:label="Authorization" >
+        <argument
+            android:name="showAuthError"
+            app:argType="boolean"
+            android:defaultValue="false" />
         <action
             android:id="@+id/action_authFragment_to_menuFragment"
             app:destination="@id/menuFragment"
@@ -70,6 +74,10 @@
         android:name="com.ruparts.app.features.task.presentation.TaskFragment"
         android:label="Task"
         tools:layout="@layout/fragment_task">
+        
+        <argument
+            android:name="task"
+            app:argType="com.ruparts.app.features.taskslist.model.TaskListItem" />
 
         <action
             android:id="@+id/action_taskFragment_to_taskslistFragment"

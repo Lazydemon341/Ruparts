@@ -52,7 +52,9 @@ class MenuFragment : Fragment() {
 
     private fun setupClickListeners() {
         tasksButton.setOnClickListener {
-            findNavController().navigate(R.id.action_menuFragment_to_taskslistFragment)
+            findNavController().navigate(
+                MenuFragmentDirections.actionMenuFragmentToTaskslistFragment()
+            )
         }
 
         placementButton.setOnClickListener {
@@ -72,7 +74,9 @@ class MenuFragment : Fragment() {
         viewModel.uiEffect.collectWhileStarted(viewLifecycleOwner) { effect ->
             when (effect) {
                 is MenuUiEffect.NavigateToAuth -> {
-                    findNavController().navigate(R.id.action_menuFragment_to_authFragment)
+                    findNavController().navigate(
+                        MenuFragmentDirections.actionMenuFragmentToAuthFragment()
+                    )
                 }
             }
         }

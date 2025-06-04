@@ -5,10 +5,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.Button
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.Spinner
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
@@ -29,7 +31,6 @@ import com.ruparts.app.core.utils.collectWhileStarted
 import com.ruparts.app.core.utils.formatSafely
 import com.ruparts.app.features.task.presentation.model.TaskScreenState
 import com.ruparts.app.features.task.presentation.model.TaskUiEffect
-import com.ruparts.app.features.taskslist.model.TaskImplementer
 import com.ruparts.app.features.taskslist.model.TaskPriority
 import com.ruparts.app.features.taskslist.model.TaskStatus
 import dagger.hilt.android.AndroidEntryPoint
@@ -43,7 +44,7 @@ class TaskFragment : Fragment() {
 
     private lateinit var title: TextView
     private lateinit var description: EditText
-    private lateinit var implementer: TextView
+    private lateinit var implementerSpinner: Spinner
     private lateinit var finishAtDate: TextView
     private lateinit var closeBtn: ImageView
     private lateinit var closeBtnLayout: FrameLayout
@@ -72,8 +73,6 @@ class TaskFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.setTask(requireNotNull(arguments?.getParcelable(ARG_TASK_KEY)))
-
         toolbar = view.findViewById(R.id.task_toolbar)
         toolbar.setNavigationOnClickListener {
             findNavController().popBackStack()
@@ -86,7 +85,7 @@ class TaskFragment : Fragment() {
 
         title = view.findViewById(R.id.title_view)
         description = view.findViewById(R.id.description_view)
-        implementer = view.findViewById(R.id.implementer_view)
+        implementerSpinner = view.findViewById(R.id.implementer_spinner)
         finishAtDate = view.findViewById(R.id.finishAt_date_view)
         closeBtnLayout = view.findViewById(R.id.close_btn_layout)
         closeBtn = view.findViewById(R.id.close_btn)
@@ -102,10 +101,6 @@ class TaskFragment : Fragment() {
         description.setText(viewModel.screenState.value.task.description)
         description.doOnTextChanged { text, start, before, count ->
             viewModel.setTaskDescription(text.toString())
-        }
-
-        implementer.setOnClickListener {
-            showBottomSheetImplementer()
         }
 
         priority.setOnClickListener {
@@ -128,13 +123,41 @@ class TaskFragment : Fragment() {
         collectUiEffects()
     }
 
-    private fun showBottomSheetImplementer() {
-        val sheet = BottomSheetImplementer.newInstance(object : OnImplementerSelectedListener {
-            override fun onItemSelected(implementer: TaskImplementer) {
-                viewModel.setTaskImplementer(implementer)
+    private fun updateImplementerSpinner(
+        implementerKey: String?,
+        implementers: Map<String, String>,
+    ) {
+        val implementersList = implementers.toList()
+
+        implementerSpinner.adapter = ImplementerSpinnerAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_item,
+            implementersList
+        )
+
+        val currentImplementerKey = implementerKey
+        val position = implementersList.indexOfFirst { it.first == currentImplementerKey }
+        if (position in (0..implementersList.lastIndex)) {
+            implementerSpinner.setSelection(position)
+        }
+
+        implementerSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                if (position >= 0 && position < implementersList.size) {
+                    val selectedImplementerKey = implementersList[position].first
+                    viewModel.setTaskImplementer(selectedImplementerKey)
+                }
             }
-        })
-        sheet.show(childFragmentManager, "MyBottomSheet")
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                viewModel.setTaskImplementer(null)
+            }
+        }
     }
 
     private fun showBottomSheetPriority() {
@@ -161,11 +184,12 @@ class TaskFragment : Fragment() {
                 }
 
                 is TaskUiEffect.TaskUpdateError -> {
-                    Snackbar.make(
-                        requireView(),
-                        "Не удалось обновить задачу",
-                        Snackbar.LENGTH_SHORT,
-                    ).show()
+                    val errorMessage = if (effect.errorMessages.isNotEmpty()) {
+                        effect.errorMessages.joinToString("\n")
+                    } else {
+                        "Не удалось обновить задачу"
+                    }
+                    Snackbar.make(requireView(), errorMessage, Snackbar.LENGTH_SHORT).show()
                 }
             }
         }
@@ -178,7 +202,7 @@ class TaskFragment : Fragment() {
         updateLoadingState(state.isLoading)
         updatePriority(task.priority)
         updateStatus(task.status)
-        updateImplementer(task.implementer)
+        updateImplementerSpinner(state.task.implementer, state.implementers)
 
         finishAtDate.text = task.finishAtDate.formatSafely(dateFormatter)
         createdDate.text = task.createdAtDate.formatSafely(dateFormatter)
@@ -259,24 +283,11 @@ class TaskFragment : Fragment() {
         }
     }
 
-    private fun updateImplementer(taskImplementer: TaskImplementer) {
-        implementer.text = when (taskImplementer) {
-            TaskImplementer.USER -> "Пользователь"
-            TaskImplementer.SUPPLIER -> "Поставщик"
-            TaskImplementer.HEAD_OF_WAREHOUSE -> "Руководитель склада"
-            TaskImplementer.STOREKEEPER -> "Кладовщик"
-            TaskImplementer.LOGISTICS_CONTROL -> "Контроль логистики"
-            TaskImplementer.PURCHASES_MANAGER -> "Менеджер по закупкам"
-            TaskImplementer.FLAWS_PROCESSING_MANAGER -> "Менеджер по обработке брака"
-            TaskImplementer.UNKNOWN -> ""
-        }
-    }
-
     private fun updateLoadingState(isLoading: Boolean) {
         progressIndicator.isVisible = isLoading
         saveButton.isEnabled = !isLoading
         description.isEnabled = !isLoading
-        implementer.isEnabled = !isLoading
+        implementerSpinner.isEnabled = !isLoading
         priority.isEnabled = !isLoading
         finishAtDate.isEnabled = !isLoading
     }
@@ -327,7 +338,6 @@ class TaskFragment : Fragment() {
     }
 
     companion object {
-        const val ARG_TASK_KEY = "task"
         const val TASK_UPDATED_REQUEST_KEY = "task_updated_request_key"
 
         private const val DATE_FORMAT_PATTERN = "dd MMM yyyy"

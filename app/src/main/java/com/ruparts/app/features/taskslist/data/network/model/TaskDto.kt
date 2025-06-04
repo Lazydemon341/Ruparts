@@ -18,7 +18,7 @@ class TaskDto(
     @SerializedName("priority")
     val priority: TaskPriorityDto,
     @SerializedName("implementer")
-    val implementer: TaskImplementerDto?,
+    val implementer: String?,
     @SerializedName("created_at")
     val createdAt: String?,
     @SerializedName("updated_at")

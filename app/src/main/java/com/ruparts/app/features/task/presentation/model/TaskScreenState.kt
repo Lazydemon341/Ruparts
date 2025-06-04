@@ -4,5 +4,6 @@ import com.ruparts.app.features.taskslist.model.TaskListItem
 
 data class TaskScreenState(
     val task: TaskListItem,
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val implementers: Map<String, String> = emptyMap(),
 )

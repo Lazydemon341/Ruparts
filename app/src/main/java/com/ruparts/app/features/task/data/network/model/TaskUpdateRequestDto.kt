@@ -2,7 +2,6 @@ package com.ruparts.app.features.task.data.network.model
 
 import com.google.gson.annotations.SerializedName
 import com.ruparts.app.core.data.network.EndpointRequestDto
-import com.ruparts.app.features.taskslist.data.network.model.TaskImplementerDto
 import com.ruparts.app.features.taskslist.data.network.model.TaskPriorityDto
 import com.ruparts.app.features.taskslist.data.network.model.toDto
 import com.ruparts.app.features.taskslist.model.TaskListItem
@@ -32,7 +31,7 @@ class TaskUpdateRequestDataDto(
     val finishAt: String?,
 
     @SerializedName("implementer")
-    val implementer: TaskImplementerDto?
+    val implementer: String?
 ) {
     companion object {
         fun fromTask(task: TaskListItem): TaskUpdateRequestDataDto {
@@ -44,7 +43,7 @@ class TaskUpdateRequestDataDto(
                 title = task.title,
                 description = task.description,
                 priority = task.priority.toDto(),
-                implementer = task.implementer.toDto(),
+                implementer = task.implementer,
                 finishAt = formattedFinishDate,
             )
         }

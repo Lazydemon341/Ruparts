@@ -3,10 +3,11 @@ package com.ruparts.app.features.task.presentation
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ruparts.app.core.task.library.TaskLibraryInteractor
 import com.ruparts.app.features.task.data.repository.TaskRepository
+import com.ruparts.app.features.task.data.repository.TaskUpdateException
 import com.ruparts.app.features.task.presentation.model.TaskScreenState
 import com.ruparts.app.features.task.presentation.model.TaskUiEffect
-import com.ruparts.app.features.taskslist.model.TaskImplementer
 import com.ruparts.app.features.taskslist.model.TaskListItem
 import com.ruparts.app.features.taskslist.model.TaskPriority
 import com.ruparts.app.features.taskslist.model.TaskStatus
@@ -14,8 +15,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -25,110 +30,109 @@ import javax.inject.Inject
 class TaskViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val taskRepository: TaskRepository,
+    private val taskLibraryInteractor: TaskLibraryInteractor,
 ) : ViewModel() {
 
-    private val _screenState = MutableStateFlow(
+    private val initialTask: TaskListItem = requireNotNull(savedStateHandle["task"])
+
+    private val taskState = MutableStateFlow<TaskListItem>(initialTask)
+    private val loadingState = MutableStateFlow<Boolean>(false)
+
+    val screenState = combine(
+        taskState,
+        loadingState,
+        flow { emit(taskLibraryInteractor.getImplementers()) },
+        ::Triple,
+    ).map { (task, isLoading, implementers) ->
         TaskScreenState(
-            task = requireNotNull(savedStateHandle[TaskFragment.ARG_TASK_KEY])
+            task = task,
+            isLoading = isLoading,
+            implementers = implementers,
         )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = TaskScreenState(task = taskState.value),
     )
-    val screenState = _screenState.asStateFlow()
 
     private val _uiEffect = MutableSharedFlow<TaskUiEffect>()
     val uiEffect: SharedFlow<TaskUiEffect> = _uiEffect.asSharedFlow()
 
     fun setTaskDescription(text: String) {
-        if (_screenState.value.isLoading) return
+        if (loadingState.value) return
 
-        _screenState.update { screenState ->
-            val task = screenState.task
-            val newTask = task.copy(description = text)
-            screenState.copy(task = newTask)
+        taskState.update { task ->
+            task.copy(description = text)
         }
     }
 
-    fun setTaskImplementer(implementer: TaskImplementer) {
-        if (_screenState.value.isLoading) return
+    fun setTaskImplementer(implementer: String?) {
+        if (loadingState.value) return
 
-        _screenState.update { screenState ->
-            val task = screenState.task
-            val newTask = task.copy(implementer = implementer)
-            screenState.copy(task = newTask)
+        taskState.update { task ->
+            task.copy(implementer = implementer)
         }
     }
 
     fun setTaskPriority(priority: TaskPriority) {
-        if (_screenState.value.isLoading) return
+        if (loadingState.value) return
 
-        _screenState.update { screenState ->
-            val task = screenState.task
-            val newTask = task.copy(priority = priority)
-            screenState.copy(task = newTask)
+        taskState.update { task ->
+            task.copy(priority = priority)
         }
     }
 
-    fun setTask(item: TaskListItem) {
-        if (_screenState.value.isLoading) return
+    fun setFinishAtDate(finishAtDate: LocalDate?) {
+        if (loadingState.value) return
 
-        _screenState.update { screenState ->
-            screenState.copy(task = item)
-        }
-    }
-
-    fun setFinishAtDate(date: LocalDate?) {
-        if (_screenState.value.isLoading) return
-
-        _screenState.update { screenState ->
-            val task = screenState.task
-            val newTask = task.copy(finishAtDate = date)
-            screenState.copy(task = newTask)
+        taskState.update { task ->
+            task.copy(finishAtDate = finishAtDate)
         }
     }
 
     fun updateTask() {
-        if (_screenState.value.isLoading) return
+        if (loadingState.value) return
 
         viewModelScope.launch {
-            _screenState.update { it.copy(isLoading = true) }
+            loadingState.value = true
             taskRepository.updateTask(screenState.value.task).fold(
                 onSuccess = { updatedTask ->
-                    _screenState.update {
-                        it.copy(
-                            task = updatedTask,
-                            isLoading = false,
-                        )
-                    }
+                    taskState.value = updatedTask
+                    loadingState.value = false
                     _uiEffect.emit(TaskUiEffect.TaskUpdateSuccess)
                 },
-                onFailure = {
-                    _screenState.update { it.copy(isLoading = false) }
-                    _uiEffect.emit(TaskUiEffect.TaskUpdateError)
+                onFailure = { exception ->
+                    loadingState.value = false
+                    val errorMessages = when (exception) {
+                        is TaskUpdateException -> exception.errorMessages
+                        else -> exception.message?.let { listOf(it) } ?: emptyList()
+                    }
+                    _uiEffect.emit(TaskUiEffect.TaskUpdateError(errorMessages))
                 }
             )
         }
     }
 
     fun changeTaskStatus(newStatus: TaskStatus) {
-        if (_screenState.value.isLoading) return
+        if (loadingState.value) return
 
         viewModelScope.launch {
-            _screenState.update { it.copy(isLoading = true) }
+            loadingState.value = true
             taskRepository.changeTaskStatus(screenState.value.task.id, newStatus).fold(
                 onSuccess = { updatedTask ->
-                    _screenState.update {
-                        it.copy(
-                            task = updatedTask,
-                            isLoading = false,
-                        )
-                    }
+                    taskState.value = updatedTask
+                    loadingState.value = false
                     _uiEffect.emit(TaskUiEffect.TaskUpdateSuccess)
                 },
-                onFailure = {
-                    _screenState.update { it.copy(isLoading = false) }
-                    _uiEffect.emit(TaskUiEffect.TaskUpdateError)
+                onFailure = { exception ->
+                    loadingState.value = false
+                    val errorMessages = when (exception) {
+                        is TaskUpdateException -> exception.errorMessages
+                        else -> exception.message?.let { listOf(it) } ?: emptyList()
+                    }
+                    _uiEffect.emit(TaskUiEffect.TaskUpdateError(errorMessages))
                 }
             )
         }
     }
-
 }

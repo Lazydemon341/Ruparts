@@ -31,7 +31,20 @@ class TaskRepository @Inject constructor(
                     ),
                     gson = gson,
                 )
-                mapper.mapTask(response.data)
+                
+                when (response.type) {
+                    0 -> {
+                        // Success response
+                        response.data?.let { mapper.mapTask(it) }
+                            ?: throw IllegalStateException("Success response with null data")
+                    }
+                    1 -> {
+                        // Error response
+                        val errorMessages = response.error?.data?.map { it.title } ?: emptyList()
+                        throw TaskUpdateException(errorMessages)
+                    }
+                    else -> throw IllegalStateException("Unknown response type: ${response.type}")
+                }
             }
         }
 
@@ -44,7 +57,22 @@ class TaskRepository @Inject constructor(
                     ),
                     gson = gson,
                 )
-                mapper.mapTask(response.data)
+                
+                when (response.type) {
+                    0 -> {
+                        // Success response
+                        response.data?.let { mapper.mapTask(it) }
+                            ?: throw IllegalStateException("Success response with null data")
+                    }
+                    1 -> {
+                        // Error response
+                        val errorMessages = response.error?.data?.map { it.title } ?: emptyList()
+                        throw TaskUpdateException(errorMessages)
+                    }
+                    else -> throw IllegalStateException("Unknown response type: ${response.type}")
+                }
             }
         }
 }
+
+class TaskUpdateException(val errorMessages: List<String>) : Exception(errorMessages.joinToString(", "))

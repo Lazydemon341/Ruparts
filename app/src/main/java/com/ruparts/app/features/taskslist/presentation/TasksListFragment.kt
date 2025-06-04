@@ -15,7 +15,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
-import androidx.core.os.bundleOf
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -61,8 +60,9 @@ class TasksListFragment : Fragment() {
         recyclerView = view.findViewById(R.id.taskslist_recycler_view)
         adapter = ExpandableTaskAdapter(
             onTaskClick = { task ->
-                val bundle = bundleOf(TaskFragment.ARG_TASK_KEY to task)
-                findNavController().navigate(R.id.action_taskslistFragment_to_taskFragment, bundle)
+                findNavController().navigate(
+                    TasksListFragmentDirections.actionTaskslistFragmentToTaskFragment(task)
+                )
             }
         )
         recyclerView.adapter = adapter
