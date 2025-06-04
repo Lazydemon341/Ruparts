@@ -26,4 +26,10 @@ class AuthRepository @Inject constructor(
     suspend fun logout() {
         tokenStorage.clearToken()
     }
+
+    suspend fun getUser(): Result<Unit> = withContext(Dispatchers.IO) {
+        runCoroutineCatching {
+            val userResponse = authRetrofitService.getUser()
+        }
+    }
 }
