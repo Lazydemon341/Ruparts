@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.ruparts.app.core.data.network.EndpointRetrofitService
 import com.ruparts.app.core.data.network.request
 import com.ruparts.app.core.utils.runCoroutineCatching
+import com.ruparts.app.features.task.data.network.model.ErrorResponseDto
 import com.ruparts.app.features.task.data.network.model.TaskChangeStatusRequestDataDto
 import com.ruparts.app.features.task.data.network.model.TaskChangeStatusRequestDto
 import com.ruparts.app.features.task.data.network.model.TaskChangeStatusResponseDto
@@ -31,18 +32,17 @@ class TaskRepository @Inject constructor(
                     ),
                     gson = gson,
                 )
-                
+
                 when (response.type) {
                     0 -> {
-                        // Success response
                         response.data?.let { mapper.mapTask(it) }
                             ?: throw IllegalStateException("Success response with null data")
                     }
+
                     1 -> {
-                        // Error response
-                        val errorMessages = response.error?.data?.map { it.title } ?: emptyList()
-                        throw TaskUpdateException(errorMessages)
+                        handleError(response.error)
                     }
+
                     else -> throw IllegalStateException("Unknown response type: ${response.type}")
                 }
             }
@@ -51,28 +51,35 @@ class TaskRepository @Inject constructor(
     suspend fun changeTaskStatus(id: Long, newStatus: TaskStatus): Result<TaskListItem> =
         withContext(Dispatchers.IO) {
             runCoroutineCatching {
-                val response = endpointService.request<TaskChangeStatusRequestDto, TaskChangeStatusResponseDto>(
-                    body = TaskChangeStatusRequestDto(
-                        data = TaskChangeStatusRequestDataDto.fromTask(id, newStatus),
-                    ),
-                    gson = gson,
-                )
-                
+                val response =
+                    endpointService.request<TaskChangeStatusRequestDto, TaskChangeStatusResponseDto>(
+                        body = TaskChangeStatusRequestDto(
+                            data = TaskChangeStatusRequestDataDto.fromTask(id, newStatus),
+                        ),
+                        gson = gson,
+                    )
+
                 when (response.type) {
                     0 -> {
-                        // Success response
                         response.data?.let { mapper.mapTask(it) }
                             ?: throw IllegalStateException("Success response with null data")
                     }
+
                     1 -> {
-                        // Error response
-                        val errorMessages = response.error?.data?.map { it.title } ?: emptyList()
-                        throw TaskUpdateException(errorMessages)
+                        handleError(response.error)
                     }
+
                     else -> throw IllegalStateException("Unknown response type: ${response.type}")
                 }
             }
         }
+
+    private fun handleError(error: ErrorResponseDto?): Nothing {
+        val errorMessages = error?.data
+            ?.associateBy({ it.path }, { it.title })
+            ?: emptyMap()
+        throw TaskUpdateException(errorMessages)
+    }
 }
 
-class TaskUpdateException(val errorMessages: List<String>) : Exception(errorMessages.joinToString(", "))
+class TaskUpdateException(val errorMessages: Map<String, String>) : Exception()

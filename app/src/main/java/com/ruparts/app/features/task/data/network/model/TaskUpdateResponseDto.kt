@@ -18,6 +18,8 @@ class ErrorResponseDto(
 )
 
 class ErrorItemDto(
+    @SerializedName("path")
+    val path: String,
     @SerializedName("title")
     val title: String,
 )

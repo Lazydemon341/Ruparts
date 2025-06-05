@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.Button
 import android.widget.EditText
-import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.TextView
@@ -44,12 +43,15 @@ class TaskFragment : Fragment() {
 
     private lateinit var title: TextView
     private lateinit var description: EditText
+    private lateinit var descriptionError: TextView
     private lateinit var implementerSpinner: Spinner
+    private lateinit var implementerError: TextView
     private lateinit var finishAtDate: TextView
+    private lateinit var finishAtError: TextView
     private lateinit var closeBtn: ImageView
-    private lateinit var closeBtnLayout: FrameLayout
     private lateinit var priorityImage: ImageView
     private lateinit var priority: MaterialTextView
+    private lateinit var priorityError: TextView
     private lateinit var createdDate: TextView
     private lateinit var changedDate: TextView
     private lateinit var toolbar: Toolbar
@@ -85,12 +87,15 @@ class TaskFragment : Fragment() {
 
         title = view.findViewById(R.id.title_view)
         description = view.findViewById(R.id.description_view)
+        descriptionError = view.findViewById(R.id.description_error)
         implementerSpinner = view.findViewById(R.id.implementer_spinner)
+        implementerError = view.findViewById(R.id.implementer_error)
         finishAtDate = view.findViewById(R.id.finishAt_date_view)
-        closeBtnLayout = view.findViewById(R.id.close_btn_layout)
+        finishAtError = view.findViewById(R.id.finish_at_error)
         closeBtn = view.findViewById(R.id.close_btn)
         priorityImage = view.findViewById(R.id.priority_imageview)
         priority = view.findViewById(R.id.priority_material_tv)
+        priorityError = view.findViewById(R.id.priority_error)
         createdDate = view.findViewById(R.id.date_view_created)
         changedDate = view.findViewById(R.id.date_view_changed)
         saveButton = view.findViewById(R.id.button_save)
@@ -115,7 +120,7 @@ class TaskFragment : Fragment() {
             viewModel.updateTask()
         }
 
-        closeBtnLayout.setOnClickListener {
+        closeBtn.setOnClickListener {
             viewModel.setFinishAtDate(null)
         }
 
@@ -179,20 +184,45 @@ class TaskFragment : Fragment() {
         viewModel.uiEffect.collectWhileStarted(viewLifecycleOwner) { effect ->
             when (effect) {
                 is TaskUiEffect.TaskUpdateSuccess -> {
+                    clearValidationErrors()
                     Snackbar.make(requireView(), "Задача обновлена", Snackbar.LENGTH_SHORT).show()
                     setFragmentResult(TASK_UPDATED_REQUEST_KEY, bundleOf())
                 }
 
+                is TaskUiEffect.ValidationError -> {
+                    clearValidationErrors()
+                    effect.errorMessages.forEach { (key, message) ->
+                        when (key) {
+                            "description" -> showError(descriptionError, message)
+                            "implementer" -> showError(implementerError, message)
+                            "finish_at" -> showError(finishAtError, message)
+                            "priority" -> showError(priorityError, message)
+                        }
+                    }
+                }
+
                 is TaskUiEffect.TaskUpdateError -> {
-                    val errorMessage = if (effect.errorMessages.isNotEmpty()) {
-                        effect.errorMessages.joinToString("\n")
-                    } else {
+                    val errorMessage = if (effect.errorMessage.isNullOrEmpty()) {
                         "Не удалось обновить задачу"
+                    } else {
+                        effect.errorMessage
                     }
                     Snackbar.make(requireView(), errorMessage, Snackbar.LENGTH_SHORT).show()
                 }
             }
         }
+    }
+
+    private fun showError(errorTextView: TextView, errorMessage: String) {
+        errorTextView.text = errorMessage
+        errorTextView.visibility = View.VISIBLE
+    }
+
+    private fun clearValidationErrors() {
+        descriptionError.visibility = View.GONE
+        implementerError.visibility = View.GONE
+        finishAtError.visibility = View.GONE
+        priorityError.visibility = View.GONE
     }
 
     private fun updateUI(state: TaskScreenState) {
