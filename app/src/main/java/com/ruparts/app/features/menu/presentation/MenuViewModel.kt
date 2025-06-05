@@ -23,4 +23,8 @@ class MenuViewModel @Inject constructor(
         authRepository.logout()
         _uiEffect.emit(MenuUiEffect.NavigateToAuth)
     }
+
+    fun getUserName() = viewModelScope.launch {
+        authRepository.getUser().displayName
+    }
 }

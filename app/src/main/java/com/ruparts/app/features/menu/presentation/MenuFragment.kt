@@ -42,6 +42,8 @@ class MenuFragment : Fragment() {
         toolbar = view.findViewById(R.id.menu_toolbar)
         (activity as? AppCompatActivity)?.supportActionBar?.hide()
 
+        toolbar.title = viewModel.getUserName().toString()
+
         tasksButton = view.findViewById(R.id.tasks)
         placementButton = view.findViewById(R.id.placement)
         workWithProductButton = view.findViewById(R.id.work_with_product)
