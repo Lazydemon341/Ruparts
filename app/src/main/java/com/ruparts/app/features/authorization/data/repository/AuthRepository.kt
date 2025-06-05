@@ -12,7 +12,6 @@ import javax.inject.Inject
 class AuthRepository @Inject constructor(
     private val authRetrofitService: AuthRetrofitService,
     private val tokenStorage: TokenStorage,
-    private var user: User
 ) {
 
     suspend fun loginWithPinCode(pinCode: String): Result<Unit> = withContext(Dispatchers.IO) {
@@ -30,11 +29,13 @@ class AuthRepository @Inject constructor(
         tokenStorage.clearToken()
     }
 
-    suspend fun getUser(): User {
-        runCoroutineCatching {
+    suspend fun getUser(): Result<User> {
+
+        return runCoroutineCatching {
             val userResponse = authRetrofitService.getUser()
-            user = userResponse.mapToUser()
+            val user = userResponse.mapToUser()
+            user
         }
-        return user
+
     }
 }
