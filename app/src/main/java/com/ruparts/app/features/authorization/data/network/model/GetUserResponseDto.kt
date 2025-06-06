@@ -2,9 +2,10 @@ package com.ruparts.app.features.authorization.data.network.model
 
 import com.google.gson.annotations.SerializedName
 import com.ruparts.app.core.model.User
-import java.time.LocalDate
+import com.ruparts.app.core.utils.toLocalDate
+import java.time.format.DateTimeFormatter
 
-class GetUserResponseDto (
+class GetUserResponseDto(
     @SerializedName("uuid")
     val uuid: String,
     @SerializedName("username")
@@ -16,11 +17,20 @@ class GetUserResponseDto (
     @SerializedName("roles")
     val roles: List<String>,
     @SerializedName("created_at")
-    val createdAt: LocalDate,
+    val createdAt: String,
     @SerializedName("updated_at")
-    val updatedAt: LocalDate,
-    ) {
+    val updatedAt: String,
+) {
 
-    fun mapToUser(): User =
-        User(uuid, userName, displayName, isActive, roles, createdAt, updatedAt)
+    fun mapToUser(dateTimeFormatter: DateTimeFormatter): User {
+        return User(
+            uuid = uuid,
+            userName = userName,
+            displayName = displayName,
+            isActive = isActive,
+            roles = roles,
+            createdAt = createdAt.toLocalDate(dateTimeFormatter),
+            updatedAt = updatedAt.toLocalDate(dateTimeFormatter),
+        )
+    }
 }
