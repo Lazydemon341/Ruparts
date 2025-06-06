@@ -49,8 +49,8 @@ class MenuFragment : Fragment() {
 
         setupClickListeners()
 
-        viewModel.displayName.collectWhileStarted(viewLifecycleOwner) { state ->
-            toolbar.title = state
+        viewModel.screenState.collectWhileStarted(viewLifecycleOwner) { state ->
+            toolbar.title = state.userName
         }
     }
 
