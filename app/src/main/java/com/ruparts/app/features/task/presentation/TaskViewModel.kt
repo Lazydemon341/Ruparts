@@ -12,6 +12,7 @@ import com.ruparts.app.features.taskslist.model.TaskListItem
 import com.ruparts.app.features.taskslist.model.TaskPriority
 import com.ruparts.app.features.taskslist.model.TaskStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -19,7 +20,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -41,9 +41,8 @@ class TaskViewModel @Inject constructor(
     val screenState = combine(
         taskState,
         loadingState,
-        flow { emit(taskLibraryInteractor.getImplementers()) },
-        ::Triple,
-    ).map { (task, isLoading, implementers) ->
+        implementersFlow(),
+    ) { task, isLoading, implementers ->
         TaskScreenState(
             task = task,
             isLoading = isLoading,
@@ -96,23 +95,8 @@ class TaskViewModel @Inject constructor(
         viewModelScope.launch {
             loadingState.value = true
             taskRepository.updateTask(screenState.value.task).fold(
-                onSuccess = { updatedTask ->
-                    taskState.value = updatedTask
-                    loadingState.value = false
-                    _uiEffect.emit(TaskUiEffect.TaskUpdateSuccess)
-                },
-                onFailure = { exception ->
-                    loadingState.value = false
-                    when (exception) {
-                        is TaskUpdateException -> {
-                            _uiEffect.emit(TaskUiEffect.ValidationError(exception.errorMessages))
-                        }
-
-                        else -> {
-                            _uiEffect.emit(TaskUiEffect.TaskUpdateError(exception.message))
-                        }
-                    }
-                }
+                onSuccess = { handleUpdateTaskSuccess(it) },
+                onFailure = { handleUpdateTaskFailure(it) },
             )
         }
     }
@@ -122,25 +106,36 @@ class TaskViewModel @Inject constructor(
 
         viewModelScope.launch {
             loadingState.value = true
-            taskRepository.changeTaskStatus(screenState.value.task.id, newStatus).fold(
-                onSuccess = { updatedTask ->
-                    taskState.value = updatedTask
-                    loadingState.value = false
-                    _uiEffect.emit(TaskUiEffect.TaskUpdateSuccess)
-                },
-                onFailure = { exception ->
-                    loadingState.value = false
-                    when (exception) {
-                        is TaskUpdateException -> {
-                            _uiEffect.emit(TaskUiEffect.ValidationError(exception.errorMessages))
-                        }
-
-                        else -> {
-                            _uiEffect.emit(TaskUiEffect.TaskUpdateError(exception.message))
-                        }
-                    }
-                }
+            taskRepository.changeTaskStatus(
+                id = screenState.value.task.id,
+                newStatus = newStatus
+            ).fold(
+                onSuccess = { handleUpdateTaskSuccess(it) },
+                onFailure = { handleUpdateTaskFailure(it) },
             )
         }
+    }
+
+    private suspend fun handleUpdateTaskSuccess(updatedTask: TaskListItem) {
+        loadingState.value = false
+        taskState.value = updatedTask
+        _uiEffect.emit(TaskUiEffect.TaskUpdateSuccess)
+    }
+
+    private suspend fun handleUpdateTaskFailure(throwable: Throwable) {
+        loadingState.value = false
+        when (throwable) {
+            is TaskUpdateException -> {
+                _uiEffect.emit(TaskUiEffect.ValidationError(throwable.errorMessages))
+            }
+
+            else -> {
+                _uiEffect.emit(TaskUiEffect.TaskUpdateError(throwable.message))
+            }
+        }
+    }
+
+    private fun implementersFlow(): Flow<Map<String, String>> {
+        return flow { emit(taskLibraryInteractor.getImplementers()) }
     }
 }
