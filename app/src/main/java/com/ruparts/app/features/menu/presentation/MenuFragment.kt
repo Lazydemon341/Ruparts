@@ -48,6 +48,10 @@ class MenuFragment : Fragment() {
         logoutButton = view.findViewById(R.id.logout_button)
 
         setupClickListeners()
+
+        viewModel.screenState.collectWhileStarted(viewLifecycleOwner) { state ->
+            toolbar.title = state.userName
+        }
     }
 
     private fun setupClickListeners() {

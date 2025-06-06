@@ -1,6 +1,7 @@
 package com.ruparts.app.features.authorization.data.repository
 
 import com.ruparts.app.core.data.local.TokenStorage
+import com.ruparts.app.core.model.User
 import com.ruparts.app.core.utils.runCoroutineCatching
 import com.ruparts.app.features.authorization.data.network.AuthRetrofitService
 import com.ruparts.app.features.authorization.data.network.model.AuthRequest
@@ -12,6 +13,7 @@ class AuthRepository @Inject constructor(
     private val authRetrofitService: AuthRetrofitService,
     private val tokenStorage: TokenStorage,
 ) {
+
     suspend fun loginWithPinCode(pinCode: String): Result<Unit> = withContext(Dispatchers.IO) {
         runCoroutineCatching {
             val authResponse = authRetrofitService.loginByCode(AuthRequest(code = pinCode))
@@ -25,5 +27,15 @@ class AuthRepository @Inject constructor(
 
     suspend fun logout() {
         tokenStorage.clearToken()
+    }
+
+    suspend fun getUser(): Result<User> {
+
+        return runCoroutineCatching {
+            val userResponse = authRetrofitService.getUser()
+            val user = userResponse.mapToUser()
+            user
+        }
+
     }
 }

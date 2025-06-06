@@ -3,11 +3,16 @@ package com.ruparts.app.features.menu.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ruparts.app.features.authorization.data.repository.AuthRepository
+import com.ruparts.app.features.menu.presentation.model.MenuScreenState
 import com.ruparts.app.features.menu.presentation.model.MenuUiEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,6 +23,15 @@ class MenuViewModel @Inject constructor(
 
     private val _uiEffect = MutableSharedFlow<MenuUiEffect>()
     val uiEffect: SharedFlow<MenuUiEffect> = _uiEffect.asSharedFlow()
+
+    val screenState: StateFlow<MenuScreenState> = flow {
+        val user = authRepository.getUser().getOrNull()
+        emit(MenuScreenState(user?.displayName.orEmpty()))
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = MenuScreenState(""),
+    )
 
     fun logout() = viewModelScope.launch {
         authRepository.logout()
