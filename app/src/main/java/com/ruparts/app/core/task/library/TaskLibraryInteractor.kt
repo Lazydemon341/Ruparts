@@ -7,12 +7,6 @@ class TaskLibraryInteractor @Inject constructor(
     private val repository: TaskLibraryRepository,
 ) {
 
-    suspend fun getImplementer(implementerKey: String?): String {
-        val taskLibrary = repository.loadTaskLibrary()
-            .getOrDefault(TaskLibrary(emptyMap()))
-        return taskLibrary.implementers[implementerKey].orEmpty()
-    }
-
     suspend fun getImplementers(): Map<String, String> {
         val taskLibrary = repository.loadTaskLibrary()
             .getOrDefault(TaskLibrary(emptyMap()))

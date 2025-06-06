@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.ksp)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.parcelize)
@@ -61,8 +61,8 @@ dependencies {
     
     // Hilt
     implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
-    kapt(libs.hilt.androidx.compiler)
+    ksp(libs.hilt.compiler)
+    ksp(libs.hilt.androidx.compiler)
     
     // Jetpack Compose
     implementation(platform(libs.compose.bom))
