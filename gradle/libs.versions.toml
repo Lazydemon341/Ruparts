@@ -1,6 +1,6 @@
 [versions]
 agp = "8.9.2"
-kotlin = "2.1.0"
+kotlin = "2.1.10"
 coreKtx = "1.16.0"
 junit = "4.13.2"
 junitVersion = "1.1.5"
@@ -19,6 +19,7 @@ retrofit = "2.11.0"
 okhttp = "4.12.0"
 gson = "2.10.1"
 securityCrypto = "1.1.0-alpha06"
+ksp = "2.1.10-1.0.31"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -66,7 +67,7 @@ security-crypto = { group = "androidx.security", name = "security-crypto", versi
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
-kotlin-kapt = { id = "org.jetbrains.kotlin.kapt" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-parcelize = { id = "kotlin-parcelize" }
 navigation-safeargs = { id = "androidx.navigation.safeargs.kotlin" }
