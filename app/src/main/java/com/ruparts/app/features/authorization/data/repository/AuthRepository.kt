@@ -7,12 +7,17 @@ import com.ruparts.app.features.authorization.data.network.AuthRetrofitService
 import com.ruparts.app.features.authorization.data.network.model.AuthRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 class AuthRepository @Inject constructor(
     private val authRetrofitService: AuthRetrofitService,
     private val tokenStorage: TokenStorage,
 ) {
+
+    private val dateFormatter by lazy {
+        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss xxx")
+    }
 
     suspend fun loginWithPinCode(pinCode: String): Result<Unit> = withContext(Dispatchers.IO) {
         runCoroutineCatching {
@@ -29,13 +34,10 @@ class AuthRepository @Inject constructor(
         tokenStorage.clearToken()
     }
 
-    suspend fun getUser(): Result<User> {
-
-        return runCoroutineCatching {
+    suspend fun getUser(): Result<User> = withContext(Dispatchers.Default) {
+        runCoroutineCatching {
             val userResponse = authRetrofitService.getUser()
-            val user = userResponse.mapToUser()
-            user
+            userResponse.mapToUser(dateFormatter)
         }
-
     }
 }

@@ -1,13 +1,11 @@
 package com.ruparts.app.features.taskslist.data.mapper
 
+import com.ruparts.app.core.utils.toLocalDate
 import com.ruparts.app.features.taskslist.data.network.model.TaskDto
 import com.ruparts.app.features.taskslist.data.network.model.toDomain
 import com.ruparts.app.features.taskslist.model.TaskListGroup
 import com.ruparts.app.features.taskslist.model.TaskListItem
-import java.time.LocalDate
-import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
 import javax.inject.Inject
 
 class TaskMapper @Inject constructor() {
@@ -43,28 +41,9 @@ class TaskMapper @Inject constructor() {
             priority = task.priority.toDomain(),
             implementer = task.implementer,
             type = task.type.toDomain(),
-            createdAtDate = mapLocalDate(task.createdAt, dateFormatter),
-            finishAtDate = mapLocalDate(task.finishAt, dateFormatter),
-            updatedAtDate = mapLocalDate(task.updatedAt, dateFormatter)
+            createdAtDate = task.createdAt.toLocalDate(dateFormatter),
+            finishAtDate = task.finishAt.toLocalDate(dateFormatter),
+            updatedAtDate = task.updatedAt.toLocalDate(dateFormatter),
         )
-    }
-
-
-
-    private fun mapLocalDate(
-        dateString: String?,
-        dateFormatter: DateTimeFormatter
-    ): LocalDate? {
-        if (dateString == null) return null
-        return try {
-            if (dateString.contains(" ")) {
-                val offsetDateTime = OffsetDateTime.parse(dateString, dateFormatter)
-                offsetDateTime.toLocalDate()
-            } else {
-                LocalDate.parse(dateString, DateTimeFormatter.ISO_LOCAL_DATE)
-            }
-        } catch (e: DateTimeParseException) {
-            null
-        }
     }
 }
