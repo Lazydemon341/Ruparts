@@ -51,9 +51,9 @@ class MainActivity : AppCompatActivity() {
 
         navigationView.setNavigationItemSelectedListener { menuItem ->
             when(menuItem.itemId){
-                R.id.nav_tasks -> showFragment(TasksListFragment())
-//                R.id.nav_placement -> showFragment(...)
-//                R.id.nav_work_with_product -> showFragment(...)
+                R.id.nav_tasks -> navController.navigate(R.id.taskslistFragment)
+//                R.id.nav_placement ->
+//                R.id.nav_work_with_product ->
             }
             menuItem.isChecked = true
             drawerLayout.closeDrawers()
@@ -62,12 +62,6 @@ class MainActivity : AppCompatActivity() {
 
         observeNavigationEvents()
     }
-
-    private fun showFragment(fragment: Fragment) {
-        supportFragmentManager.beginTransaction().replace(R.id.nav_host_fragment, fragment).commit()
-    }
-
-
 
     private fun observeNavigationEvents() {
         navigationManager.navigationEvents
