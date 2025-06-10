@@ -1,14 +1,20 @@
 package com.ruparts.app
 
 import android.os.Bundle
+import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.navigation.NavigationView
 import com.ruparts.app.core.navigation.NavigationManager
+import com.ruparts.app.features.taskslist.presentation.TasksListFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -22,6 +28,10 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var navigationManager: NavigationManager
 
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navigationView: NavigationView
+    private lateinit var headerView: View
+
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
@@ -31,9 +41,34 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
 
+        drawerLayout = findViewById(R.id.drawer_layout)
+        navigationView = findViewById(R.id.nav_view)
+        headerView = navigationView.getHeaderView(0)
+
+        navigationView.inflateMenu(R.menu.navigation_menu)
+
+        navigationView.setupWithNavController(navController)
+
+        navigationView.setNavigationItemSelectedListener { menuItem ->
+            when(menuItem.itemId){
+                R.id.nav_tasks -> showFragment(TasksListFragment())
+//                R.id.nav_placement -> showFragment(...)
+//                R.id.nav_work_with_product -> showFragment(...)
+            }
+            menuItem.isChecked = true
+            drawerLayout.closeDrawers()
+            true
+        }
+
         observeNavigationEvents()
     }
-    
+
+    private fun showFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction().replace(R.id.nav_host_fragment, fragment).commit()
+    }
+
+
+
     private fun observeNavigationEvents() {
         navigationManager.navigationEvents
             .onEach { event ->
