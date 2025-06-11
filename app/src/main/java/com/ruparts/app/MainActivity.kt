@@ -79,13 +79,6 @@ class MainActivity : AppCompatActivity() {
 
         observeNavigationEvents()
     }
-
-    private fun userFlow(): Flow<User?> {
-        return flow {
-            val user = authRepository.getUser().getOrNull()
-            emit(user)
-        }
-    }
     
     private fun observeNavigationEvents() {
         navigationManager.navigationEvents
