@@ -25,18 +25,26 @@
             app:layout_constraintTop_toTopOf="parent"
             app:navGraph="@navigation/nav_graph" />
 
-        <FrameLayout
-            android:id="@+id/frame_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
         <com.google.android.material.navigation.NavigationView
             android:id="@+id/nav_view"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="start"
             android:background="@color/based_background"
-            app:headerLayout="@layout/navigation_header"/>
+            app:headerLayout="@layout/navigation_header">
+
+            <Button
+                android:id="@+id/nav_logout_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:backgroundTint="@color/based_background"
+                android:gravity="left"
+                android:text="Выйти из профиля"
+                android:textColor="@color/purple"
+                android:paddingBottom="30dp"/>
+
+        </com.google.android.material.navigation.NavigationView>
 
     </androidx.drawerlayout.widget.DrawerLayout>
 
