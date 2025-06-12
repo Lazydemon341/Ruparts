@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_tasks"
+            android:icon="@drawable/baseline_home_24"
+            android:title="Задачи" />
+        <item
+            android:id="@+id/nav_placement"
+            android:icon="@drawable/baseline_home_24"
+            android:title="Размещение" />
+        <item
+            android:id="@+id/nav_work_with_product"
+            android:icon="@drawable/baseline_home_24"
+            android:title="Работа с товаром" />
+    </group>
+
+</menu>
