@@ -69,7 +69,7 @@ class AuthFragment : Fragment() {
                         viewModel.uiEffect.collect { effect ->
                             when (effect) {
                                 is AuthUiEffect.NavigateToMenu -> {
-                                    findNavController().navigate(R.id.action_authFragment_to_menuFragment)
+                                    findNavController().navigate(R.id.action_authFragment_to_taskslistFragment)
                                 }
 
                                 is AuthUiEffect.ShowError -> {
