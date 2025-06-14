@@ -77,11 +77,11 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
 
-        appBarConfiguration = AppBarConfiguration(navController.graph, drawerLayout)
-        setupActionBarWithNavController(navController, appBarConfiguration)
-
         navigationView.inflateMenu(R.menu.navigation_menu)
         navigationView.setupWithNavController(navController)
+
+        appBarConfiguration = AppBarConfiguration(navigationView.menu, drawerLayout)
+        setupActionBarWithNavController(navController, appBarConfiguration)
 
         navController.addOnDestinationChangedListener { controller, destination, _ ->
             toolbar.subtitle = null

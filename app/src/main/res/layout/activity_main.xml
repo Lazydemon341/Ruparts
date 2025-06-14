@@ -13,13 +13,13 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <androidx.appcompat.widget.Toolbar
+        <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/purple"
+            android:background="?colorPrimary"
             android:elevation="4dp"
-            app:theme="@style/ThemeOverlay.AppCompat.Dark"
+            app:theme="@style/ThemeOverlay.Material3.Dark"
             app:titleTextColor="@color/white" />
 
         <androidx.fragment.app.FragmentContainerView
@@ -40,7 +40,6 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@color/based_background"
         android:fitsSystemWindows="true"
         android:paddingTop="16dp"
         app:headerLayout="@layout/navigation_header">
@@ -50,11 +49,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:backgroundTint="@color/based_background"
+            android:backgroundTint="@android:color/transparent"
             android:gravity="start"
             android:paddingBottom="30dp"
             android:text="Выйти из профиля"
-            android:textColor="@color/purple" />
+            android:textColor="?colorPrimary" />
 
     </com.google.android.material.navigation.NavigationView>
 
