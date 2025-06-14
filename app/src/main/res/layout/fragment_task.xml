@@ -4,7 +4,6 @@
     android:id="@+id/task"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/based_background"
     android:orientation="vertical">
 
     <LinearLayout
