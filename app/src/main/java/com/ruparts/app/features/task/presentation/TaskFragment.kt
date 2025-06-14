@@ -13,14 +13,12 @@ import android.widget.Spinner
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.snackbar.Snackbar
@@ -54,7 +52,6 @@ class TaskFragment : Fragment() {
     private lateinit var priorityError: TextView
     private lateinit var createdDate: TextView
     private lateinit var changedDate: TextView
-    private lateinit var toolbar: Toolbar
     private lateinit var saveButton: Button
     private lateinit var statusButton: MaterialButton
     private lateinit var cancelButton: Button
@@ -74,16 +71,6 @@ class TaskFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        toolbar = view.findViewById(R.id.task_toolbar)
-        toolbar.setNavigationOnClickListener {
-            findNavController().popBackStack()
-        }
-
-        toolbar.setSubtitle(viewModel.screenState.value.task.type.displayName)
-        toolbar.setSubtitleTextColor(resources.getColor(R.color.white))
-
-        (activity as? AppCompatActivity)?.supportActionBar?.hide()
 
         title = view.findViewById(R.id.title_view)
         description = view.findViewById(R.id.description_view)
@@ -228,6 +215,8 @@ class TaskFragment : Fragment() {
     private fun updateUI(state: TaskScreenState) {
         val task = state.task
         title.text = task.title
+
+        (activity as? AppCompatActivity)?.supportActionBar?.subtitle = state.task.type.displayName
 
         updateLoadingState(state.isLoading)
         updatePriority(task.priority)
