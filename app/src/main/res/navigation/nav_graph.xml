@@ -97,6 +97,12 @@
             app:popEnterAnim="@anim/slide_in_right"
             app:popExitAnim="@anim/slide_out_left" />
     </fragment>
+
+    <fragment
+        android:id="@+id/cartFragment"
+        android:name="com.ruparts.app.features.cart.presentation.CartFragment"
+        android:label="Корзина"
+        tools:layout="@layout/fragment_cart"></fragment>
         
     <!-- Additional fragments can be added here later -->
     
