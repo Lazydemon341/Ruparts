@@ -4,16 +4,16 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/taskslistFragment"
-            android:icon="@drawable/baseline_home_24"
+            android:icon="@drawable/nav_list"
             android:title="Задачи" />
         <item
-            android:id="@+id/nav_placement"
-            android:icon="@drawable/baseline_home_24"
-            android:title="Размещение" />
+            android:id="@+id/cartFragment"
+            android:icon="@drawable/shopping_cart"
+            android:title="Корзина" />
         <item
-            android:id="@+id/nav_work_with_product"
-            android:icon="@drawable/baseline_home_24"
-            android:title="Работа с товаром" />
+            android:id="@+id/nav_search"
+            android:icon="@drawable/search_image_white"
+            android:title="Поиск" />
     </group>
 
 </menu>
