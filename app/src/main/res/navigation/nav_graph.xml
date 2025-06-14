@@ -60,7 +60,7 @@
     <fragment
         android:id="@+id/taskslistFragment"
         android:name="com.ruparts.app.features.taskslist.presentation.TasksListFragment"
-        android:label="TasksList"
+        android:label="Задачи"
         tools:layout="@layout/fragment_taskslist">
         <action
             android:id="@+id/action_taskslistFragment_to_menuFragment"
@@ -82,7 +82,7 @@
     <fragment
         android:id="@+id/taskFragment"
         android:name="com.ruparts.app.features.task.presentation.TaskFragment"
-        android:label="Task"
+        android:label="Задача"
         tools:layout="@layout/fragment_task">
         
         <argument

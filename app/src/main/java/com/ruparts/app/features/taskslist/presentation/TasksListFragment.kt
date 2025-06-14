@@ -11,9 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
@@ -41,7 +39,6 @@ class TasksListFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ExpandableTaskAdapter
     private lateinit var chipGroup: ChipGroup
-    private lateinit var toolbar: Toolbar
     private lateinit var progressIndicator: CircularProgressIndicator
 
     override fun onCreateView(
@@ -55,7 +52,7 @@ class TasksListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupToolbar(view)
+        setupMenu()
 
         recyclerView = view.findViewById(R.id.taskslist_recycler_view)
         adapter = ExpandableTaskAdapter(
@@ -92,19 +89,7 @@ class TasksListFragment : Fragment() {
         setupTaskUpdateListener()
     }
 
-    private fun setupToolbar(view: View) {
-        toolbar = view.findViewById(R.id.tasks_toolbar)
-
-        (activity as? AppCompatActivity)?.apply {
-            setSupportActionBar(toolbar)
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            supportActionBar?.setDisplayShowHomeEnabled(true)
-        }
-
-        toolbar.setNavigationOnClickListener {
-            findNavController().popBackStack()
-        }
-
+    private fun setupMenu() {
         val menuProvider = object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.search_menu, menu)
@@ -115,7 +100,6 @@ class TasksListFragment : Fragment() {
                 return false // We don't have any menu items that need to be handled here
             }
         }
-
         requireActivity().addMenuProvider(menuProvider, viewLifecycleOwner)
     }
 
