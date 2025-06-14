@@ -32,4 +32,7 @@
     <color name="background_color">#FFFFFF</color>
     <color name="text_color">#000000</color>
     <color name="surface_color">#FFFFFF</color>
+
+
+    <color name="secondary60">#958DA5</color>
 </resources>
