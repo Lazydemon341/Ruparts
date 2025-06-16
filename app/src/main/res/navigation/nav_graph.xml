@@ -14,15 +14,6 @@
             app:argType="boolean"
             android:defaultValue="false" />
         <action
-            android:id="@+id/action_authFragment_to_menuFragment"
-            app:destination="@id/menuFragment"
-            app:popUpTo="@id/authFragment"
-            app:popUpToInclusive="true"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
-        <action
             android:id="@+id/action_authFragment_to_taskslistFragment"
             app:destination="@id/taskslistFragment"
             app:popUpTo="@id/authFragment"
@@ -35,40 +26,10 @@
     </fragment>
 
     <fragment
-        android:id="@+id/menuFragment"
-        android:name="com.ruparts.app.features.menu.presentation.MenuFragment"
-        android:label="Menu"
-        tools:layout="@layout/fragment_menu">
-        <action
-            android:id="@+id/action_menuFragment_to_authFragment"
-            app:destination="@id/authFragment"
-            app:popUpTo="@id/nav_graph"
-            app:popUpToInclusive="true"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
-        <action
-            android:id="@+id/action_menuFragment_to_taskslistFragment"
-            app:destination="@id/taskslistFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
-    </fragment>
-
-    <fragment
         android:id="@+id/taskslistFragment"
         android:name="com.ruparts.app.features.taskslist.presentation.TasksListFragment"
         android:label="Задачи"
         tools:layout="@layout/fragment_taskslist">
-        <action
-            android:id="@+id/action_taskslistFragment_to_menuFragment"
-            app:destination="@id/menuFragment"
-            app:enterAnim="@anim/slide_in_left"
-            app:exitAnim="@anim/slide_out_right"
-            app:popEnterAnim="@anim/slide_in_right"
-            app:popExitAnim="@anim/slide_out_left" />
 
         <action
             android:id="@+id/action_taskslistFragment_to_taskFragment"
