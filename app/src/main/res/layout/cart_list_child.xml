@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/basket"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/basket">
+
+    <RelativeLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="14dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/article_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/article"
+                android:layout_width="340dp"
+                android:layout_height="28dp"
+                android:layout_gravity="center_vertical"
+                android:text="123456789123456789"
+                android:textAppearance="@style/art"
+                android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/menu_button"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:background="@android:color/transparent"
+                android:clickable="true"
+                android:src="@drawable/more_vert" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/brand_bar"
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:layout_below="@+id/article_layout"
+            android:layout_marginTop="2dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/brand"
+                android:layout_width="wrap_content"
+                android:layout_height="24dp"
+                android:gravity="center_vertical"
+                android:text="GENERAL MOTORS"
+                android:textAppearance="@style/brand" />
+
+            <TextView
+                android:id="@+id/amount"
+                android:layout_width="wrap_content"
+                android:layout_height="24dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="8dp"
+                android:background="@drawable/amount"
+                android:gravity="right|top"
+                android:paddingHorizontal="4dp"
+                android:paddingVertical="2dp"
+                android:text="12345"
+                android:textAppearance="@style/amount" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/description"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:layout_below="@+id/brand_bar"
+            android:layout_marginTop="2dp"
+            android:gravity="top"
+            android:lineSpacingExtra="2sp"
+            android:text="Описание"
+            android:textAppearance="@style/description"
+            android:translationY="-0.97sp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/main">
+
+        <LinearLayout
+            android:id="@+id/position_bar"
+            android:layout_width="388dp"
+            android:layout_height="24dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/scanner"
+                android:layout_width="wrap_content"
+                android:layout_height="24dp"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/barcode"
+                android:drawableStart="@drawable/scanner"
+                android:drawablePadding="5dp"
+                android:lineSpacingExtra="4sp"
+                android:paddingHorizontal="4dp"
+                android:paddingVertical="2dp"
+                android:text="A20250521T214852JL"
+                android:textAppearance="@style/text" />
+
+            <TextView
+                android:id="@+id/cart_owner"
+                android:layout_width="wrap_content"
+                android:layout_height="24dp"
+                android:layout_marginStart="4dp"
+                android:background="@drawable/position"
+                android:drawableStart="@drawable/cart2"
+                android:drawablePadding="5dp"
+                android:lineSpacingExtra="4sp"
+                android:paddingHorizontal="4dp"
+                android:paddingVertical="2dp"
+                android:text="PETROV N.A."
+                android:textAppearance="@style/text" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/marks_layout"
+            android:layout_width="match_parent"
+            android:layout_height="26dp"
+            android:layout_below="@+id/position_bar"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="14dp"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/ruler"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:background="@drawable/mark"
+                android:clickable="true"
+                android:padding="4dp"
+                android:src="@drawable/ruler" />
+
+            <ImageButton
+                android:id="@+id/weight"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:layout_marginLeft="4dp"
+                android:background="@drawable/mark"
+                android:clickable="true"
+                android:padding="4dp"
+                android:src="@drawable/weight" />
+
+            <ImageButton
+                android:id="@+id/photo"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:layout_marginLeft="4dp"
+                android:background="@drawable/mark"
+                android:clickable="true"
+                android:padding="4dp"
+                android:src="@drawable/photo" />
+
+            <ImageButton
+                android:id="@+id/build"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:layout_marginLeft="4dp"
+                android:background="@drawable/mark"
+                android:clickable="true"
+                android:padding="4dp"
+                android:src="@drawable/build" />
+
+            <ImageButton
+                android:id="@+id/recycling"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:layout_marginLeft="4dp"
+                android:background="@drawable/mark"
+                android:clickable="true"
+                android:padding="4dp"
+                android:src="@drawable/recycling" />
+
+            <TextView
+                android:id="@+id/warning"
+                android:layout_width="wrap_content"
+                android:layout_height="26dp"
+                android:layout_marginStart="4dp"
+                android:background="@drawable/mark_red"
+                android:drawableStart="@drawable/warning"
+                android:drawablePadding="5dp"
+                android:gravity="center_vertical"
+                android:paddingVertical="4dp"
+                android:paddingStart="4dp"
+                android:paddingEnd="8dp"
+                android:text="5 дней в корзине"
+                android:textAppearance="@style/text2"
+                android:textColor="@color/white" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
