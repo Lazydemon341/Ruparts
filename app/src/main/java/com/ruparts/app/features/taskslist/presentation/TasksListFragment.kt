@@ -1,6 +1,5 @@
 package com.ruparts.app.features.taskslist.presentation
 
-import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,8 +8,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.ImageView
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuProvider
@@ -40,6 +37,7 @@ class TasksListFragment : Fragment() {
     private lateinit var adapter: ExpandableTaskAdapter
     private lateinit var chipGroup: ChipGroup
     private lateinit var progressIndicator: CircularProgressIndicator
+    private lateinit var fabScanQr: com.google.android.material.floatingactionbutton.FloatingActionButton
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -67,6 +65,11 @@ class TasksListFragment : Fragment() {
         recyclerView.addItemDecoration(TaskItemDecoration(requireContext()))
 
         progressIndicator = view.findViewById(R.id.tasks_progress_indicator)
+        
+        fabScanQr = view.findViewById(R.id.fab_scan_qr)
+        fabScanQr.setOnClickListener {
+            findNavController().navigate(TasksListFragmentDirections.actionTaskslistFragmentToQrScanFragment())
+        }
 
         chipGroup = view.findViewById(R.id.tasks_chip_group)
         chipGroup.findViewById<Chip>(R.id.chip_all).setOnClickListener {
@@ -151,17 +154,6 @@ class TasksListFragment : Fragment() {
 
     private fun styleSearchView(searchView: SearchView) {
         searchView.queryHint = getString(R.string.tasklist_search_hint)
-
-        val searchIcon = searchView.findViewById<ImageView>(androidx.appcompat.R.id.search_mag_icon)
-        searchIcon?.setColorFilter(Color.WHITE)
-
-        val closeIcon = searchView.findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn)
-        closeIcon?.setColorFilter(Color.WHITE)
-
-        val searchText = searchView.findViewById<EditText>(androidx.appcompat.R.id.search_src_text)
-        searchText?.setTextColor(Color.WHITE)
-        searchText?.setHintTextColor(ContextCompat.getColor(requireContext(), R.color.white_40))
-
         val searchFrame = searchView.findViewById<View>(androidx.appcompat.R.id.search_plate)
         searchFrame.background = GradientDrawable().apply {
             cornerRadius = resources.getDimension(R.dimen.search_corner_radius)

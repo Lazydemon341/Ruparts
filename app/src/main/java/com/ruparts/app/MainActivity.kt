@@ -9,7 +9,10 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.os.bundleOf
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
@@ -57,6 +60,7 @@ class MainActivity : AppCompatActivity() {
         toolbar = findViewById(R.id.toolbar)
 
         setSupportActionBar(toolbar)
+        alignBelowStatusBar(toolbar)
         setupNavigation()
 
         logoutButton.setOnClickListener {
@@ -85,10 +89,20 @@ class MainActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { controller, destination, _ ->
             toolbar.subtitle = null
-            when(destination.id) {
+            when (destination.id) {
                 R.id.authFragment -> toolbar.isVisible = false
                 else -> toolbar.isVisible = true
             }
+        }
+    }
+
+    private fun alignBelowStatusBar(view: View) {
+        ViewCompat.setOnApplyWindowInsetsListener(view) { view, insets ->
+            val systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.updatePadding(
+                top = systemBarsInsets.top
+            )
+            WindowInsetsCompat.CONSUMED
         }
     }
 
