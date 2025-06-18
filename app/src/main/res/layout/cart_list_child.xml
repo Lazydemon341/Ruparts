@@ -11,7 +11,7 @@
     <TextView
         android:id="@+id/article"
         android:layout_width="wrap_content"
-        android:layout_height="28dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:text="123456789123456789"
         android:textColor="#1D1B20"
@@ -33,7 +33,7 @@
     <TextView
         android:id="@+id/brand"
         android:layout_width="wrap_content"
-        android:layout_height="24dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
         android:gravity="center_vertical"
         android:letterSpacing="0.03"
@@ -46,7 +46,7 @@
     <TextView
         android:id="@+id/amount"
         android:layout_width="wrap_content"
-        android:layout_height="24dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="2dp"
@@ -64,7 +64,7 @@
     <TextView
         android:id="@+id/description"
         android:layout_width="match_parent"
-        android:layout_height="32dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
         android:gravity="top"
         android:letterSpacing="0.02"
@@ -78,7 +78,7 @@
     <TextView
         android:id="@+id/scanner"
         android:layout_width="wrap_content"
-        android:layout_height="24dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginTop="8dp"
         android:background="@drawable/barcode"
@@ -97,7 +97,7 @@
     <TextView
         android:id="@+id/cart_owner"
         android:layout_width="wrap_content"
-        android:layout_height="24dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/position"
@@ -180,7 +180,7 @@
     <TextView
         android:id="@+id/warning"
         android:layout_width="wrap_content"
-        android:layout_height="26dp"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="4dp"
         android:layout_marginTop="4dp"
         android:background="@drawable/mark_red"
