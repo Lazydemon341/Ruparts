@@ -5,7 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import com.ruparts.app.R
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,7 +31,6 @@ class CartFragment: Fragment() {
 
         textView = view.findViewById(R.id.empty_cart)
         button = view.findViewById(R.id.add_button)
-
     }
 
 }
