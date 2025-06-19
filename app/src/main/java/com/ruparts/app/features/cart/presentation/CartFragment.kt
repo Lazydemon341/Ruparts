@@ -9,6 +9,7 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView
 import com.ruparts.app.R
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -17,6 +18,8 @@ class CartFragment: Fragment() {
 
     private lateinit var textView: TextView
     private lateinit var button: Button
+
+    private lateinit var recyclerView: RecyclerView
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,6 +34,8 @@ class CartFragment: Fragment() {
 
         textView = view.findViewById(R.id.empty_cart)
         button = view.findViewById(R.id.add_button)
+
+        recyclerView = view.findViewById(R.id.cart_recycler_view)
     }
 
 }
