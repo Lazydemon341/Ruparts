@@ -42,8 +42,6 @@ class CartListAdapter: ListAdapter<CartListItem, CartListAdapter.CartItemViewHol
             barcode.text = listItem.barcode
             cartOwner.text = listItem.cartOwner
         }
-
-
     }
 }
 
