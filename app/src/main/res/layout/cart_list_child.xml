@@ -72,6 +72,8 @@
         android:text="Описание"
         android:textColor="#1D1B20"
         android:textSize="14sp"
+        android:maxLines="3"
+        android:ellipsize="end"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/brand" />
 
