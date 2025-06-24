@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+<LinearLayout
     android:id="@+id/product_unit"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -15,8 +21,8 @@
 
         <TextView
             android:id="@+id/article_name"
-            android:layout_width="96dp"
-            android:layout_height="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:letterSpacing="0.03"
             android:lineSpacingExtra="5sp"
@@ -29,77 +35,77 @@
         <TextView
             android:id="@+id/article_value"
             android:layout_width="wrap_content"
-            android:layout_height="24dp"
+            android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:letterSpacing="0.03"
             android:lineSpacingExtra="5sp"
             android:text="12345678901234567890123456"
             android:textColor="#1D1B20"
             android:textSize="16sp"
-            app:layout_constraintLeft_toRightOf="@id/article_name"
+            app:layout_constraintLeft_toRightOf="@id/guideline"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/brand_name"
-            android:layout_width="96dp"
-            android:layout_height="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:gravity="center_vertical"
             android:letterSpacing="0.03"
             android:lineSpacingExtra="5sp"
             android:text="Бренд"
             android:textColor="#625B71"
             android:textSize="16sp"
-            android:layout_marginTop="8dp"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/article_name"/>
+            app:layout_constraintTop_toBottomOf="@id/article_name" />
 
         <TextView
             android:id="@+id/brand_value"
             android:layout_width="wrap_content"
-            android:layout_height="24dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:gravity="center_vertical"
             android:letterSpacing="0.03"
             android:lineSpacingExtra="5sp"
             android:text="GENERAL MOTORS"
             android:textColor="#1D1B20"
             android:textSize="16sp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintLeft_toRightOf="@id/brand_name"
+            app:layout_constraintLeft_toRightOf="@id/guideline"
             app:layout_constraintTop_toBottomOf="@id/article_value" />
 
         <TextView
             android:id="@+id/description_name"
-            android:layout_width="96dp"
-            android:layout_height="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:gravity="center_vertical"
             android:letterSpacing="0.03"
             android:lineSpacingExtra="5sp"
             android:text="Описание"
             android:textColor="#625B71"
             android:textSize="16sp"
-            android:layout_marginTop="8dp"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/brand_name"/>
+            app:layout_constraintTop_toBottomOf="@id/brand_name" />
 
         <TextView
             android:id="@+id/description_value"
-            android:layout_width="262dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
             android:gravity="center_vertical"
             android:letterSpacing="0.03"
             android:lineSpacingExtra="5sp"
             android:text="Замок зажигания очень длинное описание очень длинное описание очень длинное описание "
             android:textColor="#1D1B20"
             android:textSize="16sp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintLeft_toRightOf="@id/description_name"
-            app:layout_constraintTop_toBottomOf="@id/brand_value"
-            />
+            app:layout_constraintLeft_toRightOf="@id/guideline"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/brand_value" />
 
         <TextView
             android:id="@+id/address_name"
-            android:layout_width="96dp"
-            android:layout_height="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:letterSpacing="0.03"
             android:lineSpacingExtra="5sp"
@@ -107,131 +113,131 @@
             android:textColor="#625B71"
             android:textSize="16sp"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="@id/address_value"/>
+            app:layout_constraintTop_toTopOf="@id/address_value" />
 
         <TextView
             android:id="@+id/address_value"
             android:layout_width="wrap_content"
-            android:layout_height="24dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:gravity="center_vertical"
             android:letterSpacing="0.03"
             android:lineSpacingExtra="5sp"
             android:text="L2-A01-11-16-12"
             android:textColor="#1D1B20"
             android:textSize="16sp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintLeft_toRightOf="@id/address_name"
+            app:layout_constraintLeft_toRightOf="@id/guideline"
             app:layout_constraintTop_toBottomOf="@id/description_value" />
 
         <TextView
             android:id="@+id/barcode_name"
-            android:layout_width="96dp"
-            android:layout_height="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:gravity="center_vertical"
             android:letterSpacing="0.03"
             android:lineSpacingExtra="5sp"
             android:text="Штрихкод"
             android:textColor="#625B71"
             android:textSize="16sp"
-            android:layout_marginTop="8dp"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/address_name"/>
+            app:layout_constraintTop_toBottomOf="@id/address_name" />
 
         <TextView
             android:id="@+id/barcode_value"
             android:layout_width="wrap_content"
-            android:layout_height="24dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:gravity="center_vertical"
             android:letterSpacing="0.03"
             android:lineSpacingExtra="5sp"
             android:text="A20250521T214852JL"
             android:textColor="#1D1B20"
             android:textSize="16sp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintLeft_toRightOf="@id/barcode_name"
+            app:layout_constraintLeft_toRightOf="@id/guideline"
             app:layout_constraintTop_toBottomOf="@id/address_value" />
 
         <TextView
             android:id="@+id/quantity_name"
-            android:layout_width="96dp"
-            android:layout_height="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:gravity="center_vertical"
             android:letterSpacing="0.03"
             android:lineSpacingExtra="5sp"
             android:text="Кол-во"
             android:textColor="#625B71"
             android:textSize="16sp"
-            android:layout_marginTop="8dp"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/barcode_name"/>
+            app:layout_constraintTop_toBottomOf="@id/barcode_name" />
 
         <TextView
             android:id="@+id/quantity_value"
             android:layout_width="wrap_content"
-            android:layout_height="24dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:gravity="center_vertical"
             android:letterSpacing="0.03"
             android:lineSpacingExtra="5sp"
             android:text="12345"
             android:textColor="#1D1B20"
             android:textSize="16sp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintLeft_toRightOf="@id/quantity_name"
+            app:layout_constraintLeft_toRightOf="@id/guideline"
             app:layout_constraintTop_toBottomOf="@id/barcode_value" />
 
         <TextView
             android:id="@+id/date_name"
-            android:layout_width="96dp"
-            android:layout_height="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:gravity="center_vertical"
             android:letterSpacing="0.03"
             android:lineSpacingExtra="5sp"
             android:text="Приход"
             android:textColor="#625B71"
             android:textSize="16sp"
-            android:layout_marginTop="8dp"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/quantity_name"/>
+            app:layout_constraintTop_toBottomOf="@id/quantity_name" />
 
         <TextView
             android:id="@+id/date_value"
             android:layout_width="wrap_content"
-            android:layout_height="24dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:gravity="center_vertical"
             android:letterSpacing="0.03"
             android:lineSpacingExtra="5sp"
             android:text="2 января 2024 г. (132 дня)"
             android:textColor="#1D1B20"
             android:textSize="16sp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintLeft_toRightOf="@id/date_name"
+            app:layout_constraintLeft_toRightOf="@id/guideline"
             app:layout_constraintTop_toBottomOf="@id/quantity_value" />
 
         <TextView
             android:id="@+id/comment_name"
             android:layout_width="wrap_content"
-            android:layout_height="24dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:gravity="center_vertical"
             android:letterSpacing="0.03"
             android:lineSpacingExtra="5sp"
             android:text="Комментарий"
             android:textColor="#625B71"
             android:textSize="16sp"
-            android:layout_marginTop="16dp"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/date_name"/>
+            app:layout_constraintTop_toBottomOf="@id/date_name" />
 
         <TextView
             android:id="@+id/comment_value"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
             android:gravity="center_vertical"
             android:letterSpacing="0.03"
             android:lineSpacingExtra="5sp"
             android:text="Короткий комментарий к товарной единице"
             android:textColor="#1D1B20"
             android:textSize="16sp"
-            android:layout_marginTop="4dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/comment_name" />
 
@@ -248,8 +254,8 @@
             android:id="@+id/photo2"
             android:layout_width="64dp"
             android:layout_height="64dp"
-            android:layout_marginTop="16dp"
             android:layout_marginLeft="12dp"
+            android:layout_marginTop="16dp"
             android:clickable="true"
             app:layout_constraintLeft_toRightOf="@id/photo1"
             app:layout_constraintTop_toBottomOf="@id/comment_value" />
@@ -258,11 +264,18 @@
             android:id="@+id/photo3"
             android:layout_width="64dp"
             android:layout_height="64dp"
-            android:layout_marginTop="16dp"
             android:layout_marginLeft="12dp"
+            android:layout_marginTop="16dp"
             android:clickable="true"
             app:layout_constraintLeft_toRightOf="@id/photo2"
             app:layout_constraintTop_toBottomOf="@id/comment_value" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="96dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -276,7 +289,7 @@
         <TextView
             android:id="@+id/marks"
             android:layout_width="wrap_content"
-            android:layout_height="24dp"
+            android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:letterSpacing="0.03"
             android:lineSpacingExtra="5sp"
@@ -289,10 +302,10 @@
         <TextView
             android:id="@+id/mark1"
             android:layout_width="wrap_content"
-            android:layout_height="32dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:background="@drawable/filter_chip"
-            android:drawableStart="@drawable/ruler"
+            android:drawableStart="@drawable/ruler_black"
             android:drawablePadding="5dp"
             android:letterSpacing="0.01"
             android:lineSpacingExtra="4sp"
@@ -304,6 +317,80 @@
             android:textSize="14sp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/marks" />
+
+        <TextView
+            android:id="@+id/mark2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/filter_chip"
+            android:drawableStart="@drawable/build_black"
+            android:drawablePadding="5dp"
+            android:letterSpacing="0.01"
+            android:lineSpacingExtra="4sp"
+            android:paddingLeft="8dp"
+            android:paddingRight="16dp"
+            android:paddingVertical="6dp"
+            android:text="Признак"
+            android:textColor="#1D1B20"
+            android:textSize="14sp"
+            app:layout_constraintLeft_toRightOf="@id/mark1"
+            app:layout_constraintTop_toBottomOf="@id/marks" />
+
+        <TextView
+            android:id="@+id/mark3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/filter_chip"
+            android:drawableStart="@drawable/recycling_black"
+            android:drawablePadding="5dp"
+            android:letterSpacing="0.01"
+            android:lineSpacingExtra="4sp"
+            android:paddingLeft="8dp"
+            android:paddingRight="16dp"
+            android:paddingVertical="6dp"
+            android:text="Признак"
+            android:textColor="#1D1B20"
+            android:textSize="14sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/mark1" />
+
+        <TextView
+            android:id="@+id/mark4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/filter_chip"
+            android:gravity="center"
+            android:letterSpacing="0.01"
+            android:lineSpacingExtra="4sp"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="6dp"
+            android:text="Признак"
+            android:textColor="#1D1B20"
+            android:textSize="14sp"
+            app:layout_constraintLeft_toRightOf="@id/mark3"
+            app:layout_constraintTop_toBottomOf="@id/mark2" />
+
+        <TextView
+            android:id="@+id/mark5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/filter_chip"
+            android:gravity="center"
+            android:letterSpacing="0.01"
+            android:lineSpacingExtra="4sp"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="6dp"
+            android:text="Признак"
+            android:textColor="#1D1B20"
+            android:textSize="14sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/mark3" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -317,7 +404,7 @@
         <TextView
             android:id="@+id/info"
             android:layout_width="wrap_content"
-            android:layout_height="24dp"
+            android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:letterSpacing="0.03"
             android:lineSpacingExtra="5sp"
@@ -329,8 +416,8 @@
 
         <TextView
             android:id="@+id/weight_name"
-            android:layout_width="96dp"
-            android:layout_height="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:gravity="center_vertical"
             android:letterSpacing="0.03"
@@ -344,7 +431,7 @@
         <TextView
             android:id="@+id/weight_value"
             android:layout_width="wrap_content"
-            android:layout_height="24dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:gravity="center_vertical"
             android:letterSpacing="0.03"
@@ -352,13 +439,13 @@
             android:text="12 кг"
             android:textColor="#1D1B20"
             android:textSize="16sp"
-            app:layout_constraintLeft_toRightOf="@id/weight_name"
+            app:layout_constraintLeft_toRightOf="@+id/guideline_info"
             app:layout_constraintTop_toBottomOf="@id/info" />
 
         <TextView
             android:id="@+id/length_name"
-            android:layout_width="96dp"
-            android:layout_height="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:gravity="center_vertical"
             android:letterSpacing="0.03"
@@ -372,7 +459,7 @@
         <TextView
             android:id="@+id/length_value"
             android:layout_width="wrap_content"
-            android:layout_height="24dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:gravity="center_vertical"
             android:letterSpacing="0.03"
@@ -380,13 +467,13 @@
             android:text="120 мм"
             android:textColor="#1D1B20"
             android:textSize="16sp"
-            app:layout_constraintLeft_toRightOf="@id/length_name"
+            app:layout_constraintLeft_toRightOf="@+id/guideline_info"
             app:layout_constraintTop_toBottomOf="@id/weight_value" />
 
         <TextView
             android:id="@+id/width_name"
-            android:layout_width="96dp"
-            android:layout_height="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:gravity="center_vertical"
             android:letterSpacing="0.03"
@@ -400,7 +487,7 @@
         <TextView
             android:id="@+id/width_value"
             android:layout_width="wrap_content"
-            android:layout_height="24dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:gravity="center_vertical"
             android:letterSpacing="0.03"
@@ -408,13 +495,13 @@
             android:text="3000 мм"
             android:textColor="#1D1B20"
             android:textSize="16sp"
-            app:layout_constraintLeft_toRightOf="@id/length_name"
+            app:layout_constraintLeft_toRightOf="@+id/guideline_info"
             app:layout_constraintTop_toBottomOf="@id/length_value" />
 
         <TextView
             android:id="@+id/height_name"
-            android:layout_width="96dp"
-            android:layout_height="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:gravity="center_vertical"
             android:letterSpacing="0.03"
@@ -428,7 +515,7 @@
         <TextView
             android:id="@+id/height_value"
             android:layout_width="wrap_content"
-            android:layout_height="24dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:gravity="center_vertical"
             android:letterSpacing="0.03"
@@ -436,13 +523,13 @@
             android:text="28 мм"
             android:textColor="#1D1B20"
             android:textSize="16sp"
-            app:layout_constraintLeft_toRightOf="@id/height_name"
+            app:layout_constraintLeft_toRightOf="@+id/guideline_info"
             app:layout_constraintTop_toBottomOf="@id/width_value" />
 
         <TextView
             android:id="@+id/comment_info_name"
             android:layout_width="wrap_content"
-            android:layout_height="24dp"
+            android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:letterSpacing="0.03"
             android:lineSpacingExtra="5sp"
@@ -467,6 +554,13 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/comment_info_name" />
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="96dp" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -479,7 +573,7 @@
         <TextView
             android:id="@+id/defect"
             android:layout_width="wrap_content"
-            android:layout_height="24dp"
+            android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:letterSpacing="0.03"
             android:lineSpacingExtra="5sp"
@@ -535,3 +629,5 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>
+
+</ScrollView>

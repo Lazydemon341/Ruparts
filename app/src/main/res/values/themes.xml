@@ -18,7 +18,7 @@
         <!--        -->
         <!--        &lt;!&ndash; Background colors &ndash;&gt;-->
         <!--        <item name="android:colorBackground">@color/based_background</item>-->
-        <!--        <item name="colorSurface">@color/white</item>-->
+                <item name="colorSurface">#F3EDF7</item>
         <!--        <item name="colorOnSurface">@color/black</item>-->
         <!--        <item name="colorOnSurfaceVariant">@color/purple_dark</item>-->
         <!--        <item name="colorOnBackground">@color/black</item>-->
