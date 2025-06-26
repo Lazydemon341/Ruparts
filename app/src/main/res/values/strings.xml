@@ -20,4 +20,9 @@
 
     <string name="tasks_list_title">Задачи</string>
     <string name="task_title">Задача</string>
+    
+    <!-- QR Scanner -->
+    <string name="camera_permission_required">Для сканирования QR-кода необходим доступ к камере</string>
+    <string name="qr_scan_title">Товары</string>
+    <string name="permission_denied">Доступ к камере запрещен</string>
 </resources>

@@ -81,7 +81,14 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging.interceptor)
     implementation(libs.gson)
-    
+
+    // Camera
+    implementation(libs.camerax.core)
+    implementation(libs.camerax.camera2)
+    implementation(libs.camerax.lifecycle)
+    implementation(libs.camerax.compose)
+    implementation(libs.barcode.scanning)
+
     // Security
     implementation(libs.security.crypto)
 }

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/taskslistFragment">
+    app:startDestination="@id/authFragment">
 
     <fragment
         android:id="@+id/authFragment"
@@ -34,6 +34,14 @@
         <action
             android:id="@+id/action_taskslistFragment_to_taskFragment"
             app:destination="@id/taskFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+            
+        <action
+            android:id="@+id/action_taskslistFragment_to_qrScanFragment"
+            app:destination="@id/qrScanFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
@@ -94,6 +102,18 @@
             app:popExitAnim="@anim/slide_out_left" />
     </fragment>
         
-    <!-- Additional fragments can be added here later -->
+    <fragment
+        android:id="@+id/qrScanFragment"
+        android:name="com.ruparts.app.features.qrscan.presentation.QrScanFragment"
+        android:label="@string/qr_scan_title">
+        
+        <action
+            android:id="@+id/action_qrScanFragment_to_taskslistFragment"
+            app:destination="@id/taskslistFragment"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_out_right"
+            app:popEnterAnim="@anim/slide_in_right"
+            app:popExitAnim="@anim/slide_out_left" />
+    </fragment>
     
 </navigation>
