@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ruparts.app.R
@@ -67,7 +68,13 @@ class CartFragment : Fragment() {
         button = view.findViewById(R.id.add_button)
 
         recyclerView = view.findViewById(R.id.cart_recycler_view)
-        adapter = CartListAdapter()
+        adapter = CartListAdapter(
+            onItemClick = { listItem ->
+                findNavController().navigate(
+                CartFragmentDirections.actionCartFragmentToCartItemFragment(listItem)
+                )
+            }
+        )
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         adapter.submitList(mockItems)
