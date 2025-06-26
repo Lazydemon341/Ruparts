@@ -30,7 +30,7 @@ class AuthInterceptor @Inject constructor(
         val response =  chain.proceed(newRequest)
 
         // Handle token expiration
-        if (response.code == 401) {
+        if (response.code == 401 || response.code == 403) {
             runBlocking {
                 tokenStorage.clearToken()
                 navigationManager.navigateToAuth(showAuthError = true)
