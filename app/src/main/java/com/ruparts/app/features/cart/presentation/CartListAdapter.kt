@@ -9,12 +9,15 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.ruparts.app.R
 import com.ruparts.app.features.cart.model.CartListItem
+import com.ruparts.app.features.taskslist.model.TaskListItem
 
-class CartListAdapter: ListAdapter<CartListItem, CartListAdapter.CartItemViewHolder>(CartListItemDiffCallback()) {
+class CartListAdapter(
+    private val onItemClick: (CartListItem) -> Unit,
+): ListAdapter<CartListItem, CartListAdapter.CartItemViewHolder>(CartListItemDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CartItemViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.cart_list_child, parent, false)
-        return CartItemViewHolder(view)
+        return CartItemViewHolder(view, onItemClick)
     }
 
     override fun onBindViewHolder(holder: CartItemViewHolder, position: Int) {
@@ -24,7 +27,8 @@ class CartListAdapter: ListAdapter<CartListItem, CartListAdapter.CartItemViewHol
 
 
     class CartItemViewHolder(
-        itemView: View
+        private val itemView: View,
+        private val onItemClick: (model: CartListItem) -> Unit,
     ): RecyclerView.ViewHolder(itemView) {
 
         private val article = itemView.findViewById<TextView>(R.id.article)
@@ -35,6 +39,9 @@ class CartListAdapter: ListAdapter<CartListItem, CartListAdapter.CartItemViewHol
         private val cartOwner = itemView.findViewById<TextView>(R.id.cart_owner)
 
         fun bind(listItem: CartListItem) {
+
+            itemView.setOnClickListener { onItemClick(listItem) }
+
             article.text = listItem.article
             brand.text = listItem.brand
             amount.text = listItem.amount.toString()
