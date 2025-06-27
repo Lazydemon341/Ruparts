@@ -7,7 +7,7 @@ import kotlinx.parcelize.Parcelize
 data class CartListItem(
     val article: String,
     val brand: String,
-    val amount: Int,
+    val quantity: Int,
     val description: String,
     val barcode: String,
     val cartOwner: String
