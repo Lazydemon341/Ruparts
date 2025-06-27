@@ -2,6 +2,7 @@
     <!-- Base application theme. -->
     <style name="Theme.Ruparts" parent="Theme.Material3.Light.NoActionBar">
         <item name="android:textColorSecondary">@color/secondary60</item>
+        <item name="android:textColorPrimary">#1D1B20</item>
         <!--        &lt;!&ndash; Primary brand color (buttons) &ndash;&gt;-->
         <!--        <item name="colorPrimary">@color/purple</item>-->
         <!--        <item name="colorPrimaryVariant">@color/purple_dark</item>-->
@@ -24,7 +25,7 @@
         <!--        <item name="colorOnBackground">@color/black</item>-->
         <!--        -->
         <!--        &lt;!&ndash; Text colors &ndash;&gt;-->
-        <!--        <item name="android:textColorPrimary">@color/black</item>-->
+
         <!--        <item name="android:textColorSecondary">@color/purple_dark</item>-->
         <!--        -->
         <!--        &lt;!&ndash; Status bar color &ndash;&gt;-->

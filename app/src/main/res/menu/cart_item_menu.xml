@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/split"
+        android:icon="@drawable/split"
+        android:title="Разделить" />
+    <item
+        android:id="@+id/reprint"
+        android:icon="@drawable/print"
+        android:title="Перепечатать" />
+    <item
+        android:id="@+id/defect"
+        android:icon="@drawable/alert"
+        android:title="Дефект" />
+
+</menu>
