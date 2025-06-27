@@ -20,6 +20,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
 import com.ruparts.app.core.navigation.NavigationManager
+import com.ruparts.app.core.ui.utils.alignBelowStatusBar
 import com.ruparts.app.core.utils.collectWhileStarted
 import com.ruparts.app.model.MainUiEffect
 import dagger.hilt.android.AndroidEntryPoint
@@ -57,6 +58,7 @@ class MainActivity : AppCompatActivity() {
         toolbar = findViewById(R.id.toolbar)
 
         setSupportActionBar(toolbar)
+        toolbar.alignBelowStatusBar()
         setupNavigation()
 
         logoutButton.setOnClickListener {
@@ -85,7 +87,7 @@ class MainActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { controller, destination, _ ->
             toolbar.subtitle = null
-            when(destination.id) {
+            when (destination.id) {
                 R.id.authFragment -> toolbar.isVisible = false
                 else -> toolbar.isVisible = true
             }
