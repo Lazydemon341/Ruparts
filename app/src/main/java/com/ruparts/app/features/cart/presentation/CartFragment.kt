@@ -5,9 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.RelativeLayout
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -30,7 +28,7 @@ class CartFragment : Fragment() {
         CartListItem(
             article = "11115555669987452131",
             brand = "Toyota",
-            amount = 13481,
+            quantity = 13481,
             description = "Описание",
             barcode = "H8676BDVGJBDERY",
             cartOwner = "Ivanov A.A."
@@ -38,7 +36,7 @@ class CartFragment : Fragment() {
         CartListItem(
             article = "548870578",
             brand = "Mazda",
-            amount = 10,
+            quantity = 10,
             description = "Длинное описание, которое не влезает в одну строчку",
             barcode = "JBHFT76YUT76567tFJJCXGVNK",
             cartOwner = "Petrov P.P"
@@ -46,7 +44,7 @@ class CartFragment : Fragment() {
         CartListItem(
             article = "36575",
             brand = "Porsche",
-            amount = 1265843,
+            quantity = 1265843,
             description = "Очень длинное описание, которое не влезает в одну строчку, которое не влезает в одну строчку, которое не влезает в одну строчку, которое не влезает в одну строчку,",
             barcode = "86HH765BVDR5533DG",
             cartOwner = "Sidorov S.S."
