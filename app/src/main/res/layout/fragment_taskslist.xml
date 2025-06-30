@@ -80,14 +80,7 @@
             android:layout_gravity="center"
             android:indeterminate="true"
             android:visibility="gone" />
-            
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_scan_qr"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="16dp"
-            android:src="@drawable/ic_qr_code_scanner" />
+
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </LinearLayout>
