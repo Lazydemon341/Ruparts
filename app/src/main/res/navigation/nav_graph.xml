@@ -38,14 +38,6 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
-            
-        <action
-            android:id="@+id/action_taskslistFragment_to_qrScanFragment"
-            app:destination="@id/qrScanFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -81,6 +73,14 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
 
+        <action
+            android:id="@+id/action_cartFragment_to_qrScanFragment"
+            app:destination="@id/qrScanFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
     </fragment>
 
     <fragment
@@ -108,12 +108,13 @@
         android:label="@string/qr_scan_title">
         
         <action
-            android:id="@+id/action_qrScanFragment_to_taskslistFragment"
-            app:destination="@id/taskslistFragment"
+            android:id="@+id/action_qrScanFragment_to_cartFragment"
+            app:destination="@id/cartFragment"
             app:enterAnim="@anim/slide_in_left"
             app:exitAnim="@anim/slide_out_right"
             app:popEnterAnim="@anim/slide_in_right"
             app:popExitAnim="@anim/slide_out_left" />
+
     </fragment>
     
 </navigation>
