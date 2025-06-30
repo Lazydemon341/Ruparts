@@ -20,7 +20,8 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
 import com.ruparts.app.core.navigation.NavigationManager
-import com.ruparts.app.core.ui.utils.alignBelowStatusBar
+import com.ruparts.app.core.ui.utils.paddingAllSystemBars
+import com.ruparts.app.core.ui.utils.paddingBelowSystemBars
 import com.ruparts.app.core.utils.collectWhileStarted
 import com.ruparts.app.model.MainUiEffect
 import dagger.hilt.android.AndroidEntryPoint
@@ -58,7 +59,7 @@ class MainActivity : AppCompatActivity() {
         toolbar = findViewById(R.id.toolbar)
 
         setSupportActionBar(toolbar)
-        toolbar.alignBelowStatusBar()
+        toolbar.paddingBelowSystemBars()
         setupNavigation()
 
         logoutButton.setOnClickListener {
@@ -81,6 +82,7 @@ class MainActivity : AppCompatActivity() {
 
         navigationView.inflateMenu(R.menu.navigation_menu)
         navigationView.setupWithNavController(navController)
+        navigationView.paddingAllSystemBars()
 
         appBarConfiguration = AppBarConfiguration(navigationView.menu, drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)

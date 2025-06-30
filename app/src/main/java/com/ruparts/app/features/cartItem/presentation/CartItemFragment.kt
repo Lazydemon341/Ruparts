@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import com.ruparts.app.R
+import com.ruparts.app.core.ui.utils.paddingAboveSystemBars
 import com.ruparts.app.features.cart.model.CartListItem
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -33,6 +34,8 @@ class CartItemFragment : Fragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        view.paddingAboveSystemBars()
 
         val cartItem: CartListItem = arguments.cartItem
 

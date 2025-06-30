@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ruparts.app.R
+import com.ruparts.app.core.ui.utils.alignAboveSystemBars
 import com.ruparts.app.features.cart.model.CartListItem
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -64,6 +65,7 @@ class CartFragment : Fragment() {
 
         textView = view.findViewById(R.id.empty_cart)
         button = view.findViewById(R.id.add_button)
+        button.alignAboveSystemBars()
 
         recyclerView = view.findViewById(R.id.cart_recycler_view)
         adapter = CartListAdapter(
