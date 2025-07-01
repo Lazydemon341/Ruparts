@@ -91,4 +91,8 @@ dependencies {
 
     // Security
     implementation(libs.security.crypto)
+
+    // DataStore
+    implementation(libs.androidx.datastore.core)
+    implementation(libs.androidx.datastore.preferences)
 }
