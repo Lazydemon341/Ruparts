@@ -20,14 +20,17 @@ class AuthInterceptor @Inject constructor(
 
         // If no token is available, proceed with the original request
         val token = runBlocking { tokenStorage.getToken() }
-            ?: return chain.proceed(originalRequest)
 
         // Add the Authorization header with the Bearer token
-        val newRequest = originalRequest.newBuilder()
-            .header("Authorization", "Bearer $token")
-            .build()
+        val newRequest = if (!token.isNullOrEmpty()) {
+            originalRequest.newBuilder()
+                .header("Authorization", "Bearer $token")
+                .build()
+        } else {
+            originalRequest
+        }
 
-        val response =  chain.proceed(newRequest)
+        val response = chain.proceed(newRequest)
 
         // Handle token expiration
         if (response.code == 401 || response.code == 403) {

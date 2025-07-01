@@ -6,6 +6,8 @@ import com.ruparts.app.core.utils.runCoroutineCatching
 import com.ruparts.app.features.authorization.data.network.AuthRetrofitService
 import com.ruparts.app.features.authorization.data.network.model.AuthRequest
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
@@ -17,6 +19,22 @@ class AuthRepository @Inject constructor(
 
     private val dateFormatter by lazy {
         DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss xxx")
+    }
+
+    fun isAuthenticatedFlow(): Flow<Boolean> {
+        return tokenStorage.tokenFlow
+            .map { !it.isNullOrEmpty() }
+    }
+
+    fun userFlow(): Flow<User?> {
+        return isAuthenticatedFlow()
+            .map { isAuthenticated ->
+                if (isAuthenticated) {
+                    getUser().getOrNull()
+                } else {
+                    null
+                }
+            }
     }
 
     suspend fun loginWithPinCode(pinCode: String): Result<Unit> = withContext(Dispatchers.IO) {

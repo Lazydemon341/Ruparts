@@ -1,52 +1,59 @@
 package com.ruparts.app.core.data.local
 
 import android.content.Context
-import android.content.SharedPreferences
-import androidx.core.content.edit
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/**
- * Secure storage for the authentication token using EncryptedSharedPreferences
- */
 @Singleton
 class TokenStorage @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val tokenCryptoManager: TokenCryptoManager,
 ) {
-    private val masterKey = MasterKey.Builder(context)
-        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-        .build()
 
-    private val sharedPreferences: SharedPreferences = EncryptedSharedPreferences.create(
-        context,
-        KEY_AUTH_PREFS,
-        masterKey,
-        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-    )
+    private val Context.dataStore by preferencesDataStore(name = KEY_AUTH_PREFS)
+    private val dataStore get() = context.dataStore
+
+    private val keyAuthToken = stringPreferencesKey(KEY_AUTH_TOKEN)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val dispatcher = Dispatchers.IO.limitedParallelism(1)
 
-    suspend fun saveToken(token: String) = withContext(dispatcher) {
-        sharedPreferences.edit(commit = true) {
-            putString(KEY_AUTH_TOKEN, token)
+
+    val tokenFlow: Flow<String?>
+        get() = dataStore.data.map { preferences ->
+            preferences[keyAuthToken]?.let { encryptedString ->
+                tokenCryptoManager.decrypt(KEY_ALIAS, encryptedString)
+            }
+        }
+
+    suspend fun saveToken(token: String) {
+        withContext(dispatcher) {
+            val encrypted = tokenCryptoManager.encrypt(KEY_ALIAS, token)
+            dataStore.edit { preferences ->
+                preferences[keyAuthToken] = encrypted
+            }
         }
     }
 
-    suspend fun getToken(): String? = withContext(dispatcher) {
-        sharedPreferences.getString(KEY_AUTH_TOKEN, null)
+    suspend fun getToken(): String? {
+        return withContext(dispatcher) {
+            tokenFlow.firstOrNull()
+        }
     }
 
     suspend fun clearToken() = withContext(dispatcher) {
-        sharedPreferences.edit(commit = true) {
-            remove(KEY_AUTH_TOKEN)
+        dataStore.edit { preferences ->
+            preferences.remove(keyAuthToken)
         }
     }
 
@@ -57,5 +64,6 @@ class TokenStorage @Inject constructor(
     companion object {
         private const val KEY_AUTH_PREFS = "auth_prefs"
         private const val KEY_AUTH_TOKEN = "auth_token"
+        private const val KEY_ALIAS = "token_key_alias"
     }
 }
