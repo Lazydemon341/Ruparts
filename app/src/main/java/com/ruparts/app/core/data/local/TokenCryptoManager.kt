@@ -13,11 +13,16 @@ import javax.inject.Inject
 private const val ANDROID_KEY_STORE = "AndroidKeyStore"
 private const val TRANSFORMATION = "AES/GCM/NoPadding"
 private const val IV_SEPARATOR = ":iv:"
+private const val KEY_ALIAS = "token_key_alias"
 
 class TokenCryptoManager @Inject constructor() {
 
-    fun encrypt(keyAlias: String, plainText: String): String {
-        val secretKey = getOrCreateSecretKey(keyAlias)
+    private val keyStore by lazy {
+        KeyStore.getInstance(ANDROID_KEY_STORE).apply { load(null) }
+    }
+
+    fun encrypt(plainText: String): String {
+        val secretKey = getOrCreateSecretKey()
         val cipher = Cipher.getInstance(TRANSFORMATION)
         cipher.init(Cipher.ENCRYPT_MODE, secretKey)
         val iv = cipher.iv
@@ -27,11 +32,11 @@ class TokenCryptoManager @Inject constructor() {
         return "$ivBase64$IV_SEPARATOR$encryptedBase64"
     }
 
-    fun decrypt(keyAlias: String, encryptedString: String): String {
+    fun decrypt(encryptedString: String): String {
         val (ivBase64, encryptedBase64) = encryptedString.split(IV_SEPARATOR, limit = 2)
         val iv = Base64.decode(ivBase64, Base64.DEFAULT)
         val encrypted = Base64.decode(encryptedBase64, Base64.DEFAULT)
-        val secretKey = getOrCreateSecretKey(keyAlias)
+        val secretKey = getOrCreateSecretKey()
         val cipher = Cipher.getInstance(TRANSFORMATION)
         val spec = GCMParameterSpec(128, iv)
         cipher.init(Cipher.DECRYPT_MODE, secretKey, spec)
@@ -39,21 +44,22 @@ class TokenCryptoManager @Inject constructor() {
         return String(decrypted, Charsets.UTF_8)
     }
 
-    private fun getOrCreateSecretKey(keyAlias: String): SecretKey {
-        val keyStore = KeyStore.getInstance(ANDROID_KEY_STORE).apply { load(null) }
-        val existingKey = keyStore.getEntry(keyAlias, null) as? KeyStore.SecretKeyEntry
-        return existingKey?.secretKey ?: run {
-            val keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, ANDROID_KEY_STORE)
-            keyGenerator.init(
-                KeyGenParameterSpec.Builder(
-                    keyAlias,
-                    KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
-                )
-                    .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
-                    .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
-                    .build()
-            )
-            keyGenerator.generateKey()
+    private fun getOrCreateSecretKey(): SecretKey {
+        val existingKey = keyStore.getEntry(KEY_ALIAS, null) as? KeyStore.SecretKeyEntry
+        if (existingKey != null) {
+            return existingKey.secretKey
         }
+
+        val keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, ANDROID_KEY_STORE)
+        keyGenerator.init(
+            KeyGenParameterSpec.Builder(
+                KEY_ALIAS,
+                KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
+            )
+                .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+                .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+                .build()
+        )
+        return keyGenerator.generateKey()
     }
 } 
