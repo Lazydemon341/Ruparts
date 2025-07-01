@@ -14,6 +14,9 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
+private const val KEY_AUTH_PREFS = "auth_prefs"
+private const val KEY_AUTH_TOKEN = "auth_token"
+
 @Singleton
 class TokenStorage @Inject constructor(
     @ApplicationContext private val context: Context,
@@ -32,13 +35,13 @@ class TokenStorage @Inject constructor(
     val tokenFlow: Flow<String?>
         get() = dataStore.data.map { preferences ->
             preferences[keyAuthToken]?.let { encryptedString ->
-                tokenCryptoManager.decrypt(KEY_ALIAS, encryptedString)
+                tokenCryptoManager.decrypt(encryptedString)
             }
         }
 
     suspend fun saveToken(token: String) {
         withContext(dispatcher) {
-            val encrypted = tokenCryptoManager.encrypt(KEY_ALIAS, token)
+            val encrypted = tokenCryptoManager.encrypt(token)
             dataStore.edit { preferences ->
                 preferences[keyAuthToken] = encrypted
             }
@@ -59,11 +62,5 @@ class TokenStorage @Inject constructor(
 
     suspend fun hasToken(): Boolean {
         return !getToken().isNullOrEmpty()
-    }
-
-    companion object {
-        private const val KEY_AUTH_PREFS = "auth_prefs"
-        private const val KEY_AUTH_TOKEN = "auth_token"
-        private const val KEY_ALIAS = "token_key_alias"
     }
 }
