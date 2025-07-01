@@ -37,7 +37,6 @@ class TasksListFragment : Fragment() {
     private lateinit var adapter: ExpandableTaskAdapter
     private lateinit var chipGroup: ChipGroup
     private lateinit var progressIndicator: CircularProgressIndicator
-    private lateinit var fabScanQr: com.google.android.material.floatingactionbutton.FloatingActionButton
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -65,11 +64,6 @@ class TasksListFragment : Fragment() {
         recyclerView.addItemDecoration(TaskItemDecoration(requireContext()))
 
         progressIndicator = view.findViewById(R.id.tasks_progress_indicator)
-        
-        fabScanQr = view.findViewById(R.id.fab_scan_qr)
-        fabScanQr.setOnClickListener {
-            findNavController().navigate(TasksListFragmentDirections.actionTaskslistFragmentToQrScanFragment())
-        }
 
         chipGroup = view.findViewById(R.id.tasks_chip_group)
         chipGroup.findViewById<Chip>(R.id.chip_all).setOnClickListener {

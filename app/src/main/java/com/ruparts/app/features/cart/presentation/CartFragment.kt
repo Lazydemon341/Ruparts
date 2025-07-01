@@ -19,8 +19,8 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class CartFragment : Fragment() {
 
-    private lateinit var textView: TextView
-    private lateinit var button: Button
+    private lateinit var initialTextView: TextView
+    private lateinit var addButton: Button
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: CartListAdapter
@@ -63,9 +63,13 @@ class CartFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        textView = view.findViewById(R.id.empty_cart)
-        button = view.findViewById(R.id.add_button)
-        button.alignAboveSystemBars()
+        initialTextView = view.findViewById(R.id.empty_cart)
+        addButton = view.findViewById(R.id.add_button)
+        addButton.alignAboveSystemBars()
+
+        addButton.setOnClickListener {
+            findNavController().navigate(CartFragmentDirections.actionCartFragmentToQrScanFragment())
+        }
 
         recyclerView = view.findViewById(R.id.cart_recycler_view)
         adapter = CartListAdapter(
@@ -78,7 +82,7 @@ class CartFragment : Fragment() {
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         adapter.submitList(mockItems)
-        textView.isVisible = false
+        initialTextView.isVisible = false
     }
 
 }
