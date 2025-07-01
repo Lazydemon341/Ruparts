@@ -12,13 +12,22 @@ import androidx.camera.core.Preview
 import androidx.camera.core.SurfaceRequest
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.lifecycle.awaitInstance
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -29,14 +38,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.ruparts.app.R
 import com.ruparts.app.features.qrscan.presentation.camera.QrCodeImageAnalyzer
 import java.util.concurrent.Executors
 
 @Composable
+@androidx.compose.ui.tooling.preview.Preview
 fun QrScanScreen() {
     val context = LocalContext.current
     var permissionGranted by remember { mutableStateOf<Boolean>(false) }
@@ -91,7 +107,74 @@ fun QrScanScreen() {
             shadowElevation = 8.dp,
             shape = MaterialTheme.shapes.extraLarge
         ) {
-            // Empty bottom sheet content
+//            Box(
+//                contentAlignment = Alignment.Center,
+//                modifier = Modifier.fillMaxSize(),
+//            ) {
+//                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+//                    Image(
+//                        painter = painterResource(id = R.drawable.qrscan),
+//                        contentDescription = "Картинка",
+//                        modifier = Modifier.padding(bottom = 16.dp)
+//                    )
+//                    Text(
+//                        text = "Отсканируйте товары и они появятся в списке",
+//                        color = colorResource(id = R.color.secondary60),
+//                        fontSize = 14.sp
+//                    )
+//                }
+//            }
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize(),
+            ) {
+                LazyColumn(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+
+                    ) {
+                    items(10) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween) {
+                            Text(
+                                text = "12345678901234567890",
+                                color = Color(0xFF1D1B20),
+                                style = TextStyle(fontWeight = FontWeight.Bold),
+                                fontSize = 22.sp
+                            )
+                            Box(
+                                contentAlignment = Alignment.CenterEnd,
+                                ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.amount),
+                                    contentDescription = "Рамка"
+                                )
+                                Text(
+                                    text = "123",
+                                    color = Color(0xFF1D1B20),
+                                    fontSize = 14.sp,
+                                    modifier = Modifier.padding(horizontal = 6.dp)
+                                )
+                            }
+                        }
+                        Text(
+                            text = "GENERAL MOTORS",
+                            color = Color(0xFF1D1B20),
+                            fontSize = 16.sp,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                        Text(
+                            text = "Замок зажигания очень длинное описание очень длинное описание очень длинное описание",
+                            color = Color(0xFF1D1B20),
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(top = 4.dp),
+                            maxLines = 1
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                }
+            }
+
         }
     }
 }
