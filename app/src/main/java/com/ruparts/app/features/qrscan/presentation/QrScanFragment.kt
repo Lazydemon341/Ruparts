@@ -44,7 +44,7 @@ val mockScannedItems = listOf(
     ScannedItem(
         article = "36575",
         brand = "Porsche",
-        quantity = 1265843,
+        quantity = 5843,
         description = "Очень длинное описание, которое не влезает в одну строчку, которое не влезает в одну строчку, которое не влезает в одну строчку, которое не влезает в одну строчку,",
     )
 )
