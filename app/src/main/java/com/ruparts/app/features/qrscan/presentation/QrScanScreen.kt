@@ -48,12 +48,12 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.ruparts.app.R
+import com.ruparts.app.features.qrscan.model.ScannedItem
 import com.ruparts.app.features.qrscan.presentation.camera.QrCodeImageAnalyzer
 import java.util.concurrent.Executors
 
 @Composable
-@androidx.compose.ui.tooling.preview.Preview
-fun QrScanScreen() {
+fun QrScanScreen(scannedItems: List<ScannedItem>) {
     val context = LocalContext.current
     var permissionGranted by remember { mutableStateOf<Boolean>(false) }
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -107,74 +107,89 @@ fun QrScanScreen() {
             shadowElevation = 8.dp,
             shape = MaterialTheme.shapes.extraLarge
         ) {
-//            Box(
-//                contentAlignment = Alignment.Center,
-//                modifier = Modifier.fillMaxSize(),
-//            ) {
-//                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-//                    Image(
-//                        painter = painterResource(id = R.drawable.qrscan),
-//                        contentDescription = "Картинка",
-//                        modifier = Modifier.padding(bottom = 16.dp)
-//                    )
-//                    Text(
-//                        text = "Отсканируйте товары и они появятся в списке",
-//                        color = colorResource(id = R.color.secondary60),
-//                        fontSize = 14.sp
-//                    )
-//                }
-//            }
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.fillMaxSize(),
-            ) {
-                LazyColumn(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-
-                    ) {
-                    items(10) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text(
-                                text = "12345678901234567890",
-                                color = Color(0xFF1D1B20),
-                                style = TextStyle(fontWeight = FontWeight.Bold),
-                                fontSize = 22.sp
-                            )
-                            Box(
-                                contentAlignment = Alignment.CenterEnd,
-                                ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.amount),
-                                    contentDescription = "Рамка"
-                                )
-                                Text(
-                                    text = "123",
-                                    color = Color(0xFF1D1B20),
-                                    fontSize = 14.sp,
-                                    modifier = Modifier.padding(horizontal = 6.dp)
-                                )
-                            }
-                        }
-                        Text(
-                            text = "GENERAL MOTORS",
-                            color = Color(0xFF1D1B20),
-                            fontSize = 16.sp,
-                            modifier = Modifier.padding(top = 4.dp)
-                        )
-                        Text(
-                            text = "Замок зажигания очень длинное описание очень длинное описание очень длинное описание",
-                            color = Color(0xFF1D1B20),
-                            fontSize = 12.sp,
-                            modifier = Modifier.padding(top = 4.dp),
-                            maxLines = 1
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                    }
-                }
+            if (scannedItems.isEmpty()) {
+                QrScanEmptyContent()
+            } else {
+                QrScanItemsContent(scannedItems)
             }
+        }
+    }
+}
 
+@Composable
+private fun QrScanItemsContent(scannedItems: List<ScannedItem>) {
+    LazyColumn(
+        modifier = Modifier
+            .padding(horizontal = 16.dp, vertical = 12.dp)
+            .background(Color.White)
+            .fillMaxSize()
+    ) {
+        items(10) {
+            QrScanListItem(scannedItems)
+        }
+    }
+}
+
+@Composable
+private fun QrScanListItem(scannedItems: List<ScannedItem>) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = "12345678901234567890",
+            color = Color(0xFF1D1B20),
+            style = TextStyle(fontWeight = FontWeight.Bold),
+            fontSize = 22.sp
+        )
+        Box(
+            contentAlignment = Alignment.CenterEnd,
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.amount),
+                contentDescription = "Рамка"
+            )
+            Text(
+                text = "123",
+                color = Color(0xFF1D1B20),
+                fontSize = 14.sp,
+                modifier = Modifier.padding(horizontal = 6.dp)
+            )
+        }
+    }
+    Text(
+        text = "GENERAL MOTORS",
+        color = Color(0xFF1D1B20),
+        fontSize = 16.sp,
+        modifier = Modifier.padding(top = 4.dp)
+    )
+    Text(
+        text = "Замок зажигания очень длинное описание очень длинное описание очень длинное описание",
+        color = Color(0xFF1D1B20),
+        fontSize = 12.sp,
+        modifier = Modifier.padding(top = 4.dp),
+        maxLines = 1
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+}
+
+@Composable
+private fun QrScanEmptyContent() {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Image(
+                painter = painterResource(id = R.drawable.qrscan),
+                contentDescription = "Картинка",
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+            Text(
+                text = "Отсканируйте товары и они появятся в списке",
+                color = colorResource(id = R.color.secondary60),
+                fontSize = 14.sp
+            )
         }
     }
 }
@@ -211,4 +226,10 @@ private suspend fun startCamera(
         cameraPreviewUseCase,
         imageAnalysisUseCase,
     )
+}
+
+@androidx.compose.ui.tooling.preview.Preview
+@Composable
+fun QrScanScreenPreview() {
+    QrScanScreen(scannedItems = mockScannedItems)
 }

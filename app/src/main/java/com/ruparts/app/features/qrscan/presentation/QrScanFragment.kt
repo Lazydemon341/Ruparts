@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.ruparts.app.features.qrscan.model.ScannedItem
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -21,8 +22,29 @@ class QrScanFragment : Fragment() {
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
-                QrScanScreen()
+                QrScanScreen(mockScannedItems)
             }
         }
     }
-} 
+}
+
+val mockScannedItems = listOf(
+    ScannedItem(
+        article = "11115555669987452131",
+        brand = "Toyota",
+        quantity = 13481,
+        description = "Описание",
+    ),
+    ScannedItem(
+        article = "548870578",
+        brand = "Mazda",
+        quantity = 10,
+        description = "Длинное описание, которое не влезает в одну строчку",
+    ),
+    ScannedItem(
+        article = "36575",
+        brand = "Porsche",
+        quantity = 1265843,
+        description = "Очень длинное описание, которое не влезает в одну строчку, которое не влезает в одну строчку, которое не влезает в одну строчку, которое не влезает в одну строчку,",
+    )
+)
