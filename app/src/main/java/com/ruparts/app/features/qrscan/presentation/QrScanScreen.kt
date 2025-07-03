@@ -26,13 +26,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -46,6 +53,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -125,73 +133,119 @@ fun QrScanScreen(scannedItems: List<ScannedItem>) {
 
 @Composable
 private fun QrScanItemsContent(scannedItems: List<ScannedItem>) {
-    Box(modifier = Modifier.fillMaxSize()
-        .padding(bottom = 16.dp)) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 16.dp)
+    ) {
         LazyColumn(
             modifier = Modifier
                 .padding(horizontal = 16.dp, vertical = 12.dp)
                 .fillMaxSize()
         ) {
 
-            items(scannedItems) { item ->
-                QrScanListItem(item)
-                Spacer(modifier = Modifier.height(8.dp))
-            }
+        items(scannedItems) { item ->
+            QrScanListItem(item)
+            Spacer(modifier = Modifier.height(8.dp))
         }
-        Button(
-            onClick = {},
-            modifier = Modifier.align(Alignment.BottomCenter).padding(horizontal = 20.dp, vertical = 8.dp)
-                .fillMaxWidth()
-                .height(56.dp),
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Text(text = "Закончить",
-                fontSize = 16.sp,)
-        }
+
     }
+    Button(
+        onClick = {},
+        modifier = Modifier
+            .align(Alignment.BottomCenter)
+            .padding(horizontal = 20.dp, vertical = 8.dp)
+            .fillMaxWidth()
+            .height(56.dp),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Text(
+            text = "Закончить",
+            fontSize = 16.sp,
+        )
+    }
+}
 }
 
 @Composable
 private fun QrScanListItem(item: ScannedItem) {
-    Column(
-        modifier = Modifier.background(Color(0xFFFEF7FF))
+
+    val swipeToDismissBoxState = rememberSwipeToDismissBoxState(
+        confirmValueChange = {
+            if (it == SwipeToDismissBoxValue.StartToEnd)
+            else if (it == SwipeToDismissBoxValue.EndToStart) onRemove(item)
+            it != SwipeToDismissBoxValue.StartToEnd
+        }
+    )
+
+    SwipeToDismissBox(
+        state = swipeToDismissBoxState,
+        modifier = Modifier.fillMaxSize(),
+        backgroundContent = {
+            when (swipeToDismissBoxState.dismissDirection) {
+                SwipeToDismissBoxValue.StartToEnd -> {
+                }
+                SwipeToDismissBoxValue.EndToStart -> {
+                    Icon(
+                        painter = painterResource(id = R.drawable.delete_white),
+                        contentDescription = "Remove item",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color(0xFFB3261E))
+                            .wrapContentSize(Alignment.CenterEnd)
+                            .padding(12.dp),
+                        tint = Color.White
+                    )
+                }
+                SwipeToDismissBoxValue.Settled -> {}
+            }
+        }
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+
+        Column(
+            modifier = Modifier.background(Color(0xFFFEF7FF))
         ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = item.article,
+                    color = Color(0xFF1D1B20),
+                    style = TextStyle(fontWeight = FontWeight.Bold),
+                    fontSize = 22.sp
+                )
+                Text(
+                    text = item.quantity.toString(),
+                    color = Color(0xFF1D1B20),
+                    fontSize = 14.sp,
+                    modifier = Modifier
+                        .border(1.dp, SolidColor(Color.Black), RoundedCornerShape(percent = 20))
+                        .padding(horizontal = 6.dp, vertical = 3.dp)
+                )
+            }
+
             Text(
-                text = item.article,
+                text = item.brand,
                 color = Color(0xFF1D1B20),
-                style = TextStyle(fontWeight = FontWeight.Bold),
-                fontSize = 22.sp
+                fontSize = 16.sp,
+                modifier = Modifier.padding(top = 4.dp)
             )
             Text(
-                text = item.quantity.toString(),
+                text = item.description,
                 color = Color(0xFF1D1B20),
-                fontSize = 14.sp,
-                modifier = Modifier
-                    .border(1.dp, SolidColor(Color.Black), RoundedCornerShape(percent = 20))
-                    .padding(horizontal = 6.dp, vertical = 3.dp)
+                fontSize = 12.sp,
+                modifier = Modifier.padding(top = 4.dp),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
-
-        Text(
-            text = item.brand,
-            color = Color(0xFF1D1B20),
-            fontSize = 16.sp,
-            modifier = Modifier.padding(top = 4.dp)
-        )
-        Text(
-            text = item.description,
-            color = Color(0xFF1D1B20),
-            fontSize = 12.sp,
-            modifier = Modifier.padding(top = 4.dp),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
     }
+}
+
+private fun onRemove(item: ScannedItem) {
+    mockScannedItems -= item
 }
 
 
@@ -255,3 +309,48 @@ private suspend fun startCamera(
 fun QrScanScreenPreview() {
     QrScanScreen(scannedItems = mockScannedItems)
 }
+
+@Composable
+fun TodoListItem(
+    item: ScannedItem,
+    onToggleDone: (ScannedItem) -> Unit,
+    onRemove: (ScannedItem) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val swipeToDismissBoxState = rememberSwipeToDismissBoxState(
+        confirmValueChange = {
+            if (it == SwipeToDismissBoxValue.StartToEnd) onToggleDone(item)
+            else
+                if (it == SwipeToDismissBoxValue.EndToStart) onRemove(item)
+            it != SwipeToDismissBoxValue.StartToEnd
+        }
+    )
+
+    SwipeToDismissBox(
+        state = swipeToDismissBoxState,
+        modifier = modifier.fillMaxSize(),
+        backgroundContent = {
+            when (swipeToDismissBoxState.dismissDirection) {
+                SwipeToDismissBoxValue.StartToEnd -> {
+                }
+                SwipeToDismissBoxValue.EndToStart -> {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Remove item",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Red)
+                            .wrapContentSize(Alignment.CenterEnd)
+                            .padding(12.dp),
+                        tint = Color.White
+                    )
+                }
+                SwipeToDismissBoxValue.Settled -> {}
+            }
+        }
+    ) {
+        QrScanListItem(item)
+    }
+}
+
+

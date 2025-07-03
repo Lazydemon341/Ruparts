@@ -28,7 +28,7 @@ class QrScanFragment : Fragment() {
     }
 }
 
-val mockScannedItems = listOf(
+val mockScannedItems = mutableListOf(
     ScannedItem(
         article = "11115555669987452131",
         brand = "Toyota",
