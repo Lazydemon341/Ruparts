@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -68,7 +69,7 @@ import com.ruparts.app.features.qrscan.presentation.camera.QrCodeImageAnalyzer
 import java.util.concurrent.Executors
 
 @Composable
-fun QrScanScreen(scannedItems: List<ScannedItem>) {
+fun QrScanScreen(scannedItems: List<ScannedItem>, onRemove: (ScannedItem) -> Unit) {
     val context = LocalContext.current
     var permissionGranted by remember { mutableStateOf<Boolean>(false) }
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -125,14 +126,14 @@ fun QrScanScreen(scannedItems: List<ScannedItem>) {
             if (scannedItems.isEmpty()) {
                 QrScanEmptyContent()
             } else {
-                QrScanItemsContent(scannedItems)
+                QrScanItemsContent(scannedItems, onRemove)
             }
         }
     }
 }
 
 @Composable
-private fun QrScanItemsContent(scannedItems: List<ScannedItem>) {
+private fun QrScanItemsContent(scannedItems: List<ScannedItem>, onRemove: (ScannedItem) -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -141,11 +142,17 @@ private fun QrScanItemsContent(scannedItems: List<ScannedItem>) {
         LazyColumn(
             modifier = Modifier
                 .padding(horizontal = 16.dp, vertical = 12.dp)
-                .fillMaxSize()
+                .align(Alignment.TopCenter),
+            reverseLayout = true
         ) {
 
-        items(scannedItems) { item ->
-            QrScanListItem(item)
+        itemsIndexed(
+            scannedItems,
+            key = { _, it -> it.article },
+            ) { index, item ->
+            QrScanListItem(
+                item = item,
+                onRemove = onRemove)
             Spacer(modifier = Modifier.height(8.dp))
         }
 
@@ -168,7 +175,7 @@ private fun QrScanItemsContent(scannedItems: List<ScannedItem>) {
 }
 
 @Composable
-private fun QrScanListItem(item: ScannedItem) {
+private fun QrScanListItem(item: ScannedItem, onRemove: (ScannedItem) -> Unit) {
 
     val swipeToDismissBoxState = rememberSwipeToDismissBoxState(
         confirmValueChange = {
@@ -181,6 +188,7 @@ private fun QrScanListItem(item: ScannedItem) {
     SwipeToDismissBox(
         state = swipeToDismissBoxState,
         modifier = Modifier.fillMaxSize(),
+        enableDismissFromStartToEnd = false,
         backgroundContent = {
             when (swipeToDismissBoxState.dismissDirection) {
                 SwipeToDismissBoxValue.StartToEnd -> {
@@ -244,11 +252,6 @@ private fun QrScanListItem(item: ScannedItem) {
     }
 }
 
-private fun onRemove(item: ScannedItem) {
-    mockScannedItems -= item
-}
-
-
 @Composable
 private fun QrScanEmptyContent() {
     Box(
@@ -307,50 +310,8 @@ private suspend fun startCamera(
 @Preview
 @Composable
 fun QrScanScreenPreview() {
-    QrScanScreen(scannedItems = mockScannedItems)
+    QrScanScreen(scannedItems = mockScannedItems, {})
 }
 
-@Composable
-fun TodoListItem(
-    item: ScannedItem,
-    onToggleDone: (ScannedItem) -> Unit,
-    onRemove: (ScannedItem) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val swipeToDismissBoxState = rememberSwipeToDismissBoxState(
-        confirmValueChange = {
-            if (it == SwipeToDismissBoxValue.StartToEnd) onToggleDone(item)
-            else
-                if (it == SwipeToDismissBoxValue.EndToStart) onRemove(item)
-            it != SwipeToDismissBoxValue.StartToEnd
-        }
-    )
-
-    SwipeToDismissBox(
-        state = swipeToDismissBoxState,
-        modifier = modifier.fillMaxSize(),
-        backgroundContent = {
-            when (swipeToDismissBoxState.dismissDirection) {
-                SwipeToDismissBoxValue.StartToEnd -> {
-                }
-                SwipeToDismissBoxValue.EndToStart -> {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Remove item",
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.Red)
-                            .wrapContentSize(Alignment.CenterEnd)
-                            .padding(12.dp),
-                        tint = Color.White
-                    )
-                }
-                SwipeToDismissBoxValue.Settled -> {}
-            }
-        }
-    ) {
-        QrScanListItem(item)
-    }
-}
 
 

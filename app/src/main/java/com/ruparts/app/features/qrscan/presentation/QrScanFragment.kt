@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -22,29 +23,12 @@ class QrScanFragment : Fragment() {
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
-                QrScanScreen(mockScannedItems)
+                val itemsState = viewModel.scannedItems.collectAsState()
+                QrScanScreen(
+                    scannedItems = itemsState.value, onRemove = {item -> viewModel.onRemove(item)}
+                )
             }
         }
     }
 }
 
-val mockScannedItems = mutableListOf(
-    ScannedItem(
-        article = "11115555669987452131",
-        brand = "Toyota",
-        quantity = 13481,
-        description = "Описание",
-    ),
-    ScannedItem(
-        article = "548870578",
-        brand = "Mazda",
-        quantity = 10,
-        description = "Длинное описание, которое не влезает в одну строчку",
-    ),
-    ScannedItem(
-        article = "36575",
-        brand = "Porsche",
-        quantity = 5843,
-        description = "Очень длинное описание, которое не влезает в одну строчку, которое не влезает в одну строчку, которое не влезает в одну строчку, которое не влезает в одну строчку,",
-    )
-)
