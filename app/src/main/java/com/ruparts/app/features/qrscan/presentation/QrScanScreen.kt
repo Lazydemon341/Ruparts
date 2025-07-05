@@ -146,36 +146,38 @@ private fun QrScanItemsContent(scannedItems: List<ScannedItem>, onRemove: (Scann
             reverseLayout = true
         ) {
 
-        itemsIndexed(
-            scannedItems,
-            key = { _, it -> it.article },
+            itemsIndexed(
+                scannedItems,
+                key = { _, it -> it.article },
             ) { index, item ->
-            QrScanListItem(
-                item = item,
-                onRemove = onRemove)
-            Spacer(modifier = Modifier.height(8.dp))
-        }
+                QrScanListItem(
+                    item = item,
+                    onRemove = onRemove,
+                    enableSwipeToDismiss = index == scannedItems.lastIndex
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
 
+        }
+        Button(
+            onClick = {},
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(horizontal = 20.dp, vertical = 8.dp)
+                .fillMaxWidth()
+                .height(56.dp),
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Text(
+                text = "Закончить",
+                fontSize = 16.sp,
+            )
+        }
     }
-    Button(
-        onClick = {},
-        modifier = Modifier
-            .align(Alignment.BottomCenter)
-            .padding(horizontal = 20.dp, vertical = 8.dp)
-            .fillMaxWidth()
-            .height(56.dp),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Text(
-            text = "Закончить",
-            fontSize = 16.sp,
-        )
-    }
-}
 }
 
 @Composable
-private fun QrScanListItem(item: ScannedItem, onRemove: (ScannedItem) -> Unit) {
+private fun QrScanListItem(item: ScannedItem, onRemove: (ScannedItem) -> Unit, enableSwipeToDismiss: Boolean) {
 
     val swipeToDismissBoxState = rememberSwipeToDismissBoxState(
         confirmValueChange = {
@@ -189,10 +191,12 @@ private fun QrScanListItem(item: ScannedItem, onRemove: (ScannedItem) -> Unit) {
         state = swipeToDismissBoxState,
         modifier = Modifier.fillMaxSize(),
         enableDismissFromStartToEnd = false,
+        gesturesEnabled = enableSwipeToDismiss,
         backgroundContent = {
             when (swipeToDismissBoxState.dismissDirection) {
                 SwipeToDismissBoxValue.StartToEnd -> {
                 }
+
                 SwipeToDismissBoxValue.EndToStart -> {
                     Icon(
                         painter = painterResource(id = R.drawable.delete_white),
@@ -205,6 +209,7 @@ private fun QrScanListItem(item: ScannedItem, onRemove: (ScannedItem) -> Unit) {
                         tint = Color.White
                     )
                 }
+
                 SwipeToDismissBoxValue.Settled -> {}
             }
         }

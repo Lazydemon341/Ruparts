@@ -15,7 +15,7 @@ class QrScanViewModel @Inject constructor() : ViewModel() {
     val scannedItems = _scannedItems.asStateFlow()
 
     fun onRemove(item: ScannedItem) {
-        _scannedItems.value.toMutableList().apply { remove(item) }
+        _scannedItems.value = _scannedItems.value.toMutableList().apply { remove(item) }
     }
 
 }
