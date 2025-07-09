@@ -270,7 +270,8 @@ private fun QrScanEmptyContent() {
                 modifier = Modifier.padding(bottom = 16.dp)
             )
             Text(
-                text = "Отсканируйте товары и они появятся в списке",
+                text = "Отсканируйте товары в ячейке, чтобы переместить их в корзину " +
+                        "или отсканируйте товары в корзине, чтобы переместить их в ячейку",
                 color = colorResource(id = R.color.secondary60),
                 fontSize = 14.sp
             )
