@@ -3,16 +3,15 @@ package com.ruparts.app.features.qrscan.presentation
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.compose.CameraXViewfinder
 import androidx.camera.core.CameraSelector.DEFAULT_BACK_CAMERA
 import androidx.camera.core.ImageAnalysis
-import androidx.camera.core.Preview as CameraPreview
 import androidx.camera.core.SurfaceRequest
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.lifecycle.awaitInstance
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -26,22 +25,29 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,32 +56,61 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.ruparts.app.R
 import com.ruparts.app.features.qrscan.model.ScannedItem
 import com.ruparts.app.features.qrscan.presentation.camera.QrCodeImageAnalyzer
 import java.util.concurrent.Executors
+import androidx.camera.core.Preview as CameraPreview
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun QrScanScreen(scannedItems: List<ScannedItem>, onRemove: (ScannedItem) -> Unit) {
+fun QrScanScreen(
+    scannedItems: List<ScannedItem>,
+    onRemove: (ScannedItem) -> Unit,
+    onBackClick: () -> Unit,
+) {
     val context = LocalContext.current
     var permissionGranted by remember { mutableStateOf<Boolean>(false) }
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
         permissionGranted = isGranted
+    }
+
+    val activity = LocalActivity.current
+    val view = LocalView.current
+
+    DisposableEffect(activity, view) {
+        val window = requireNotNull(activity?.window)
+        val windowInsetsController = WindowInsetsControllerCompat(window, view)
+        windowInsetsController.apply {
+            isAppearanceLightStatusBars = false
+            isAppearanceLightNavigationBars = false
+        }
+
+        onDispose {
+            windowInsetsController.apply {
+                isAppearanceLightStatusBars = true
+                isAppearanceLightNavigationBars = true
+            }
+        }
     }
 
     LaunchedEffect(Unit) {
@@ -100,33 +135,68 @@ fun QrScanScreen(scannedItems: List<ScannedItem>, onRemove: (ScannedItem) -> Uni
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        val surfaceRequest = surfaceRequestState.value
-        if (surfaceRequest != null) {
-            CameraXViewfinder(
-                surfaceRequest = surfaceRequest,
-                modifier = Modifier,
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = "Товары",
+                        color = Color.White
+                    )
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = onBackClick,
+                        modifier = Modifier.size(48.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Close",
+                            tint = Color.White
+                        )
+                    }
+                },
+                actions = {
+                    Box(modifier = Modifier.size(48.dp))
+                    Box(modifier = Modifier.size(48.dp))
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Black,
+                    titleContentColor = Color.White,
+                    actionIconContentColor = Color.White,
+                    navigationIconContentColor = Color.White
+                ),
             )
-        } else {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black)
-            )
-        }
-        Surface(
+        },
+        containerColor = Color.Black,
+    ) { paddingValues ->
+        Box(
             modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .fillMaxHeight(0.5f),
-            color = MaterialTheme.colorScheme.surface,
-            shadowElevation = 8.dp,
-            shape = MaterialTheme.shapes.extraLarge
+                .fillMaxSize()
+                .padding(paddingValues)
         ) {
-            if (scannedItems.isEmpty()) {
-                QrScanEmptyContent()
-            } else {
-                QrScanItemsContent(scannedItems, onRemove)
+            val surfaceRequest = surfaceRequestState.value
+            if (surfaceRequest != null) {
+                CameraXViewfinder(
+                    surfaceRequest = surfaceRequest,
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
+
+            Surface(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.5f),
+                color = MaterialTheme.colorScheme.surface,
+                shadowElevation = 8.dp,
+                shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
+            ) {
+                if (scannedItems.isEmpty()) {
+                    QrScanEmptyContent()
+                } else {
+                    QrScanItemsContent(scannedItems, onRemove)
+                }
             }
         }
     }
@@ -134,89 +204,107 @@ fun QrScanScreen(scannedItems: List<ScannedItem>, onRemove: (ScannedItem) -> Uni
 
 @Composable
 private fun QrScanItemsContent(scannedItems: List<ScannedItem>, onRemove: (ScannedItem) -> Unit) {
+    val lazyListState = rememberLazyListState()
+
+    LaunchedEffect(scannedItems) {
+        lazyListState.scrollToItem(scannedItems.lastIndex)
+    }
+
     Box(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(bottom = 16.dp)
+            .fillMaxSize(),
     ) {
         LazyColumn(
-            modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 12.dp)
-                .align(Alignment.TopCenter),
+            modifier = Modifier.align(Alignment.TopCenter),
+            state = lazyListState,
             reverseLayout = true
         ) {
-
             itemsIndexed(
-                scannedItems,
+                items = scannedItems,
                 key = { _, it -> it.article },
             ) { index, item ->
                 QrScanListItem(
                     item = item,
                     onRemove = onRemove,
-                    enableSwipeToDismiss = index == scannedItems.lastIndex
+                    enableSwipeToDismiss = index == scannedItems.lastIndex,
+                    modifier = Modifier.animateItem()
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                if (index == scannedItems.lastIndex) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                } else {
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
             }
 
         }
-        Button(
-            onClick = {},
+        Surface(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(horizontal = 20.dp, vertical = 8.dp)
-                .fillMaxWidth()
-                .height(56.dp),
-            shape = RoundedCornerShape(16.dp)
+                .fillMaxWidth(),
+            color = MaterialTheme.colorScheme.onSurface,
+            shadowElevation = 8.dp,
+            shape = RectangleShape,
         ) {
-            Text(
-                text = "Закончить",
-                fontSize = 16.sp,
-            )
+            Button(
+                onClick = {},
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .padding(top = 8.dp, bottom = 24.dp)
+                    .fillMaxWidth()
+                    .height(56.dp),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Text(
+                    text = "Закончить",
+                    fontSize = 16.sp,
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun QrScanListItem(item: ScannedItem, onRemove: (ScannedItem) -> Unit, enableSwipeToDismiss: Boolean) {
+private fun QrScanListItem(
+    item: ScannedItem,
+    onRemove: (ScannedItem) -> Unit,
+    enableSwipeToDismiss: Boolean,
+    modifier: Modifier = Modifier,
+) {
 
     val swipeToDismissBoxState = rememberSwipeToDismissBoxState(
-        confirmValueChange = {
-            if (it == SwipeToDismissBoxValue.StartToEnd)
-            else if (it == SwipeToDismissBoxValue.EndToStart) onRemove(item)
-            it != SwipeToDismissBoxValue.StartToEnd
-        }
+        confirmValueChange = { value ->
+            if (value == SwipeToDismissBoxValue.EndToStart) {
+                onRemove(item)
+            }
+            value != SwipeToDismissBoxValue.StartToEnd
+        },
+        positionalThreshold = with(LocalDensity.current) { { 160.dp.toPx() } }
     )
 
     SwipeToDismissBox(
         state = swipeToDismissBoxState,
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         enableDismissFromStartToEnd = false,
         gesturesEnabled = enableSwipeToDismiss,
         backgroundContent = {
-            when (swipeToDismissBoxState.dismissDirection) {
-                SwipeToDismissBoxValue.StartToEnd -> {
-                }
-
-                SwipeToDismissBoxValue.EndToStart -> {
-                    Icon(
-                        painter = painterResource(id = R.drawable.delete_white),
-                        contentDescription = "Remove item",
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color(0xFFB3261E))
-                            .wrapContentSize(Alignment.CenterEnd)
-                            .padding(12.dp),
-                        tint = Color.White
-                    )
-                }
-
-                SwipeToDismissBoxValue.Settled -> {}
+            if (swipeToDismissBoxState.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
+                Icon(
+                    painter = painterResource(id = R.drawable.delete_white),
+                    contentDescription = "Remove item",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color(0xFFB3261E))
+                        .wrapContentSize(Alignment.CenterEnd)
+                        .padding(12.dp),
+                    tint = Color.White
+                )
             }
         }
     ) {
-
         Column(
-            modifier = Modifier.background(Color(0xFFFEF7FF))
+            modifier = Modifier
+                .background(color = MaterialTheme.colorScheme.onSurface)
+                .padding(vertical = 12.dp, horizontal = 16.dp),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -316,7 +404,7 @@ private suspend fun startCamera(
 @Preview
 @Composable
 fun QrScanScreenPreview() {
-    QrScanScreen(scannedItems = mockScannedItems, {})
+    QrScanScreen(scannedItems = mockScannedItems, onRemove = {}, onBackClick = {})
 }
 
 

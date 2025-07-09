@@ -20,7 +20,7 @@
         android:id="@+id/cart_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="none"
+        android:clipToPadding="false"
         app:layout_constraintBottom_toTopOf="@+id/add_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -31,13 +31,13 @@
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_marginEnd="20dp"
-        android:layout_marginBottom="48dp"
+        android:layout_marginBottom="24dp"
         android:padding="16dp"
-        app:srcCompat="@drawable/scanner"
-        app:tint="@color/white"
-        android:backgroundTint="@color/purple_dark"
+        app:backgroundTint="?colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/scanner"
+        app:tint="?colorOnPrimary" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

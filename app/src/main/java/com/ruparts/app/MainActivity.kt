@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity() {
         navController.addOnDestinationChangedListener { controller, destination, _ ->
             toolbar.subtitle = null
             when (destination.id) {
-                R.id.authFragment -> toolbar.isVisible = false
+                R.id.authFragment, R.id.qrScanFragment -> toolbar.isVisible = false
                 else -> toolbar.isVisible = true
             }
         }
