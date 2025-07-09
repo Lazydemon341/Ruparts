@@ -214,22 +214,11 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/recycling" />
 
-    <Button
+    <com.ruparts.app.features.cart.presentation.CartItemCancelButton
         android:id="@+id/cart_cancel_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:background="@drawable/content"
-        android:drawableStart="@drawable/close"
-        android:drawablePadding="8dp"
-        android:letterSpacing="0.01"
-        android:lineSpacingExtra="5sp"
-        android:paddingHorizontal="24dp"
-        android:paddingVertical="16dp"
-        android:text="Отменить добавление"
-        android:textColor="#4A4459"
-        android:textSize="16sp"
-        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cell" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

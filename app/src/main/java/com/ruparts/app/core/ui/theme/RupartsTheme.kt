@@ -23,8 +23,8 @@ fun RupartsTheme(
 
     // Secondary colors
     val secondary = colorResource(id = R.color.purple)
-    val secondaryContainer = colorResource(id = R.color.light_purple)
-    val onSecondaryContainer = primaryDark
+    val secondaryContainer = colorResource(id = R.color.secondaryContainer)
+    val onSecondaryContainer = colorResource(id = R.color.onSecondaryContainer)
 
     // Tertiary colors
     val tertiary = colorResource(id = R.color.purple_middle)
