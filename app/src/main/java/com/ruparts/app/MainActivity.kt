@@ -89,10 +89,12 @@ class MainActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { controller, destination, _ ->
             toolbar.subtitle = null
-            when (destination.id) {
-                R.id.authFragment -> toolbar.isVisible = false
-                else -> toolbar.isVisible = true
-            }
+            toolbar.isVisible = destination.id != R.id.authFragment && destination.id != R.id.qrScanFragment
+
+//            WindowInsetsControllerCompat(window, window.decorView).apply {
+//                isAppearanceLightStatusBars = destination.id != R.id.qrScanFragment
+//                isAppearanceLightNavigationBars = destination.id != R.id.qrScanFragment
+//            }
         }
     }
 

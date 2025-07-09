@@ -7,7 +7,6 @@
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
     <color name="white_40">#66FFFFFF</color> <!-- 40% opacity white -->
     
     <!-- Ruparts App Color Palette -->
@@ -35,4 +34,12 @@
 
 
     <color name="secondary60">#958DA5</color>
+
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="primary">#6750A4</color>
+    <color name="onPrimary">@color/white</color>
+
+    <color name="surface">#F3EDF7</color>
+    <color name="onSurface">#FEF7FF</color>
 </resources>
