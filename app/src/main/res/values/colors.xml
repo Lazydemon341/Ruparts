@@ -43,6 +43,7 @@
     <color name="secondaryContainer">#E8DEF8</color>
     <color name="onSecondaryContainer">#4A4459</color>
 
-    <color name="surface">#F3EDF7</color>
-    <color name="onSurface">#FEF7FF</color>
+    <color name="surfaceContainer">#F3EDF7</color>
+    <color name="surface">#FEF7FF</color>
+    <color name="onSurface">#1D1B20</color>
 </resources>

@@ -11,7 +11,7 @@ import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 
 internal class QrCodeImageAnalyzer(
-    private val onBarcodeDetected: (Barcode) -> Unit
+    private val onBarcodesScanned: (List<Barcode>) -> Unit
 ) : ImageAnalysis.Analyzer {
 
     private val options = BarcodeScannerOptions.Builder()
@@ -35,7 +35,7 @@ internal class QrCodeImageAnalyzer(
                 .addOnSuccessListener { barcodes ->
                     Log.d(TAG, "Barcodes detected: $barcodes")
                     if (barcodes.isNotEmpty()) {
-                        onBarcodeDetected(barcodes.first())
+                        onBarcodesScanned(barcodes)
                     }
                 }
                 .addOnFailureListener {

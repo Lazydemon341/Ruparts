@@ -12,6 +12,7 @@
         <item name="colorSecondaryContainer">@color/secondaryContainer</item>
         <item name="colorOnSecondaryContainer">@color/onSecondaryContainer</item>
 
+        <item name="colorSurfaceContainer">@color/surfaceContainer</item>
         <item name="colorSurface">@color/surface</item>
         <item name="colorOnSurface">@color/onSurface</item>
 

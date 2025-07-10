@@ -12,13 +12,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,7 +44,7 @@ class CartItemActionsFragment : BottomSheetDialogFragment() {
                 dismiss()
             },
             modifier = Modifier.padding(top = 16.dp),
-            containerColor = colorResource(id = R.color.onSurface),
+            containerColor = MaterialTheme.colorScheme.surface,
             dragHandle = {},
         ) {
             Column {
@@ -53,8 +52,9 @@ class CartItemActionsFragment : BottomSheetDialogFragment() {
                     onClick = { },
                     modifier = Modifier.padding(vertical = 8.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = colorResource(id = R.color.onSurface),
-                        contentColor = Color(0xFF1D1B20)  )
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    )
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.split),
@@ -70,8 +70,9 @@ class CartItemActionsFragment : BottomSheetDialogFragment() {
                     onClick = { },
                     modifier = Modifier.padding(vertical = 8.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = colorResource(id = R.color.onSurface),
-                        contentColor = Color(0xFF1D1B20)  )
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    )
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.alert),
@@ -87,8 +88,9 @@ class CartItemActionsFragment : BottomSheetDialogFragment() {
                     onClick = { },
                     modifier = Modifier.padding(vertical = 8.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = colorResource(id = R.color.onSurface),
-                        contentColor = Color(0xFF1D1B20)  )
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    )
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.print),
@@ -104,8 +106,9 @@ class CartItemActionsFragment : BottomSheetDialogFragment() {
                     onClick = { },
                     modifier = Modifier.padding(vertical = 8.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = colorResource(id = R.color.onSurface),
-                        contentColor = Color(0xFF1D1B20)  )
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    )
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.delete_white),
@@ -121,8 +124,9 @@ class CartItemActionsFragment : BottomSheetDialogFragment() {
                     onClick = { },
                     modifier = Modifier.padding(vertical = 8.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = colorResource(id = R.color.onSurface),
-                        contentColor = Color(0xFF1D1B20)  )
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    )
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.edit),
