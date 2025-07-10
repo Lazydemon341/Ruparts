@@ -33,22 +33,26 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Keyboard
 import androidx.compose.material.icons.outlined.Bolt
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
@@ -61,6 +65,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.SolidColor
@@ -144,7 +150,7 @@ fun QrScanScreen(
         }
     }
 
-    var showKeyboardDialog by remember { mutableStateOf(false) }
+    var showInputDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -183,7 +189,7 @@ fun QrScanScreen(
                 actions = {
                     IconButton(
                         onClick = {
-                            showKeyboardDialog = true
+                            showInputDialog = true
                         },
                         modifier = Modifier.size(48.dp)
                     ) {
@@ -236,6 +242,14 @@ fun QrScanScreen(
                     )
                 }
             }
+        }
+
+        if (showInputDialog) {
+            ManualInputDialog(
+                onDismiss = {
+                    showInputDialog = false
+                },
+            )
         }
     }
 }
@@ -432,9 +446,69 @@ private fun FlashButton(camera: Camera?) {
                 tint = Color.White
             )
         }
-    } else {
-        Box(modifier = Modifier.size(48.dp))
     }
+}
+
+@Composable
+private fun ManualInputDialog(
+    onDismiss: () -> Unit,
+) {
+    var inputText by remember { mutableStateOf("") }
+    AlertDialog(
+        onDismissRequest = {
+            inputText = ""
+            onDismiss()
+        },
+        title = {
+            Text(
+                text = "Ручной ввод кода",
+                style = MaterialTheme.typography.headlineSmall
+            )
+        },
+        text = {
+            val focusRequester = remember { FocusRequester() }
+
+            LaunchedEffect(Unit) {
+                focusRequester.requestFocus()
+            }
+
+            OutlinedTextField(
+                value = inputText,
+                onValueChange = { inputText = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester),
+                label = { Text("Штрихкод") },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    autoCorrectEnabled = false
+                )
+            )
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    if (inputText.isNotBlank()) {
+                        // TODO: Handle input confirmation
+                        inputText = ""
+                    }
+                    onDismiss()
+                }
+            ) {
+                Text("Применить")
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    inputText = ""
+                    onDismiss()
+                }
+            ) {
+                Text("Отмена")
+            }
+        }
+    )
 }
 
 private suspend fun startCamera(
