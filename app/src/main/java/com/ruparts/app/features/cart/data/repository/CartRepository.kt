@@ -1,0 +1,35 @@
+package com.ruparts.app.features.cart.data.repository
+
+import com.google.gson.Gson
+import com.ruparts.app.core.data.network.EndpointRetrofitService
+import com.ruparts.app.core.data.network.request
+import com.ruparts.app.core.utils.runCoroutineCatching
+import com.ruparts.app.features.cart.data.network.model.CartRequestDto
+import com.ruparts.app.features.cart.data.network.model.CartResponseDto
+import com.ruparts.app.features.cart.model.CartListItem
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
+import javax.inject.Inject
+
+class CartRepository @Inject constructor(
+    private val endpointService: EndpointRetrofitService,
+    private val gson: Gson,
+) {
+    suspend fun getCart(): Result<List<CartListItem>> = withContext(Dispatchers.Default) {
+        runCoroutineCatching {
+            coroutineScope {
+                val cartItems = async {
+                    val response = endpointService.request<CartRequestDto, CartResponseDto>(
+                        body = CartRequestDto(),
+                        gson = gson,
+                    )
+//                   переписать для Cart
+                    mapper.mapCart(response.data?.items)
+                }
+                cartItems.await()
+            }
+        }
+    }
+}
