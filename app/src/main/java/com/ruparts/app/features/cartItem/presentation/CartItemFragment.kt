@@ -2,9 +2,13 @@ package com.ruparts.app.features.cartItem.presentation
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import com.ruparts.app.R
@@ -51,6 +55,29 @@ class CartItemFragment : Fragment(){
         description.setText(cartItem.description)
         barcode.setText(cartItem.barcode)
 
+        setupMenu()
+
+    }
+
+    private fun setupMenu() {
+        val menuProvider = object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.product_unit_bottom_menu, menu)
+
+                val unitMenu = menu.findItem(R.id.unit_menu)
+
+                unitMenu.setOnMenuItemClickListener {
+                    CartItemActionsFragment().show(parentFragmentManager, "")
+                    return@setOnMenuItemClickListener true
+                }
+
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return false
+            }
+        }
+        requireActivity().addMenuProvider(menuProvider, viewLifecycleOwner)
     }
 
 }
