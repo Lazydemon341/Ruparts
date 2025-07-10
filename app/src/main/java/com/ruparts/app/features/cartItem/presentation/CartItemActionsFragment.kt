@@ -9,11 +9,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,103 +37,105 @@ class CartItemActionsFragment : BottomSheetDialogFragment() {
         }
     }
 
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ModalBottomSheetScreen() {
-    ModalBottomSheet(
-        onDismissRequest = {},
-        modifier = Modifier.padding(top = 16.dp),
-        containerColor = colorResource(id = R.color.onSurface),
-        dragHandle = {},
-    ) {
-        Column {
-            Button(
-                onClick = { },
-                modifier = Modifier.padding(vertical = 8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = colorResource(id = R.color.onSurface),
-                    contentColor = Color(0xFF1D1B20)  )
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.split),
-                    contentDescription = "",
-                )
-                Spacer(Modifier.width(16.dp))
-                Text(
-                    text = "Разделить",
-                    fontSize = 16.sp,
-                )
-            }
-            Button(
-                onClick = { },
-                modifier = Modifier.padding(vertical = 8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = colorResource(id = R.color.onSurface),
-                    contentColor = Color(0xFF1D1B20)  )
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.alert),
-                    contentDescription = "",
-                )
-                Spacer(Modifier.width(16.dp))
-                Text(
-                    text = "Дефект",
-                    fontSize = 16.sp,
-                )
-            }
-            Button(
-                onClick = { },
-                modifier = Modifier.padding(vertical = 8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = colorResource(id = R.color.onSurface),
-                    contentColor = Color(0xFF1D1B20)  )
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.print),
-                    contentDescription = "",
-                )
-                Spacer(Modifier.width(16.dp))
-                Text(
-                    text = "Перепечатать",
-                    fontSize = 16.sp,
-                )
-            }
-            Button(
-                onClick = { },
-                modifier = Modifier.padding(vertical = 8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = colorResource(id = R.color.onSurface),
-                    contentColor = Color(0xFF1D1B20)  )
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.delete_white),
-                    contentDescription = "",
-                )
-                Spacer(Modifier.width(16.dp))
-                Text(
-                    text = "Списать",
-                    fontSize = 16.sp,
-                )
-            }
-            Button(
-                onClick = { },
-                modifier = Modifier.padding(vertical = 8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = colorResource(id = R.color.onSurface),
-                    contentColor = Color(0xFF1D1B20)  )
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.edit),
-                    contentDescription = "",
-                )
-                Spacer(Modifier.width(16.dp))
-                Text(
-                    text = "Редактировать",
-                    fontSize = 16.sp,
-                )
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    private fun ModalBottomSheetScreen() {
+        ModalBottomSheet(
+            onDismissRequest = {
+                dismiss()
+            },
+            modifier = Modifier.padding(top = 16.dp),
+            containerColor = colorResource(id = R.color.onSurface),
+            dragHandle = {},
+        ) {
+            Column {
+                Button(
+                    onClick = { },
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = colorResource(id = R.color.onSurface),
+                        contentColor = Color(0xFF1D1B20)  )
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.split),
+                        contentDescription = "",
+                    )
+                    Spacer(Modifier.width(16.dp))
+                    Text(
+                        text = "Разделить",
+                        fontSize = 16.sp,
+                    )
+                }
+                Button(
+                    onClick = { },
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = colorResource(id = R.color.onSurface),
+                        contentColor = Color(0xFF1D1B20)  )
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.alert),
+                        contentDescription = "",
+                    )
+                    Spacer(Modifier.width(16.dp))
+                    Text(
+                        text = "Дефект",
+                        fontSize = 16.sp,
+                    )
+                }
+                Button(
+                    onClick = { },
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = colorResource(id = R.color.onSurface),
+                        contentColor = Color(0xFF1D1B20)  )
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.print),
+                        contentDescription = "",
+                    )
+                    Spacer(Modifier.width(16.dp))
+                    Text(
+                        text = "Перепечатать",
+                        fontSize = 16.sp,
+                    )
+                }
+                Button(
+                    onClick = { },
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = colorResource(id = R.color.onSurface),
+                        contentColor = Color(0xFF1D1B20)  )
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.delete_white),
+                        contentDescription = "",
+                    )
+                    Spacer(Modifier.width(16.dp))
+                    Text(
+                        text = "Списать",
+                        fontSize = 16.sp,
+                    )
+                }
+                Button(
+                    onClick = { },
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = colorResource(id = R.color.onSurface),
+                        contentColor = Color(0xFF1D1B20)  )
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.edit),
+                        contentDescription = "",
+                    )
+                    Spacer(Modifier.width(16.dp))
+                    Text(
+                        text = "Редактировать",
+                        fontSize = 16.sp,
+                    )
+                }
             }
         }
     }
 }
+
