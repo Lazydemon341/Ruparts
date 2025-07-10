@@ -12,6 +12,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,7 +46,7 @@ class CartItemActionsFragment : BottomSheetDialogFragment() {
                 dismiss()
             },
             modifier = Modifier.padding(top = 16.dp),
-            containerColor = colorResource(id = R.color.onSurface),
+            containerColor = MaterialTheme.colorScheme.onSurface,
             dragHandle = {},
         ) {
             Column {
@@ -53,7 +54,7 @@ class CartItemActionsFragment : BottomSheetDialogFragment() {
                     onClick = { },
                     modifier = Modifier.padding(vertical = 8.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = colorResource(id = R.color.onSurface),
+                        containerColor = MaterialTheme.colorScheme.onSurface,
                         contentColor = Color(0xFF1D1B20)  )
                 ) {
                     Icon(
@@ -70,7 +71,7 @@ class CartItemActionsFragment : BottomSheetDialogFragment() {
                     onClick = { },
                     modifier = Modifier.padding(vertical = 8.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = colorResource(id = R.color.onSurface),
+                        containerColor = MaterialTheme.colorScheme.onSurface,
                         contentColor = Color(0xFF1D1B20)  )
                 ) {
                     Icon(
@@ -87,7 +88,7 @@ class CartItemActionsFragment : BottomSheetDialogFragment() {
                     onClick = { },
                     modifier = Modifier.padding(vertical = 8.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = colorResource(id = R.color.onSurface),
+                        containerColor = MaterialTheme.colorScheme.onSurface,
                         contentColor = Color(0xFF1D1B20)  )
                 ) {
                     Icon(
@@ -104,7 +105,7 @@ class CartItemActionsFragment : BottomSheetDialogFragment() {
                     onClick = { },
                     modifier = Modifier.padding(vertical = 8.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = colorResource(id = R.color.onSurface),
+                        containerColor = MaterialTheme.colorScheme.onSurface,
                         contentColor = Color(0xFF1D1B20)  )
                 ) {
                     Icon(
@@ -121,7 +122,7 @@ class CartItemActionsFragment : BottomSheetDialogFragment() {
                     onClick = { },
                     modifier = Modifier.padding(vertical = 8.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = colorResource(id = R.color.onSurface),
+                        containerColor = MaterialTheme.colorScheme.onSurface,
                         contentColor = Color(0xFF1D1B20)  )
                 ) {
                     Icon(
