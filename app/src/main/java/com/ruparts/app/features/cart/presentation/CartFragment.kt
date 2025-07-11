@@ -106,11 +106,23 @@ class CartFragment : Fragment() {
     private fun observeScreenState() {
         viewModel.state.collectWhileStarted(viewLifecycleOwner) { state ->
             updateUI(state)
-            initialTextView.isVisible = state.items.isEmpty()
         }
     }
 
-        private fun updateUI(state: CartScreenState) {
+    private fun updateUI(state: CartScreenState) {
+        when(state.isLoading) {
+            true -> {
+                recyclerView.isVisible = false
+                initialTextView.isVisible = false
+                progressIndicator.isVisible = true
+            }
+            false -> {
+                recyclerView.isVisible = state.items.isNotEmpty()
+                initialTextView.isVisible = state.items.isEmpty()
+                progressIndicator.isVisible = false
+            }
+        }
+        initialTextView.isVisible = state.items.isEmpty()
         adapter.submitList(state.items)
         updateLoadingState(state.isLoading)
     }
@@ -121,7 +133,7 @@ class CartFragment : Fragment() {
         }
     }
 
-        private fun updateLoadingState(isLoading: Boolean) {
+    private fun updateLoadingState(isLoading: Boolean) {
         progressIndicator.isVisible = isLoading
     }
 
