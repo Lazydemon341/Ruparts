@@ -123,17 +123,12 @@ class CartFragment : Fragment() {
             }
         }
         adapter.submitList(state.items)
-        updateLoadingState(state.isLoading)
     }
 
     private fun setupTaskUpdateListener() {
         setFragmentResultListener(CartFragment.CART_UPDATED_REQUEST_KEY) { _, _ ->
             viewModel.loadCart()
         }
-    }
-
-    private fun updateLoadingState(isLoading: Boolean) {
-        progressIndicator.isVisible = isLoading
     }
 
     companion object {
