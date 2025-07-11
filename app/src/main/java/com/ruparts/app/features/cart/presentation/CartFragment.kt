@@ -122,7 +122,6 @@ class CartFragment : Fragment() {
                 progressIndicator.isVisible = false
             }
         }
-        initialTextView.isVisible = state.items.isEmpty()
         adapter.submitList(state.items)
         updateLoadingState(state.isLoading)
     }
