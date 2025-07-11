@@ -4,11 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
+import androidx.navigation.findNavController
 import com.ruparts.app.core.ui.theme.RupartsTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -25,11 +26,25 @@ class QrScanFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 val itemsState = viewModel.scannedItems.collectAsState()
+
+                LaunchedEffect(Unit) {
+                    viewModel.events.collect { event ->
+                        when (event) {
+                            QrScanScreenEvent.NavigateBack -> {
+                                findNavController().popBackStack()
+                            }
+
+                            QrScanScreenEvent.ShowKeyboardInput -> {
+
+                            }
+                        }
+                    }
+                }
+
                 RupartsTheme {
                     QrScanScreen(
                         scannedItems = itemsState.value,
-                        onRemove = { item -> viewModel.onRemove(item) },
-                        onBackClick = { findNavController().popBackStack() },
+                        onAction = viewModel::handleAction,
                     )
                 }
             }
