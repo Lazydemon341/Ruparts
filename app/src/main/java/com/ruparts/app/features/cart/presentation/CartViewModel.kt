@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ruparts.app.features.cart.data.repository.CartRepository
 import com.ruparts.app.features.cart.model.CartListItem
+import com.ruparts.app.features.cart.presentation.model.CartScreenState
+import com.ruparts.app.features.taskslist.presentation.model.TasksListScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -26,11 +28,11 @@ class CartViewModel @Inject constructor(
     private var loadCartJob: Job? = null
 
     val state = flow {
-        emit(repository.getCart().getOrNull() ?: emptyList())
+        emit(CartScreenState(items = repository.getCart().getOrNull() ?: emptyList()))
     }.stateIn(
         scope = viewModelScope + Dispatchers.Default,
         started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptyList(),
+        initialValue = initialScreenState,
     )
 
     fun loadCart() {
@@ -43,6 +45,9 @@ class CartViewModel @Inject constructor(
         }
     }
 
-
 }
 
+private val initialScreenState = CartScreenState(
+    items = emptyList(),
+    isLoading = true
+)

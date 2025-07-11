@@ -27,7 +27,7 @@ class CartRepository @Inject constructor(
                         body = CartRequestDto(),
                         gson = gson,
                     )
-                    mapper.mapCartItems(response.data!!.items)
+                    mapper.mapCartItems(response.data?.items.orEmpty())
                 }
                 cartItems.await()
             }

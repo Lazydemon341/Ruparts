@@ -13,12 +13,13 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.ruparts.app.R
 import com.ruparts.app.core.ui.utils.alignAboveSystemBars
 import com.ruparts.app.core.ui.utils.dp
 import com.ruparts.app.core.ui.utils.enableEdgeToEdge
 import com.ruparts.app.core.utils.collectWhileStarted
-import com.ruparts.app.features.cart.model.CartListItem
+import com.ruparts.app.features.cart.presentation.model.CartScreenState
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -31,6 +32,8 @@ class CartFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: CartListAdapter
+
+    private lateinit var progressIndicator: CircularProgressIndicator
 
 //    val mockItems = listOf(
 //        CartListItem(
@@ -82,6 +85,8 @@ class CartFragment : Fragment() {
             findNavController().navigate(CartFragmentDirections.actionCartFragmentToQrScanFragment())
         }
 
+        progressIndicator = view.findViewById(R.id.cart_progress_indicator)
+
         recyclerView = view.findViewById(R.id.cart_recycler_view)
         recyclerView.enableEdgeToEdge()
         adapter = CartListAdapter(
@@ -99,16 +104,25 @@ class CartFragment : Fragment() {
     }
 
     private fun observeScreenState() {
-        viewModel.state.collectWhileStarted(viewLifecycleOwner) { listOfItems ->
-            adapter.submitList(listOfItems)
-            if (!listOfItems.isEmpty()) initialTextView.isVisible = false
+        viewModel.state.collectWhileStarted(viewLifecycleOwner) { state ->
+            updateUI(state)
+            initialTextView.isVisible = state.items.isEmpty()
         }
+    }
+
+        private fun updateUI(state: CartScreenState) {
+        adapter.submitList(state.items)
+        updateLoadingState(state.isLoading)
     }
 
     private fun setupTaskUpdateListener() {
         setFragmentResultListener(CartFragment.CART_UPDATED_REQUEST_KEY) { _, _ ->
             viewModel.loadCart()
         }
+    }
+
+        private fun updateLoadingState(isLoading: Boolean) {
+        progressIndicator.isVisible = isLoading
     }
 
     companion object {
