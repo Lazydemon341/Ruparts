@@ -7,6 +7,10 @@ import com.ruparts.app.core.utils.runCoroutineCatching
 import com.ruparts.app.features.cart.data.mapper.CartMapper
 import com.ruparts.app.features.cart.data.network.model.CartRequestDto
 import com.ruparts.app.features.cart.data.network.model.CartResponseDto
+import com.ruparts.app.features.cart.data.network.model.CartTransferToBasketRequestDataDto
+import com.ruparts.app.features.cart.data.network.model.CartTransferToBasketRequestDto
+import com.ruparts.app.features.cart.data.network.model.CartTransferToBasketResponseDto
+import com.ruparts.app.features.cart.data.network.model.CartTransferToBasketResponseDataDto
 import com.ruparts.app.features.cart.model.CartListItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -26,4 +30,21 @@ class CartRepository @Inject constructor(
             mapper.mapCartItems(response.data?.items.orEmpty())
         }
     }
+
+    suspend fun doScan(): Result<CartTransferToBasketResponseDataDto> = withContext(Dispatchers.Default) {
+        runCoroutineCatching {
+            val response = endpointService.request<CartTransferToBasketRequestDto, CartTransferToBasketResponseDto>(
+                body = CartTransferToBasketRequestDto(
+                    data = CartTransferToBasketRequestDataDto(
+                        barcode = TODO(),
+                        bcTypes = TODO(),
+                        purpose = TODO()
+                    )
+                ),
+                gson = gson,
+            )
+            response.data
+        }
+    }
+
 }
