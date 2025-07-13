@@ -7,5 +7,5 @@ sealed interface QrScanScreenAction {
     data object BackClick : QrScanScreenAction
     data class RemoveItem(val item: ScannedItem) : QrScanScreenAction
     data class BarcodesScanned(val barcodes: List<Barcode>) : QrScanScreenAction
-    data object KeyboardClick : QrScanScreenAction
+    data class ManualInput(val code: String) : QrScanScreenAction
 }

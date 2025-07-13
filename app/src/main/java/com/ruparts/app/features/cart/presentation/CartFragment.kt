@@ -35,34 +35,6 @@ class CartFragment : Fragment() {
 
     private lateinit var progressIndicator: CircularProgressIndicator
 
-//    val mockItems = listOf(
-//        CartListItem(
-//            article = "11115555669987452131",
-//            brand = "Toyota",
-//            quantity = 13481,
-//            description = "Описание",
-//            barcode = "H8676BDVGJBDERY",
-//            cartOwner = "Ivanov A.A."
-//        ),
-//        CartListItem(
-//            article = "548870578",
-//            brand = "Mazda",
-//            quantity = 10,
-//            description = "Длинное описание, которое не влезает в одну строчку",
-//            barcode = "JBHFT76YUT76567tFJJCXGVNK",
-//            cartOwner = "Petrov P.P"
-//        ),
-//        CartListItem(
-//            article = "36575",
-//            brand = "Porsche",
-//            quantity = 1265843,
-//            description = "Очень длинное описание, которое не влезает в одну строчку, которое не влезает в одну строчку, которое не влезает в одну строчку, которое не влезает в одну строчку,",
-//            barcode = "86HH765BVDR5533DG",
-//            cartOwner = "Sidorov S.S."
-//        )
-//    )
-
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -110,12 +82,13 @@ class CartFragment : Fragment() {
     }
 
     private fun updateUI(state: CartScreenState) {
-        when(state.isLoading) {
+        when (state.isLoading) {
             true -> {
                 recyclerView.isVisible = false
                 initialTextView.isVisible = false
                 progressIndicator.isVisible = true
             }
+
             false -> {
                 recyclerView.isVisible = state.items.isNotEmpty()
                 initialTextView.isVisible = state.items.isEmpty()
@@ -126,14 +99,13 @@ class CartFragment : Fragment() {
     }
 
     private fun setupTaskUpdateListener() {
-        setFragmentResultListener(CartFragment.CART_UPDATED_REQUEST_KEY) { _, _ ->
-            viewModel.loadCart()
+        setFragmentResultListener(CART_UPDATED_REQUEST_KEY) { _, _ ->
+            viewModel.reloadCart()
         }
     }
 
     companion object {
         const val CART_UPDATED_REQUEST_KEY = "cart_updated_request_key"
     }
-
 }
 

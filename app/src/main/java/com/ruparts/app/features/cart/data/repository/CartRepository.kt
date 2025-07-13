@@ -9,8 +9,6 @@ import com.ruparts.app.features.cart.data.network.model.CartRequestDto
 import com.ruparts.app.features.cart.data.network.model.CartResponseDto
 import com.ruparts.app.features.cart.model.CartListItem
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -19,18 +17,13 @@ class CartRepository @Inject constructor(
     private val gson: Gson,
     private val mapper: CartMapper
 ) {
-    suspend fun getCart(): Result<List<CartListItem>?> = withContext(Dispatchers.Default) {
+    suspend fun getCart(): Result<List<CartListItem>> = withContext(Dispatchers.Default) {
         runCoroutineCatching {
-            coroutineScope {
-                val cartItems = async {
-                    val response = endpointService.request<CartRequestDto, CartResponseDto>(
-                        body = CartRequestDto(),
-                        gson = gson,
-                    )
-                    mapper.mapCartItems(response.data?.items.orEmpty())
-                }
-                cartItems.await()
-            }
+            val response = endpointService.request<CartRequestDto, CartResponseDto>(
+                body = CartRequestDto(),
+                gson = gson,
+            )
+            mapper.mapCartItems(response.data?.items.orEmpty())
         }
     }
 }

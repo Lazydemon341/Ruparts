@@ -9,6 +9,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.os.bundleOf
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
@@ -87,11 +88,18 @@ class MainActivity : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(navigationView.menu, drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
 
+        val windowInsetsController = WindowInsetsControllerCompat(window, window.decorView)
+
         navController.addOnDestinationChangedListener { controller, destination, _ ->
-            toolbar.subtitle = null
-            when (destination.id) {
-                R.id.authFragment, R.id.qrScanFragment -> toolbar.isVisible = false
-                else -> toolbar.isVisible = true
+            toolbar.apply {
+                subtitle = null
+                isVisible = destination.id != R.id.authFragment && destination.id != R.id.qrScanFragment
+            }
+
+            val lightSystemBars = destination.id != R.id.qrScanFragment
+            windowInsetsController.apply {
+                isAppearanceLightStatusBars = lightSystemBars
+                isAppearanceLightNavigationBars = lightSystemBars
             }
         }
     }
