@@ -40,22 +40,17 @@ class CartRepository @Inject constructor(
 
     suspend fun doScan(): Result<CartTransferToBasketResponseDataDto> = withContext(Dispatchers.Default) {
         runCoroutineCatching {
-            coroutineScope {
-                val scannedItems = async {
-                    val response = endpointService.request<CartTransferToBasketRequestDto, CartTransferToBasketResponseDto>(
-                        body = CartTransferToBasketRequestDto(
-                            data = CartTransferToBasketRequestDataDto(
-                                barcode = TODO(),
-                                bcTypes = TODO(),
-                                purpose = TODO()
-                            )
-                        ),
-                        gson = gson,
+            val response = endpointService.request<CartTransferToBasketRequestDto, CartTransferToBasketResponseDto>(
+                body = CartTransferToBasketRequestDto(
+                    data = CartTransferToBasketRequestDataDto(
+                        barcode = TODO(),
+                        bcTypes = TODO(),
+                        purpose = TODO()
                     )
-                    response.data
-                }
-                scannedItems.await()
-            }
+                ),
+                gson = gson,
+            )
+            response.data
         }
     }
 

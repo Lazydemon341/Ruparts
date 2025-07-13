@@ -33,21 +33,6 @@ data class CartTransferToBasketResponseDataDto(
         @SerializedName("info")
         val info: String,
         @SerializedName("actions")
-        val actions: ScannedItemActions
-    ) {
-        class ScannedItemActions(
-            @SerializedName("split")
-            val split: Boolean,
-            @SerializedName("not_found")
-            val notFound: Boolean,
-            @SerializedName("reprint")
-            val reprint: Boolean,
-            @SerializedName("defec")
-            val defect: Boolean,
-            @SerializedName("suspect_defect")
-            val suspectDefect: Boolean,
-            @SerializedName("write_off")
-            val writeOff: Boolean,
-        )
-    }
+        val actions: CartItemDto
+    )
 }
