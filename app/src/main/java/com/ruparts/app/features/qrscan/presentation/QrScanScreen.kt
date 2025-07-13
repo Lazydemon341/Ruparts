@@ -293,13 +293,19 @@ private fun QrScanItemsContent(scannedItems: List<ScannedItem>, onRemove: (Scann
                     enableSwipeToDismiss = index == scannedItems.lastIndex,
                     modifier = Modifier.animateItem()
                 )
-                if (index == scannedItems.lastIndex) {
-                    Spacer(modifier = Modifier.height(12.dp))
-                } else {
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
+                Spacer(modifier = Modifier.height(8.dp))
             }
-
+            stickyHeader {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp, bottom = 4.dp),
+                    color = colorResource(R.color.neutral60),
+                    text = "Отсканируйте один или несколько товаров",
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center,
+                )
+            }
         }
         Surface(
             modifier = Modifier
@@ -319,7 +325,7 @@ private fun QrScanItemsContent(scannedItems: List<ScannedItem>, onRemove: (Scann
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Text(
-                    text = "Закончить",
+                    text = "Переместить в корзину",
                     fontSize = 16.sp,
                 )
             }
@@ -460,18 +466,16 @@ private fun QrScanEmptyContent() {
             )
             Text(
                 text = "Отсканируйте товары в ячейке, они попадут в корзину",
-                fontSize = 14.sp,
                 color = colorResource(id = R.color.secondary60),
+                style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
-                fontWeight = FontWeight.W400,
             )
         }
         Text(
             text = "или",
-            fontSize = 14.sp,
             color = colorResource(id = R.color.secondary60),
+            style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,
-            fontWeight = FontWeight.W400,
             modifier = Modifier.padding(vertical = 8.dp)
         )
         Column(
@@ -513,10 +517,9 @@ private fun QrScanEmptyContent() {
             Text(
                 text = "Отсканируйте товары в корзине,\n" +
                         "а затем ячейку",
-                fontSize = 14.sp,
                 color = colorResource(id = R.color.secondary60),
+                style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
-                fontWeight = FontWeight.W400,
             )
         }
     }
