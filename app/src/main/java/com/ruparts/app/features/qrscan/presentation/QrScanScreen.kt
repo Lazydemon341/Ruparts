@@ -3,7 +3,6 @@ package com.ruparts.app.features.qrscan.presentation
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.compose.CameraXViewfinder
@@ -14,7 +13,6 @@ import androidx.camera.core.SurfaceRequest
 import androidx.camera.core.TorchState
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.lifecycle.awaitInstance
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -35,9 +33,12 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Keyboard
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -56,7 +57,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -71,8 +71,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -83,7 +82,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.google.mlkit.vision.barcode.common.Barcode
@@ -99,7 +97,7 @@ fun QrScanScreen(
     scannedItems: List<ScannedItem>,
     onAction: (QrScanScreenAction) -> Unit,
 ) {
-    val context = LocalContext.current
+
     var permissionGranted by remember { mutableStateOf<Boolean>(false) }
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -107,25 +105,7 @@ fun QrScanScreen(
         permissionGranted = isGranted
     }
 
-    val activity = LocalActivity.current
-    val view = LocalView.current
-
-    DisposableEffect(activity, view) {
-        val window = requireNotNull(activity?.window)
-        val windowInsetsController = WindowInsetsControllerCompat(window, view)
-        windowInsetsController.apply {
-            isAppearanceLightStatusBars = false
-            isAppearanceLightNavigationBars = false
-        }
-
-        onDispose {
-            windowInsetsController.apply {
-                isAppearanceLightStatusBars = true
-                isAppearanceLightNavigationBars = true
-            }
-        }
-    }
-
+    val context = LocalContext.current
     LaunchedEffect(Unit) {
         val permission = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
         if (permission != PackageManager.PERMISSION_GRANTED) {
@@ -135,10 +115,10 @@ fun QrScanScreen(
         }
     }
 
-    val lifecycleOwner = LocalLifecycleOwner.current
     var surfaceRequestState = remember { mutableStateOf<SurfaceRequest?>(null) }
     var cameraState = remember { mutableStateOf<Camera?>(null) }
 
+    val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(permissionGranted, context, lifecycleOwner) {
         if (permissionGranted) {
             cameraState.value = startCamera(
@@ -151,62 +131,17 @@ fun QrScanScreen(
     }
 
     var showInputDialog by remember { mutableStateOf(false) }
-
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Column(
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Text(
-                            text = if (scannedItems.isEmpty()) "Скан" else "Товары",
-                            color = Color.White,
-                            fontSize = 22.sp,
-                        )
-                        if (scannedItems.isNotEmpty()) {
-                            Text(
-                                text = "Отсканировано: ${scannedItems.size}",
-                                color = Color.White,
-                                fontSize = 12.sp,
-                            )
-                        }
-                    }
+            QrScanScreenTopBar(
+                cameraProvider = {
+                    cameraState.value
                 },
-                navigationIcon = {
-                    IconButton(
-                        onClick = { onAction(QrScanScreenAction.BackClick) },
-                        modifier = Modifier.size(48.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Close",
-                            tint = Color.White
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(
-                        onClick = {
-                            showInputDialog = true
-                        },
-                        modifier = Modifier.size(48.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Keyboard,
-                            contentDescription = null,
-                            tint = Color.White
-                        )
-                    }
-                    FlashButton(camera = cameraState.value)
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Black,
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White,
-                    navigationIconContentColor = Color.White
-                ),
+                scannedItemsCount = scannedItems.size,
+                onAction = onAction,
+                onShowInputDialog = {
+                    showInputDialog = true
+                }
             )
         },
         containerColor = Color.Black,
@@ -220,7 +155,10 @@ fun QrScanScreen(
             if (surfaceRequest != null) {
                 CameraXViewfinder(
                     surfaceRequest = surfaceRequest,
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .fillMaxSize()
+                        .fillMaxHeight(0.5f),
                 )
             }
 
@@ -228,7 +166,7 @@ fun QrScanScreen(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
-                    .fillMaxHeight(0.5f),
+                    .fillMaxHeight(0.55f),
                 color = MaterialTheme.colorScheme.surfaceContainer,
                 shadowElevation = 8.dp,
                 shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
@@ -249,6 +187,78 @@ fun QrScanScreen(
                 onDismiss = {
                     showInputDialog = false
                 },
+                onConfirmInput = { input ->
+                    onAction(QrScanScreenAction.ManualInput(input))
+                },
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun QrScanScreenTopBar(
+    cameraProvider: () -> Camera?,
+    scannedItemsCount: Int,
+    onAction: (QrScanScreenAction) -> Unit,
+    onShowInputDialog: () -> Unit,
+) {
+    CenterAlignedTopAppBar(
+        title = {
+            QrScanScreenTitle(scannedItemsCount)
+        },
+        navigationIcon = {
+            IconButton(
+                onClick = { onAction(QrScanScreenAction.BackClick) },
+                modifier = Modifier.size(48.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Close",
+                    tint = Color.White
+                )
+            }
+        },
+        actions = {
+            IconButton(
+                onClick = {
+                    onShowInputDialog()
+                },
+                modifier = Modifier.size(48.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Keyboard,
+                    contentDescription = null,
+                    tint = Color.White
+                )
+            }
+            FlashButton(camera = cameraProvider())
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color.Black,
+            titleContentColor = Color.White,
+            actionIconContentColor = Color.White,
+            navigationIconContentColor = Color.White
+        ),
+    )
+}
+
+@Composable
+private fun QrScanScreenTitle(scannedItemsCount: Int) {
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(
+            text = if (scannedItemsCount == 0) "Скан" else "Товары",
+            color = Color.White,
+            fontSize = 22.sp,
+        )
+        if (scannedItemsCount > 0) {
+            Text(
+                text = "Отсканировано: ${scannedItemsCount}",
+                color = Color.White,
+                fontSize = 12.sp,
             )
         }
     }
@@ -263,8 +273,7 @@ private fun QrScanItemsContent(scannedItems: List<ScannedItem>, onRemove: (Scann
     }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxWidth(),
     ) {
         LazyColumn(
             modifier = Modifier.align(Alignment.TopCenter),
@@ -275,19 +284,28 @@ private fun QrScanItemsContent(scannedItems: List<ScannedItem>, onRemove: (Scann
                 items = scannedItems,
                 key = { _, it -> it.article },
             ) { index, item ->
+                if (index == 0) {
+                    Spacer(modifier = Modifier.height(88.dp))
+                }
                 QrScanListItem(
                     item = item,
                     onRemove = onRemove,
                     enableSwipeToDismiss = index == scannedItems.lastIndex,
                     modifier = Modifier.animateItem()
                 )
-                if (index == scannedItems.lastIndex) {
-                    Spacer(modifier = Modifier.height(12.dp))
-                } else {
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
+                Spacer(modifier = Modifier.height(8.dp))
             }
-
+            stickyHeader {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp, bottom = 4.dp),
+                    color = colorResource(R.color.neutral60),
+                    text = "Отсканируйте один или несколько товаров",
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center,
+                )
+            }
         }
         Surface(
             modifier = Modifier
@@ -307,7 +325,7 @@ private fun QrScanItemsContent(scannedItems: List<ScannedItem>, onRemove: (Scann
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Text(
-                    text = "Закончить",
+                    text = "Переместить в корзину",
                     fontSize = 16.sp,
                 )
             }
@@ -322,16 +340,20 @@ private fun QrScanListItem(
     enableSwipeToDismiss: Boolean,
     modifier: Modifier = Modifier,
 ) {
+    val screenWidth = LocalWindowInfo.current.containerSize.width
 
     val swipeToDismissBoxState = rememberSwipeToDismissBoxState(
         confirmValueChange = { value ->
-            if (value == SwipeToDismissBoxValue.EndToStart) {
-                onRemove(item)
-            }
             value != SwipeToDismissBoxValue.StartToEnd
         },
-        positionalThreshold = with(LocalDensity.current) { { 160.dp.toPx() } }
+        positionalThreshold = { screenWidth / 3f }
     )
+
+    LaunchedEffect(swipeToDismissBoxState.currentValue) {
+        if (swipeToDismissBoxState.currentValue == SwipeToDismissBoxValue.EndToStart) {
+            onRemove(item)
+        }
+    }
 
     SwipeToDismissBox(
         state = swipeToDismissBoxState,
@@ -399,24 +421,104 @@ private fun QrScanListItem(
 
 @Composable
 private fun QrScanEmptyContent() {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize(),
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 24.dp, bottom = 24.dp),
+        verticalArrangement = Arrangement.Center
     ) {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(horizontal = 32.dp)
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.qrscan),
-                contentDescription = "Картинка",
-                modifier = Modifier.padding(bottom = 16.dp)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.padding(bottom = 4.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.LocationOn,
+                    contentDescription = null,
+                    modifier = Modifier.size(40.dp),
+                    tint = Color.Gray
+                )
+                Icon(
+                    imageVector = Icons.Default.ArrowForward,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(20.dp)
+                        .padding(horizontal = 10.dp),
+                    tint = Color.Gray
+                )
+                Icon(
+                    imageVector = Icons.Default.ShoppingCart,
+                    contentDescription = null,
+                    modifier = Modifier.size(28.dp),
+                    tint = Color.Gray
+                )
+            }
+            Text(
+                text = "Из ячейки в корзину",
+                fontSize = 16.sp,
+                color = colorResource(id = R.color.secondary60),
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.W500,
             )
             Text(
-                text = "Отсканируйте товары в ячейке, чтобы переместить их в корзину " +
-                        "или отсканируйте товары в корзине, чтобы переместить их в ячейку",
+                text = "Отсканируйте товары в ячейке, они попадут в корзину",
                 color = colorResource(id = R.color.secondary60),
-                fontSize = 14.sp,
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center,
+            )
+        }
+        Text(
+            text = "или",
+            color = colorResource(id = R.color.secondary60),
+            style = MaterialTheme.typography.bodyMedium,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(vertical = 8.dp)
+        )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.padding(bottom = 4.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ShoppingCart,
+                    contentDescription = null,
+                    modifier = Modifier.size(28.dp),
+                    tint = Color.Gray
+                )
+                Icon(
+                    imageVector = Icons.Default.ArrowForward,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(20.dp)
+                        .padding(horizontal = 10.dp),
+                    tint = Color.Gray
+                )
+                Icon(
+                    imageVector = Icons.Default.LocationOn,
+                    contentDescription = null,
+                    modifier = Modifier.size(28.dp),
+                    tint = Color.Gray
+                )
+            }
+            Text(
+                text = "Из корзины в ячейку",
+                fontSize = 16.sp,
+                color = colorResource(id = R.color.secondary60),
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.W500,
+            )
+            Text(
+                text = "Отсканируйте товары в корзине,\n" +
+                        "а затем ячейку",
+                color = colorResource(id = R.color.secondary60),
+                style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
             )
         }
@@ -452,6 +554,7 @@ private fun FlashButton(camera: Camera?) {
 @Composable
 private fun ManualInputDialog(
     onDismiss: () -> Unit,
+    onConfirmInput: (text: String) -> Unit,
 ) {
     var inputText by remember { mutableStateOf("") }
     AlertDialog(
@@ -489,7 +592,7 @@ private fun ManualInputDialog(
             TextButton(
                 onClick = {
                     if (inputText.isNotBlank()) {
-                        // TODO: Handle input confirmation
+                        onConfirmInput(inputText)
                         inputText = ""
                     }
                     onDismiss()
@@ -552,6 +655,3 @@ fun QrScanScreenPreview() {
         onAction = {},
     )
 }
-
-
-

@@ -33,10 +33,6 @@ class QrScanFragment : Fragment() {
                             QrScanScreenEvent.NavigateBack -> {
                                 findNavController().popBackStack()
                             }
-
-                            QrScanScreenEvent.ShowKeyboardInput -> {
-
-                            }
                         }
                     }
                 }

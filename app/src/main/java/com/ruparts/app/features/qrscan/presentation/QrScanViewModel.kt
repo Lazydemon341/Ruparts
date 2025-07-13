@@ -26,7 +26,7 @@ class QrScanViewModel @Inject constructor() : ViewModel() {
             QrScanScreenAction.BackClick -> _events.emit(QrScanScreenEvent.NavigateBack)
             is QrScanScreenAction.BarcodesScanned -> onBarcodesScanned(action.barcodes)
             is QrScanScreenAction.RemoveItem -> onRemoveItem(action.item)
-            QrScanScreenAction.KeyboardClick -> _events.emit(QrScanScreenEvent.ShowKeyboardInput)
+            is QrScanScreenAction.ManualInput -> onManualInput(action.code)
         }
     }
 
@@ -35,6 +35,10 @@ class QrScanViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun onBarcodesScanned(barcodes: List<Barcode>) {
+
+    }
+
+    private fun onManualInput(code: String) {
 
     }
 }
