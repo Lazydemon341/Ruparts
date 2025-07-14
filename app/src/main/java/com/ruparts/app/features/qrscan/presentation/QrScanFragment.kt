@@ -25,7 +25,7 @@ class QrScanFragment : Fragment() {
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
-                val itemsState = viewModel.scannedItems.collectAsState()
+                val state = viewModel.state.collectAsState()
 
                 LaunchedEffect(Unit) {
                     viewModel.events.collect { event ->
@@ -39,7 +39,7 @@ class QrScanFragment : Fragment() {
 
                 RupartsTheme {
                     QrScanScreen(
-                        scannedItems = itemsState.value,
+                        state = state.value,
                         onAction = viewModel::handleAction,
                     )
                 }
