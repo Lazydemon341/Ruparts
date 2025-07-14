@@ -33,8 +33,8 @@ internal class QrCodeImageAnalyzer(
             )
             scanner.process(image)
                 .addOnSuccessListener { barcodes ->
-                    Log.d(TAG, "Barcodes detected: $barcodes")
                     if (barcodes.isNotEmpty()) {
+                        Log.d(TAG, "Barcodes detected: $barcodes")
                         onBarcodesScanned(barcodes)
                     }
                 }
@@ -50,6 +50,6 @@ internal class QrCodeImageAnalyzer(
     }
 
     companion object {
-        private const val TAG = "QrCodeAnalyzer"
+        private const val TAG = "QrCodeImageAnalyzer"
     }
 }

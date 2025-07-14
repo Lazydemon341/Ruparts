@@ -25,4 +25,12 @@
     <string name="camera_permission_required">Для сканирования QR-кода необходим доступ к камере</string>
     <string name="qr_scan_title">Товары</string>
     <string name="permission_denied">Доступ к камере запрещен</string>
+
+    <!-- Cart -->
+    <plurals name="cart_items_count">
+        <item quantity="one">%d товар</item>
+        <item quantity="few">%d товара</item>
+        <item quantity="many">%d товаров</item>
+        <item quantity="other">%d товаров</item>
+    </plurals>
 </resources>

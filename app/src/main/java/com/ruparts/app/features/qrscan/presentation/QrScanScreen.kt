@@ -50,6 +50,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
@@ -99,6 +101,7 @@ import androidx.camera.core.Preview as CameraPreview
 fun QrScanScreen(
     state: QrScanScreenState,
     onAction: (QrScanScreenAction) -> Unit,
+    snackbarHostState: SnackbarHostState,
 ) {
 
     var permissionGranted by remember { mutableStateOf<Boolean>(false) }
@@ -146,6 +149,9 @@ fun QrScanScreen(
                     showInputDialog = true
                 }
             )
+        },
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
         },
         containerColor = Color.Black,
     ) { paddingValues ->
@@ -286,6 +292,9 @@ private fun QrScanScreenTitle(scannedItemsCount: Int) {
     }
 }
 
+private const val listItemContentType = "listItem"
+private const val listHeaderContentType = "listHeader"
+
 @Composable
 private fun QrScanItemsContent(scannedItems: List<CartListItem>, onRemove: (CartListItem) -> Unit) {
     val lazyListState = rememberLazyListState()
@@ -305,6 +314,7 @@ private fun QrScanItemsContent(scannedItems: List<CartListItem>, onRemove: (Cart
             itemsIndexed(
                 items = scannedItems,
                 key = { _, it -> it.id },
+                contentType = { _, _ -> listItemContentType },
             ) { index, item ->
                 if (index == 0) {
                     Spacer(modifier = Modifier.height(88.dp))
@@ -317,7 +327,9 @@ private fun QrScanItemsContent(scannedItems: List<CartListItem>, onRemove: (Cart
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
-            stickyHeader {
+            stickyHeader(
+                contentType = listHeaderContentType,
+            ) {
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -707,6 +719,7 @@ private fun QrScanScreenPreview() {
             isLoading = false,
         ),
         onAction = {},
+        snackbarHostState = remember { SnackbarHostState() }
     )
 }
 
@@ -719,6 +732,7 @@ private fun QrScanScreenEmptyPreview() {
             isLoading = false,
         ),
         onAction = {},
+        snackbarHostState = remember { SnackbarHostState() }
     )
 }
 
@@ -731,5 +745,6 @@ private fun QrScanScreenLoadingPreview() {
             isLoading = true,
         ),
         onAction = {},
+        snackbarHostState = remember { SnackbarHostState() }
     )
 }

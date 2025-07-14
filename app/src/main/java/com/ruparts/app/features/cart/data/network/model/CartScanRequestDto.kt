@@ -13,7 +13,7 @@ class CartScanRequestDataDto(
     @SerializedName("barcode")
     val barcode: String,
     @SerializedName("bc_types")
-    val bcTypes: List<String>? = null,
+    val bcTypes: List<CartScanBCTypeDto>? = listOf(CartScanBCTypeDto.PRODUCT),
     @SerializedName("purpose")
     val purpose: CartScanRequestPurposeDto = CartScanRequestPurposeDto.TRANSFER_TO_BASKET,
 )
@@ -24,4 +24,9 @@ enum class CartScanRequestPurposeDto {
 
     @SerializedName("info")
     INFO,
+}
+
+enum class CartScanBCTypeDto {
+    @SerializedName("PB")
+    PRODUCT,
 }

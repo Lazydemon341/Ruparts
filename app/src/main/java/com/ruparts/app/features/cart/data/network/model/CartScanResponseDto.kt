@@ -2,14 +2,22 @@ package com.ruparts.app.features.cart.data.network.model
 
 import com.google.gson.annotations.SerializedName
 
-data class CartScanResponseDto(
+class CartScanResponseDto(
+    @SerializedName("type")
+    val type: Int,
     @SerializedName("data")
-    val data: CartScanResponseDataDto
+    val data: CartScanResponseDataDto?,
+    val error: CartScanResponseErrorDto?,
 )
 
-data class CartScanResponseDataDto(
+class CartScanResponseDataDto(
     @SerializedName("bc_type")
     val bcType: String,
     @SerializedName("scanned")
-    val scannedItem : CartItemDto
+    val scannedItem: CartItemDto
+)
+
+class CartScanResponseErrorDto(
+    @SerializedName("message")
+    val message: String?
 )

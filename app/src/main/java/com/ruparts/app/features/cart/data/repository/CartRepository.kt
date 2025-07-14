@@ -15,6 +15,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+private const val SUCCESS_RESPONSE_TYPE = 0
+private const val ERROR_RESPONSE_TYPE = 1
+
 class CartRepository @Inject constructor(
     private val endpointService: EndpointRetrofitService,
     private val gson: Gson,
@@ -33,6 +36,9 @@ class CartRepository @Inject constructor(
 
     suspend fun doScan(barcode: String): Result<CartListItem> = withContext(Dispatchers.Default) {
         runCoroutineCatching {
+
+            // TODO: detect code type (location, product, etc), and do request accordingly
+
             val response = endpointService.request<CartScanRequestDto, CartScanResponseDto>(
                 body = CartScanRequestDto(
                     data = CartScanRequestDataDto(
@@ -41,7 +47,24 @@ class CartRepository @Inject constructor(
                 ),
                 gson = gson,
             )
-            mapper.mapCartItem(response.data.scannedItem)
+
+            when (response.type) {
+                SUCCESS_RESPONSE_TYPE -> {
+                    val data = requireNotNull(
+                        value = response.data,
+                        lazyMessage = { "Success response with null data" },
+                    )
+                    mapper.mapCartItem(data.scannedItem)
+                }
+
+                ERROR_RESPONSE_TYPE -> {
+                    throw CartScanException(response.error?.message)
+                }
+
+                else -> throw IllegalStateException("Unknown response type: ${response.type}")
+            }
         }
     }
 }
+
+class CartScanException(message: String?) : Exception(message)

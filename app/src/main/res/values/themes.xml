@@ -4,7 +4,7 @@
 
         <!--  Text colors -->
         <item name="android:textColorSecondary">@color/secondary60</item>
-        <item name="android:textColorPrimary">#1D1B20</item>
+        <item name="android:textColorPrimary">@color/onSurface</item>
 
         <item name="colorPrimary">@color/primary</item>
         <item name="colorOnPrimary">@color/onPrimary</item>
@@ -15,9 +15,26 @@
         <item name="colorSurfaceContainer">@color/surfaceContainer</item>
         <item name="colorSurface">@color/surface</item>
         <item name="colorOnSurface">@color/onSurface</item>
+        <item name="colorOnSurfaceVariant">@color/onSurfaceVariant</item>
 
         <!--  Status bar color -->
         <item name="android:statusBarColor">?colorSurface</item>
         <item name="android:windowLightStatusBar">true</item>
     </style>
+
+    <!-- Text appearance styles -->
+    <style name="TextAppearance.Ruparts.LabelMedium" parent="TextAppearance.Material3.LabelMedium">
+        <item name="android:textSize">12sp</item>
+        <item name="android:lineSpacingExtra">2sp</item>
+        <item name="android:translationY">-0.97sp</item>
+        <item name="android:textColor">?colorOnSurfaceVariant</item>
+    </style>
+
+    <style name="TextAppearance.Ruparts.TitleLarge" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textSize">22sp</item>
+        <item name="android:lineSpacingExtra">2sp</item>
+        <item name="android:translationY">-1.11sp</item>
+        <item name="android:textColor">?colorOnSurface</item>
+    </style>
+
 </resources>
