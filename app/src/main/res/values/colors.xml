@@ -47,4 +47,5 @@
     <color name="surfaceContainer">#F3EDF7</color>
     <color name="surface">#FEF7FF</color>
     <color name="onSurface">#1D1B20</color>
+    <color name="onSurfaceVariant">#FF49454F</color>
 </resources>

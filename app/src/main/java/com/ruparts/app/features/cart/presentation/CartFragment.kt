@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
@@ -95,6 +96,18 @@ class CartFragment : Fragment() {
                 progressIndicator.isVisible = false
             }
         }
+        setToolbarSubtitle(
+            if (state.items.isEmpty()) {
+                null
+            } else {
+                val itemsCount = state.items.size
+                resources.getQuantityString(
+                    R.plurals.cart_items_count,
+                    itemsCount,
+                    itemsCount,
+                )
+            }
+        )
         adapter.submitList(state.items)
     }
 
@@ -102,6 +115,10 @@ class CartFragment : Fragment() {
         setFragmentResultListener(CART_UPDATED_REQUEST_KEY) { _, _ ->
             viewModel.reloadCart()
         }
+    }
+
+    private fun setToolbarSubtitle(subtitle: String?) {
+        (activity as? AppCompatActivity)?.supportActionBar?.subtitle = subtitle
     }
 
     companion object {

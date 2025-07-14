@@ -43,12 +43,15 @@ import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
@@ -82,11 +85,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.ruparts.app.R
-import com.ruparts.app.features.qrscan.model.ScannedItem
+import com.ruparts.app.features.cart.model.CartListItem
 import com.ruparts.app.features.qrscan.presentation.camera.QrCodeImageAnalyzer
 import java.util.concurrent.Executors
 import androidx.camera.core.Preview as CameraPreview
@@ -94,8 +99,9 @@ import androidx.camera.core.Preview as CameraPreview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QrScanScreen(
-    scannedItems: List<ScannedItem>,
+    state: QrScanScreenState,
     onAction: (QrScanScreenAction) -> Unit,
+    snackbarHostState: SnackbarHostState,
 ) {
 
     var permissionGranted by remember { mutableStateOf<Boolean>(false) }
@@ -121,12 +127,14 @@ fun QrScanScreen(
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(permissionGranted, context, lifecycleOwner) {
         if (permissionGranted) {
-            cameraState.value = startCamera(
-                context = context,
-                lifecycleOwner = lifecycleOwner,
-                onSurfaceRequest = { surfaceRequestState.value = it },
-                onBarcodesScanned = { onAction(QrScanScreenAction.BarcodesScanned(it)) },
-            )
+            lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                cameraState.value = startCamera(
+                    context = context,
+                    lifecycleOwner = lifecycleOwner,
+                    onSurfaceRequest = { surfaceRequestState.value = it },
+                    onBarcodesScanned = { onAction(QrScanScreenAction.BarcodesScanned(it)) },
+                )
+            }
         }
     }
 
@@ -134,15 +142,16 @@ fun QrScanScreen(
     Scaffold(
         topBar = {
             QrScanScreenTopBar(
-                cameraProvider = {
-                    cameraState.value
-                },
-                scannedItemsCount = scannedItems.size,
+                camera = cameraState.value,
+                scannedItemsCount = state.scannedItems.size,
                 onAction = onAction,
                 onShowInputDialog = {
                     showInputDialog = true
                 }
             )
+        },
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
         },
         containerColor = Color.Black,
     ) { paddingValues ->
@@ -151,15 +160,34 @@ fun QrScanScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            val surfaceRequest = surfaceRequestState.value
-            if (surfaceRequest != null) {
-                CameraXViewfinder(
-                    surfaceRequest = surfaceRequest,
-                    modifier = Modifier
-                        .align(Alignment.TopCenter)
-                        .fillMaxSize()
-                        .fillMaxHeight(0.5f),
-                )
+
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.5f),
+            ) {
+                val surfaceRequest = surfaceRequestState.value
+                if (surfaceRequest != null) {
+                    CameraXViewfinder(
+                        surfaceRequest = surfaceRequest,
+                        modifier = Modifier
+                            .align(Alignment.TopCenter)
+                            .fillMaxSize(),
+                    )
+                }
+
+                if (state.isLoading) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(color = Color.Black.copy(alpha = 0.5f))
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    }
+                }
             }
 
             Surface(
@@ -171,11 +199,11 @@ fun QrScanScreen(
                 shadowElevation = 8.dp,
                 shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
             ) {
-                if (scannedItems.isEmpty()) {
+                if (state.scannedItems.isEmpty()) {
                     QrScanEmptyContent()
                 } else {
                     QrScanItemsContent(
-                        scannedItems = scannedItems,
+                        scannedItems = state.scannedItems,
                         onRemove = { onAction(QrScanScreenAction.RemoveItem(it)) },
                     )
                 }
@@ -198,7 +226,7 @@ fun QrScanScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun QrScanScreenTopBar(
-    cameraProvider: () -> Camera?,
+    camera: Camera?,
     scannedItemsCount: Int,
     onAction: (QrScanScreenAction) -> Unit,
     onShowInputDialog: () -> Unit,
@@ -232,7 +260,7 @@ private fun QrScanScreenTopBar(
                     tint = Color.White
                 )
             }
-            FlashButton(camera = cameraProvider())
+            FlashButton(camera = camera)
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color.Black,
@@ -264,8 +292,11 @@ private fun QrScanScreenTitle(scannedItemsCount: Int) {
     }
 }
 
+private const val listItemContentType = "listItem"
+private const val listHeaderContentType = "listHeader"
+
 @Composable
-private fun QrScanItemsContent(scannedItems: List<ScannedItem>, onRemove: (ScannedItem) -> Unit) {
+private fun QrScanItemsContent(scannedItems: List<CartListItem>, onRemove: (CartListItem) -> Unit) {
     val lazyListState = rememberLazyListState()
 
     LaunchedEffect(scannedItems) {
@@ -282,7 +313,8 @@ private fun QrScanItemsContent(scannedItems: List<ScannedItem>, onRemove: (Scann
         ) {
             itemsIndexed(
                 items = scannedItems,
-                key = { _, it -> it.article },
+                key = { _, it -> it.id },
+                contentType = { _, _ -> listItemContentType },
             ) { index, item ->
                 if (index == 0) {
                     Spacer(modifier = Modifier.height(88.dp))
@@ -295,7 +327,9 @@ private fun QrScanItemsContent(scannedItems: List<ScannedItem>, onRemove: (Scann
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
-            stickyHeader {
+            stickyHeader(
+                contentType = listHeaderContentType,
+            ) {
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -335,8 +369,8 @@ private fun QrScanItemsContent(scannedItems: List<ScannedItem>, onRemove: (Scann
 
 @Composable
 private fun QrScanListItem(
-    item: ScannedItem,
-    onRemove: (ScannedItem) -> Unit,
+    item: CartListItem,
+    onRemove: (CartListItem) -> Unit,
     enableSwipeToDismiss: Boolean,
     modifier: Modifier = Modifier,
 ) {
@@ -439,15 +473,15 @@ private fun QrScanEmptyContent() {
                 Icon(
                     imageVector = Icons.Default.LocationOn,
                     contentDescription = null,
-                    modifier = Modifier.size(40.dp),
+                    modifier = Modifier.size(28.dp),
                     tint = Color.Gray
                 )
                 Icon(
                     imageVector = Icons.Default.ArrowForward,
                     contentDescription = null,
                     modifier = Modifier
-                        .size(20.dp)
-                        .padding(horizontal = 10.dp),
+                        .padding(horizontal = 10.dp)
+                        .size(20.dp),
                     tint = Color.Gray
                 )
                 Icon(
@@ -496,8 +530,8 @@ private fun QrScanEmptyContent() {
                     imageVector = Icons.Default.ArrowForward,
                     contentDescription = null,
                     modifier = Modifier
-                        .size(20.dp)
-                        .padding(horizontal = 10.dp),
+                        .padding(horizontal = 10.dp)
+                        .size(20.dp),
                     tint = Color.Gray
                 )
                 Icon(
@@ -621,6 +655,7 @@ private suspend fun startCamera(
     onBarcodesScanned: (List<Barcode>) -> Unit,
 ): Camera {
     val processCameraProvider = ProcessCameraProvider.awaitInstance(context.applicationContext)
+
     processCameraProvider.unbindAll()
 
     val cameraPreviewUseCase = CameraPreview.Builder()
@@ -649,9 +684,67 @@ private suspend fun startCamera(
 
 @Preview
 @Composable
-fun QrScanScreenPreview() {
+private fun QrScanScreenPreview() {
     QrScanScreen(
-        scannedItems = mockScannedItems,
+        state = QrScanScreenState(
+            scannedItems = listOf(
+                CartListItem(
+                    id = 0,
+                    article = "11115555669987452131",
+                    brand = "Toyota",
+                    quantity = 13481,
+                    description = "Описание",
+                    barcode = "",
+                    cartOwner = "",
+                ),
+                CartListItem(
+                    id = 1,
+                    article = "548870578",
+                    brand = "Mazda",
+                    quantity = 10,
+                    description = "Длинное описание, которое не влезает в одну строчку",
+                    barcode = "",
+                    cartOwner = "",
+                ),
+                CartListItem(
+                    id = 2,
+                    article = "36575",
+                    brand = "Porsche",
+                    quantity = 5843,
+                    description = "Очень длинное описание, которое не влезает в одну строчку, которое не влезает в одну строчку, которое не влезает в одну строчку, которое не влезает в одну строчку,",
+                    barcode = "",
+                    cartOwner = "",
+                )
+            ),
+            isLoading = false,
+        ),
         onAction = {},
+        snackbarHostState = remember { SnackbarHostState() }
+    )
+}
+
+@Preview
+@Composable
+private fun QrScanScreenEmptyPreview() {
+    QrScanScreen(
+        state = QrScanScreenState(
+            scannedItems = emptyList(),
+            isLoading = false,
+        ),
+        onAction = {},
+        snackbarHostState = remember { SnackbarHostState() }
+    )
+}
+
+@Preview
+@Composable
+private fun QrScanScreenLoadingPreview() {
+    QrScanScreen(
+        state = QrScanScreenState(
+            scannedItems = emptyList(),
+            isLoading = true,
+        ),
+        onAction = {},
+        snackbarHostState = remember { SnackbarHostState() }
     )
 }
