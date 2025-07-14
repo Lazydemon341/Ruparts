@@ -38,7 +38,7 @@ class QrScanViewModel @Inject constructor(
 
     private fun onRemoveItem(item: CartListItem) {
         _state.update {
-            it.copy(scannedItems = it.scannedItems.filter { it.article != item.article })
+            it.copy(scannedItems = it.scannedItems.filter { it.id != item.id })
         }
     }
 
