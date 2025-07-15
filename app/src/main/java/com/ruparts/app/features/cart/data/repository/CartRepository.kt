@@ -10,6 +10,8 @@ import com.ruparts.app.features.cart.data.network.model.CartResponseDto
 import com.ruparts.app.features.cart.data.network.model.CartScanRequestDataDto
 import com.ruparts.app.features.cart.data.network.model.CartScanRequestDto
 import com.ruparts.app.features.cart.data.network.model.CartScanResponseDto
+import com.ruparts.app.features.cart.data.network.model.CartTransferRequestDataDto
+import com.ruparts.app.features.cart.data.network.model.CartTransferRequestDto
 import com.ruparts.app.features.cart.model.CartListItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -65,6 +67,21 @@ class CartRepository @Inject constructor(
             }
         }
     }
+
+    suspend fun transferToCart(barcodes: List<String>): Result<List<CartListItem>> = withContext(Dispatchers.Default) {
+        runCoroutineCatching {
+            val response = endpointService.request<CartTransferRequestDto, CartResponseDto>(
+                body = CartTransferRequestDto(
+                    data = CartTransferRequestDataDto(
+                        barcodes = barcodes
+                    )
+                ),
+                gson = gson
+            )
+            mapper.mapCartItems(response.data?.items.orEmpty())
+        }
+    }
 }
 
 class CartScanException(message: String?) : Exception(message)
+
