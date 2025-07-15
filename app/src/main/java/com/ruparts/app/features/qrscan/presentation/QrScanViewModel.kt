@@ -34,6 +34,12 @@ class QrScanViewModel @Inject constructor(
             is QrScanScreenAction.BarcodesScanned -> onBarcodesScanned(action.barcodes)
             is QrScanScreenAction.RemoveItem -> onRemoveItem(action.item)
             is QrScanScreenAction.ManualInput -> onManualInput(action.code)
+            QrScanScreenAction.OnTransferToCart -> {
+                cartRepository.transferToCart(
+                    barcodes = state.value.scannedItems.map {it.barcode}
+                )
+                _events.emit(QrScanScreenEvent.NavigateBack)
+            }
         }
     }
 

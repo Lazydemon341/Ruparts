@@ -96,7 +96,6 @@ import com.ruparts.app.features.qrscan.presentation.camera.QrCodeImageAnalyzer
 import java.util.concurrent.Executors
 import androidx.camera.core.Preview as CameraPreview
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QrScanScreen(
     state: QrScanScreenState,
@@ -205,6 +204,7 @@ fun QrScanScreen(
                     QrScanItemsContent(
                         scannedItems = state.scannedItems,
                         onRemove = { onAction(QrScanScreenAction.RemoveItem(it)) },
+                        onTransferToCart = {onAction(QrScanScreenAction.OnTransferToCart)},
                     )
                 }
             }
@@ -296,7 +296,11 @@ private const val listItemContentType = "listItem"
 private const val listHeaderContentType = "listHeader"
 
 @Composable
-private fun QrScanItemsContent(scannedItems: List<CartListItem>, onRemove: (CartListItem) -> Unit) {
+private fun QrScanItemsContent(
+    scannedItems: List<CartListItem>,
+    onRemove: (CartListItem) -> Unit,
+    onTransferToCart: () -> Unit,
+) {
     val lazyListState = rememberLazyListState()
 
     LaunchedEffect(scannedItems) {
@@ -350,7 +354,7 @@ private fun QrScanItemsContent(scannedItems: List<CartListItem>, onRemove: (Cart
             shape = RectangleShape,
         ) {
             Button(
-                onClick = {},
+                onClick = onTransferToCart,
                 modifier = Modifier
                     .padding(horizontal = 20.dp)
                     .padding(top = 8.dp, bottom = 24.dp)
