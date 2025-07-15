@@ -24,11 +24,15 @@ android {
 
     buildTypes {
         release {
+            // TODO: turn on
             isMinifyEnabled = false
+            isShrinkResources = false
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
@@ -90,9 +94,6 @@ dependencies {
     implementation(libs.camerax.lifecycle)
     implementation(libs.camerax.compose)
     implementation(libs.barcode.scanning)
-
-    // Security
-    implementation(libs.security.crypto)
 
     // DataStore
     implementation(libs.androidx.datastore.core)
