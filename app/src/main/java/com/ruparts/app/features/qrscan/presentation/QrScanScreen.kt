@@ -26,7 +26,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -68,6 +70,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.paint
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -204,7 +207,7 @@ fun QrScanScreen(
                     QrScanItemsContent(
                         scannedItems = state.scannedItems,
                         onRemove = { onAction(QrScanScreenAction.RemoveItem(it)) },
-                        onTransferToCart = {onAction(QrScanScreenAction.OnTransferToCart)},
+                        onTransferToCart = { onAction(QrScanScreenAction.OnTransferToCart) },
                     )
                 }
             }
@@ -453,6 +456,52 @@ private fun QrScanListItem(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
+            Row {
+                Row(
+                    modifier = Modifier
+                        .padding(top = 8.dp)
+                        .wrapContentWidth()
+                        .paint(
+                            painter = painterResource(
+                                id = R.drawable.barcode
+                            )
+                        ),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        modifier = Modifier.padding(start = 4.dp),
+                        painter = painterResource(id = R.drawable.scanner),
+                        contentDescription = "",
+                    )
+                    Spacer(Modifier.width(5.dp))
+                    Text(
+                        text = item.barcode,
+                        fontSize = 14.sp,
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .padding(top = 8.dp, start = 4.dp)
+                        .wrapContentWidth()
+                        .paint(
+                            painter = painterResource(
+                                id = R.drawable.position
+                            )
+                        ),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        modifier = Modifier.padding(start = 4.dp),
+                        painter = painterResource(id = R.drawable.cart2),
+                        contentDescription = "",
+                    )
+                    Spacer(Modifier.width(5.dp))
+                    Text(
+                        text = item.cartOwner.substring(1),
+                        fontSize = 14.sp,
+                    )
+                }
+            }
         }
     }
 }
