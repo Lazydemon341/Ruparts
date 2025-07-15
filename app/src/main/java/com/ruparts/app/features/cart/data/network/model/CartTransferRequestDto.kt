@@ -12,4 +12,5 @@ class CartTransferRequestDto(data: CartTransferRequestDataDto)  :
 class CartTransferRequestDataDto(
     @SerializedName("barcodes")
     val barcodes: List<String>
+
 )

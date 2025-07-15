@@ -81,6 +81,7 @@ class CartRepository @Inject constructor(
             mapper.mapCartItems(response.data?.items.orEmpty())
         }
     }
+
 }
 
 class CartScanException(message: String?) : Exception(message)
