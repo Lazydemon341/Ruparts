@@ -8,4 +8,5 @@ sealed interface QrScanScreenAction {
     data class RemoveItem(val item: CartListItem) : QrScanScreenAction
     data class BarcodesScanned(val barcodes: List<Barcode>) : QrScanScreenAction
     data class ManualInput(val code: String) : QrScanScreenAction
+    data object OnTransferToCart : QrScanScreenAction
 }

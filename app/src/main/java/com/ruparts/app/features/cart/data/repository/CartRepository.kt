@@ -68,7 +68,7 @@ class CartRepository @Inject constructor(
         }
     }
 
-    suspend fun transferToCart(barcodes: List<String>): Result<List<CartListItem>> = withContext(Dispatchers.Default) {
+    suspend fun transferToCart(barcodes: List<String>): Result<Unit> = withContext(Dispatchers.Default) {
         runCoroutineCatching {
             val response = endpointService.request<CartTransferRequestDto, CartResponseDto>(
                 body = CartTransferRequestDto(
@@ -78,7 +78,7 @@ class CartRepository @Inject constructor(
                 ),
                 gson = gson
             )
-            mapper.mapCartItems(response.data?.items.orEmpty())
+            Unit
         }
     }
 
