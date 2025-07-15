@@ -76,6 +76,12 @@ class MainActivity : AppCompatActivity() {
                 || super.onSupportNavigateUp()
     }
 
+//    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+//        val pressedKey = event.unicodeChar.toChar()
+//        Log.d("MainActivity", "barcode key: $pressedKey")
+//        return true
+//    }
+
     private fun setupNavigation() {
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
@@ -93,11 +99,12 @@ class MainActivity : AppCompatActivity() {
         navController.addOnDestinationChangedListener { controller, destination, _ ->
             toolbar.apply {
                 subtitle = null
-                isVisible = destination.id != R.id.authFragment && destination.id != R.id.qrScanFragment
+                isVisible = destination.id != R.id.authFragment
+                        && destination.id != R.id.qrScanFragment
             }
 
-            val lightSystemBars = destination.id != R.id.qrScanFragment
             windowInsetsController.apply {
+                val lightSystemBars = destination.id != R.id.qrScanFragment
                 isAppearanceLightStatusBars = lightSystemBars
                 isAppearanceLightNavigationBars = lightSystemBars
             }
