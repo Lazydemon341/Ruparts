@@ -334,6 +334,7 @@ private fun QrScanItemsContent(
                     item = item,
                     onRemove = onRemove,
                     enableSwipeToDismiss = index == scannedItems.lastIndex,
+                    isRowVisible = index == scannedItems.lastIndex,
                     modifier = Modifier.animateItem()
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -383,6 +384,7 @@ private fun QrScanListItem(
     item: CartListItem,
     onRemove: (CartListItem) -> Unit,
     enableSwipeToDismiss: Boolean,
+    isRowVisible: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val screenWidth = LocalWindowInfo.current.containerSize.width
@@ -460,55 +462,57 @@ private fun QrScanListItem(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-            Row {
-                Row(
-                    modifier = Modifier
-                        .padding(top = 8.dp)
-                        .wrapContentWidth()
-                        .paint(
-                            painter = painterResource(
-                                id = R.drawable.barcode
-                            )
-                        ),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        modifier = Modifier.padding(start = 4.dp),
-                        painter = painterResource(id = R.drawable.scanner),
-                        contentDescription = "",
-                    )
-                    Spacer(Modifier.width(5.dp))
-                    Text(
-                        buildAnnotatedString {
-                            append(item.barcode.substring(0, item.barcode.length-3))
-                            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = Color.Black)) {
-                                append(item.barcode.substring(item.barcode.length-3))
-                            }
-                        },
-                        fontSize = 14.sp
-                    )
-                }
-                Row(
-                    modifier = Modifier
-                        .padding(top = 8.dp, start = 4.dp)
-                        .wrapContentWidth()
-                        .paint(
-                            painter = painterResource(
-                                id = R.drawable.position
-                            )
-                        ),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        modifier = Modifier.padding(start = 4.dp),
-                        painter = painterResource(id = R.drawable.cart2),
-                        contentDescription = "",
-                    )
-                    Spacer(Modifier.width(5.dp))
-                    Text(
-                        text = item.cartOwner.substring(1),
-                        fontSize = 14.sp,
-                    )
+            if (isRowVisible) {
+                Row {
+                    Row(
+                        modifier = Modifier
+                            .padding(top = 8.dp)
+                            .wrapContentWidth()
+                            .paint(
+                                painter = painterResource(
+                                    id = R.drawable.barcode
+                                )
+                            ),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            modifier = Modifier.padding(start = 4.dp),
+                            painter = painterResource(id = R.drawable.scanner),
+                            contentDescription = "",
+                        )
+                        Spacer(Modifier.width(5.dp))
+                        Text(
+                            buildAnnotatedString {
+                                append(item.barcode.substring(0, item.barcode.length - 3))
+                                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = Color.Black)) {
+                                    append(item.barcode.substring(item.barcode.length - 3))
+                                }
+                            },
+                            fontSize = 14.sp
+                        )
+                    }
+                    Row(
+                        modifier = Modifier
+                            .padding(top = 8.dp, start = 4.dp)
+                            .wrapContentWidth()
+                            .paint(
+                                painter = painterResource(
+                                    id = R.drawable.position
+                                )
+                            ),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            modifier = Modifier.padding(start = 4.dp),
+                            painter = painterResource(id = R.drawable.cart2),
+                            contentDescription = "",
+                        )
+                        Spacer(Modifier.width(5.dp))
+                        Text(
+                            text = item.cartOwner.substring(1),
+                            fontSize = 14.sp,
+                        )
+                    }
                 }
             }
         }
