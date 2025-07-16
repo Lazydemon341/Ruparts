@@ -32,6 +32,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -468,10 +469,9 @@ private fun QrScanListItem(
                         modifier = Modifier
                             .padding(top = 8.dp)
                             .wrapContentWidth()
-                            .paint(
-                                painter = painterResource(
-                                    id = R.drawable.barcode
-                                )
+                            .background(
+                                shape = RoundedCornerShape(CornerSize(5.dp)),
+                                color = Color(0xFFFFE8A3)
                             ),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -488,17 +488,17 @@ private fun QrScanListItem(
                                     append(item.barcode.substring(item.barcode.length - 3))
                                 }
                             },
-                            fontSize = 14.sp
+                            fontSize = 14.sp,
+                            modifier = Modifier.padding(end = 4.dp)
                         )
                     }
                     Row(
                         modifier = Modifier
                             .padding(top = 8.dp, start = 4.dp)
                             .wrapContentWidth()
-                            .paint(
-                                painter = painterResource(
-                                    id = R.drawable.position
-                                )
+                            .background(
+                                shape = RoundedCornerShape(CornerSize(5.dp)),
+                                color = Color(0xFFE8DEF8)
                             ),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -511,6 +511,7 @@ private fun QrScanListItem(
                         Text(
                             text = item.cartOwner.substring(1),
                             fontSize = 14.sp,
+                            modifier = Modifier.padding(end = 4.dp)
                         )
                     }
                 }
