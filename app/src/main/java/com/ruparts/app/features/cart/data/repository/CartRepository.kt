@@ -7,8 +7,10 @@ import com.ruparts.app.core.utils.runCoroutineCatching
 import com.ruparts.app.features.cart.data.mapper.CartMapper
 import com.ruparts.app.features.cart.data.network.model.CartRequestDto
 import com.ruparts.app.features.cart.data.network.model.CartResponseDto
+import com.ruparts.app.features.cart.data.network.model.CartScanBCTypeDto
 import com.ruparts.app.features.cart.data.network.model.CartScanRequestDataDto
 import com.ruparts.app.features.cart.data.network.model.CartScanRequestDto
+import com.ruparts.app.features.cart.data.network.model.CartScanRequestPurposeDto
 import com.ruparts.app.features.cart.data.network.model.CartScanResponseDto
 import com.ruparts.app.features.cart.data.network.model.CartTransferRequestDataDto
 import com.ruparts.app.features.cart.data.network.model.CartTransferRequestDto
@@ -79,6 +81,43 @@ class CartRepository @Inject constructor(
                 gson = gson
             )
             Unit
+        }
+    }
+
+    suspend fun doScanToLocation(
+        barcode: String,
+        bcTypes: List<CartScanBCTypeDto>,
+        purpose: CartScanRequestPurposeDto) : Result<CartListItem> = withContext(Dispatchers.Default) {
+        runCoroutineCatching {
+
+            // TODO: detect code type (location, product, etc), and do request accordingly
+
+            val response = endpointService.request<CartScanRequestDto, CartScanResponseDto>(
+                body = CartScanRequestDto(
+                    data = CartScanRequestDataDto(
+                        barcode = barcode,
+                        bcTypes = listOf(CartScanBCTypeDto.LOCATION_CELL, CartScanBCTypeDto.LOCATION_PLACE),
+                        purpose = CartScanRequestPurposeDto.TRANSFER_TO_LOCATION
+                    )
+                ),
+                gson = gson,
+            )
+
+            when (response.type) {
+                SUCCESS_RESPONSE_TYPE -> {
+                    val data = requireNotNull(
+                        value = response.data,
+                        lazyMessage = { "Success response with null data" },
+                    )
+                    mapper.mapCartItem(data.scannedItem)
+                }
+
+                ERROR_RESPONSE_TYPE -> {
+                    throw CartScanException(response.error?.message)
+                }
+
+                else -> throw IllegalStateException("Unknown response type: ${response.type}")
+            }
         }
     }
 
