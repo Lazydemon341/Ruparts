@@ -123,13 +123,13 @@ class CartRepository @Inject constructor(
         }
     }
 
-    suspend fun transferToLocation(barcodes: List<String>): Result<Unit> = withContext(Dispatchers.Default) {
+    suspend fun transferToLocation(barcodes: List<String>, location: String): Result<Unit> = withContext(Dispatchers.Default) {
         runCoroutineCatching {
             val response = endpointService.request<CartTransferToLocationRequestDto, CartResponseDto>(
                 body = CartTransferToLocationRequestDto(
                     data = CartTransferToLocationRequestDataDto(
                         barcodes = barcodes,
-                        location = TODO(),
+                        location = location,
                     )
                 ),
                 gson = gson
