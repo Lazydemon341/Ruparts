@@ -21,6 +21,8 @@ class CartScanRequestDataDto(
 enum class CartScanRequestPurposeDto {
     @SerializedName("transfer_to_basket")
     TRANSFER_TO_BASKET,
+    @SerializedName("transfer_to_location")
+    TRANSFER_TO_LOCATION,
 
     @SerializedName("info")
     INFO,
@@ -29,4 +31,8 @@ enum class CartScanRequestPurposeDto {
 enum class CartScanBCTypeDto {
     @SerializedName("PB")
     PRODUCT,
+    @SerializedName("LC")
+    LOCATION_CELL,
+    @SerializedName("LP")
+    LOCATION_PLACE,
 }

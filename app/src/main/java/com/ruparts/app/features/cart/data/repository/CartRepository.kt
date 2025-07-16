@@ -7,11 +7,15 @@ import com.ruparts.app.core.utils.runCoroutineCatching
 import com.ruparts.app.features.cart.data.mapper.CartMapper
 import com.ruparts.app.features.cart.data.network.model.CartRequestDto
 import com.ruparts.app.features.cart.data.network.model.CartResponseDto
+import com.ruparts.app.features.cart.data.network.model.CartScanBCTypeDto
 import com.ruparts.app.features.cart.data.network.model.CartScanRequestDataDto
 import com.ruparts.app.features.cart.data.network.model.CartScanRequestDto
+import com.ruparts.app.features.cart.data.network.model.CartScanRequestPurposeDto
 import com.ruparts.app.features.cart.data.network.model.CartScanResponseDto
-import com.ruparts.app.features.cart.data.network.model.CartTransferRequestDataDto
-import com.ruparts.app.features.cart.data.network.model.CartTransferRequestDto
+import com.ruparts.app.features.cart.data.network.model.CartTransferToBasketRequestDataDto
+import com.ruparts.app.features.cart.data.network.model.CartTransferToBasketRequestDto
+import com.ruparts.app.features.cart.data.network.model.CartTransferToLocationRequestDataDto
+import com.ruparts.app.features.cart.data.network.model.CartTransferToLocationRequestDto
 import com.ruparts.app.features.cart.model.CartListItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -70,10 +74,62 @@ class CartRepository @Inject constructor(
 
     suspend fun transferToCart(barcodes: List<String>): Result<Unit> = withContext(Dispatchers.Default) {
         runCoroutineCatching {
-            val response = endpointService.request<CartTransferRequestDto, CartResponseDto>(
-                body = CartTransferRequestDto(
-                    data = CartTransferRequestDataDto(
+            val response = endpointService.request<CartTransferToBasketRequestDto, CartResponseDto>(
+                body = CartTransferToBasketRequestDto(
+                    data = CartTransferToBasketRequestDataDto(
                         barcodes = barcodes
+                    )
+                ),
+                gson = gson
+            )
+            Unit
+        }
+    }
+
+    suspend fun doScanToLocation(
+        barcode: String,
+        bcTypes: List<CartScanBCTypeDto>,
+        purpose: CartScanRequestPurposeDto) : Result<CartListItem> = withContext(Dispatchers.Default) {
+        runCoroutineCatching {
+
+            // TODO: detect code type (location, product, etc), and do request accordingly
+
+            val response = endpointService.request<CartScanRequestDto, CartScanResponseDto>(
+                body = CartScanRequestDto(
+                    data = CartScanRequestDataDto(
+                        barcode = barcode,
+                        bcTypes = listOf(CartScanBCTypeDto.LOCATION_CELL, CartScanBCTypeDto.LOCATION_PLACE),
+                        purpose = CartScanRequestPurposeDto.TRANSFER_TO_LOCATION
+                    )
+                ),
+                gson = gson,
+            )
+
+            when (response.type) {
+                SUCCESS_RESPONSE_TYPE -> {
+                    val data = requireNotNull(
+                        value = response.data,
+                        lazyMessage = { "Success response with null data" },
+                    )
+                    mapper.mapCartItem(data.scannedItem)
+                }
+
+                ERROR_RESPONSE_TYPE -> {
+                    throw CartScanException(response.error?.message)
+                }
+
+                else -> throw IllegalStateException("Unknown response type: ${response.type}")
+            }
+        }
+    }
+
+    suspend fun transferToLocation(barcodes: List<String>, location: String): Result<Unit> = withContext(Dispatchers.Default) {
+        runCoroutineCatching {
+            val response = endpointService.request<CartTransferToLocationRequestDto, CartResponseDto>(
+                body = CartTransferToLocationRequestDto(
+                    data = CartTransferToLocationRequestDataDto(
+                        barcodes = barcodes,
+                        location = location,
                     )
                 ),
                 gson = gson
