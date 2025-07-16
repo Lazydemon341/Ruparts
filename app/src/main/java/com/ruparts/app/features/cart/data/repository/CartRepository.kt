@@ -12,8 +12,10 @@ import com.ruparts.app.features.cart.data.network.model.CartScanRequestDataDto
 import com.ruparts.app.features.cart.data.network.model.CartScanRequestDto
 import com.ruparts.app.features.cart.data.network.model.CartScanRequestPurposeDto
 import com.ruparts.app.features.cart.data.network.model.CartScanResponseDto
-import com.ruparts.app.features.cart.data.network.model.CartTransferRequestDataDto
-import com.ruparts.app.features.cart.data.network.model.CartTransferRequestDto
+import com.ruparts.app.features.cart.data.network.model.CartTransferToBasketRequestDataDto
+import com.ruparts.app.features.cart.data.network.model.CartTransferToBasketRequestDto
+import com.ruparts.app.features.cart.data.network.model.CartTransferToLocationRequestDataDto
+import com.ruparts.app.features.cart.data.network.model.CartTransferToLocationRequestDto
 import com.ruparts.app.features.cart.model.CartListItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -72,9 +74,9 @@ class CartRepository @Inject constructor(
 
     suspend fun transferToCart(barcodes: List<String>): Result<Unit> = withContext(Dispatchers.Default) {
         runCoroutineCatching {
-            val response = endpointService.request<CartTransferRequestDto, CartResponseDto>(
-                body = CartTransferRequestDto(
-                    data = CartTransferRequestDataDto(
+            val response = endpointService.request<CartTransferToBasketRequestDto, CartResponseDto>(
+                body = CartTransferToBasketRequestDto(
+                    data = CartTransferToBasketRequestDataDto(
                         barcodes = barcodes
                     )
                 ),
@@ -118,6 +120,21 @@ class CartRepository @Inject constructor(
 
                 else -> throw IllegalStateException("Unknown response type: ${response.type}")
             }
+        }
+    }
+
+    suspend fun transferToLocation(barcodes: List<String>): Result<Unit> = withContext(Dispatchers.Default) {
+        runCoroutineCatching {
+            val response = endpointService.request<CartTransferToLocationRequestDto, CartResponseDto>(
+                body = CartTransferToLocationRequestDto(
+                    data = CartTransferToLocationRequestDataDto(
+                        barcodes = barcodes,
+                        location = TODO(),
+                    )
+                ),
+                gson = gson
+            )
+            Unit
         }
     }
 
