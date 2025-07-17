@@ -88,6 +88,8 @@ class CartViewModel @Inject constructor(
     private suspend fun onItemScanSuccess(scannedItem: CartListItem) {
         val currentScannedItem = scannedItemState.value
         if (currentScannedItem != null && scannedItemTransferJob?.isActive == true) {
+            // new item scanned while previous item is still loading.
+            // in this case we immediately transfer previous scanned item to basket.
             scannedItemTransferJob?.cancel()
             transferToCart(currentScannedItem)
         }
@@ -97,6 +99,7 @@ class CartViewModel @Inject constructor(
         scannedItemTransferJob = viewModelScope.launch {
             _loaderState.value = 0f
 
+            // wait for 20 seconds (user can cancel transfer during this time), then transfer to cart
             waitBeforeTransferingScannedItem()
             transferToCart(scannedItem)
 
@@ -104,6 +107,10 @@ class CartViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Waits for 20 seconds before transfering scanned item to cart.
+     * Also updates [loaderState] roughly each 16 ms (~60 fps) to show cancel button loading animation
+     */
     private suspend fun waitBeforeTransferingScannedItem() {
         val startTime = SystemClock.uptimeMillis()
         while (currentCoroutineContext().isActive) {

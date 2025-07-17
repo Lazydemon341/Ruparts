@@ -37,6 +37,9 @@ class CartListAdapter(
         holder.bind(item)
     }
 
+    override fun getItemId(position: Int): Long {
+        return getItem(position).id
+    }
 
     class CartItemViewHolder(
         private val itemView: View,
