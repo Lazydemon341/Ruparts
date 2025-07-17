@@ -1,7 +1,6 @@
 package com.ruparts.app
 
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.widget.Button
@@ -89,14 +88,12 @@ class MainActivity : AppCompatActivity() {
             return super.dispatchKeyEvent(event)
         }
 
-        if (event.action == KeyEvent.ACTION_DOWN && externalCodeInputHandler != null) {
-            val char = event.unicodeChar.toChar()
-            Log.d("MYTAG", char.toString())
-            externalCodeInputHandler?.handleInput(char)
+        if (externalCodeInputHandler != null) {
+            if (event.action == KeyEvent.ACTION_DOWN) {
+                val char = event.unicodeChar.toChar()
+                externalCodeInputHandler?.handleInput(char)
+            }
             return true
-//            if (handled) {
-//                return true
-//            }
         }
 
         return super.dispatchKeyEvent(event)
