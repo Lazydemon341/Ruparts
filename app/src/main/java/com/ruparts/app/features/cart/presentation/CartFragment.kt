@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.progressindicator.CircularProgressIndicator
+import com.google.android.material.snackbar.Snackbar
 import com.ruparts.app.ExternalCodeInputHandler
 import com.ruparts.app.MainActivity
 import com.ruparts.app.R
@@ -147,8 +148,12 @@ class CartFragment : Fragment() {
     }
 
     private fun setupTaskUpdateListener() {
-        setFragmentResultListener(CART_UPDATED_REQUEST_KEY) { _, _ ->
+        setFragmentResultListener(CART_UPDATED_REQUEST_KEY) { _, bundle ->
             viewModel.reloadCart()
+            val toastToShow = bundle.getString(CART_TOAST_TO_SHOW_KEY)
+            if (!toastToShow.isNullOrEmpty()) {
+                Snackbar.make(requireView(), toastToShow, Snackbar.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -158,6 +163,7 @@ class CartFragment : Fragment() {
 
     companion object {
         const val CART_UPDATED_REQUEST_KEY = "cart_updated_request_key"
+        const val CART_TOAST_TO_SHOW_KEY = "cart_updated_request_key"
     }
 }
 

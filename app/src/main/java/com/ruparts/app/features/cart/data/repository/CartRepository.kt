@@ -17,6 +17,7 @@ import com.ruparts.app.features.cart.data.network.model.CartTransferToBasketRequ
 import com.ruparts.app.features.cart.data.network.model.CartTransferToLocationRequestDataDto
 import com.ruparts.app.features.cart.data.network.model.CartTransferToLocationRequestDto
 import com.ruparts.app.features.cart.model.CartListItem
+import com.ruparts.app.features.qrscan.presentation.model.QrScanPurpose
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -40,15 +41,20 @@ class CartRepository @Inject constructor(
         }
     }
 
-    suspend fun doScan(barcode: String): Result<CartListItem> = withContext(Dispatchers.Default) {
+    suspend fun scanProduct(
+        barcode: String,
+        purpose: QrScanPurpose = QrScanPurpose.TRANSFER_TO_CART,
+    ): Result<CartListItem> = withContext(Dispatchers.Default) {
         runCoroutineCatching {
-
-            // TODO: detect code type (location, product, etc), and do request accordingly
-
             val response = endpointService.request<CartScanRequestDto, CartScanResponseDto>(
                 body = CartScanRequestDto(
                     data = CartScanRequestDataDto(
                         barcode = barcode,
+                        bcTypes = listOf(CartScanBCTypeDto.PRODUCT),
+                        purpose = when (purpose) {
+                            QrScanPurpose.TRANSFER_TO_LOCATION -> CartScanRequestPurposeDto.TRANSFER_TO_LOCATION
+                            QrScanPurpose.TRANSFER_TO_CART -> CartScanRequestPurposeDto.TRANSFER_TO_BASKET
+                        },
                     )
                 ),
                 gson = gson,
@@ -69,6 +75,23 @@ class CartRepository @Inject constructor(
 
                 else -> throw IllegalStateException("Unknown response type: ${response.type}")
             }
+        }
+    }
+
+    suspend fun scanLocation(
+        barcode: String,
+    ): Result<Unit> = withContext(Dispatchers.Default) {
+        runCoroutineCatching {
+            val response = endpointService.request<CartScanRequestDto, CartScanResponseDto>(
+                body = CartScanRequestDto(
+                    data = CartScanRequestDataDto(
+                        barcode = barcode,
+                        bcTypes = listOf(CartScanBCTypeDto.LOCATION_PLACE, CartScanBCTypeDto.LOCATION_CELL),
+                        purpose = CartScanRequestPurposeDto.TRANSFER_TO_LOCATION,
+                    )
+                ),
+                gson = gson,
+            )
         }
     }
 
@@ -86,46 +109,9 @@ class CartRepository @Inject constructor(
         }
     }
 
-    suspend fun doScanToLocation(
-        barcode: String,
-        bcTypes: List<CartScanBCTypeDto>,
-        purpose: CartScanRequestPurposeDto) : Result<CartListItem> = withContext(Dispatchers.Default) {
-        runCoroutineCatching {
-
-            // TODO: detect code type (location, product, etc), and do request accordingly
-
-            val response = endpointService.request<CartScanRequestDto, CartScanResponseDto>(
-                body = CartScanRequestDto(
-                    data = CartScanRequestDataDto(
-                        barcode = barcode,
-                        bcTypes = listOf(CartScanBCTypeDto.LOCATION_CELL, CartScanBCTypeDto.LOCATION_PLACE),
-                        purpose = CartScanRequestPurposeDto.TRANSFER_TO_LOCATION
-                    )
-                ),
-                gson = gson,
-            )
-
-            when (response.type) {
-                SUCCESS_RESPONSE_TYPE -> {
-                    val data = requireNotNull(
-                        value = response.data,
-                        lazyMessage = { "Success response with null data" },
-                    )
-                    mapper.mapCartItem(data.scannedItem)
-                }
-
-                ERROR_RESPONSE_TYPE -> {
-                    throw CartScanException(response.error?.message)
-                }
-
-                else -> throw IllegalStateException("Unknown response type: ${response.type}")
-            }
-        }
-    }
-
     suspend fun transferToLocation(barcodes: List<String>, location: String): Result<Unit> = withContext(Dispatchers.Default) {
         runCoroutineCatching {
-            val response = endpointService.request<CartTransferToLocationRequestDto, CartResponseDto>(
+            endpointService.request<CartTransferToLocationRequestDto, CartResponseDto>(
                 body = CartTransferToLocationRequestDto(
                     data = CartTransferToLocationRequestDataDto(
                         barcodes = barcodes,

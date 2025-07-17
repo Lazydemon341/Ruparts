@@ -73,7 +73,7 @@ class CartViewModel @Inject constructor(
     }
 
     private suspend fun doScan(code: String) {
-        repository.doScan(
+        repository.scanProduct(
             barcode = code,
         ).fold(
             onSuccess = { scannedItem ->

@@ -1,4 +1,4 @@
-package com.ruparts.app.features.qrscan.presentation
+package com.ruparts.app.features.qrscan.presentation.model
 
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.ruparts.app.features.cart.model.CartListItem

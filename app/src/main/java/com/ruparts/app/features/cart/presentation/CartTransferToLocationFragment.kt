@@ -1,4 +1,4 @@
-package com.ruparts.app.features.qrscan.presentation
+package com.ruparts.app.features.cart.presentation
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -162,5 +162,3 @@ class CartTransferToLocationFragment : BottomSheetDialogFragment() {
         )
     }
 }
-
-

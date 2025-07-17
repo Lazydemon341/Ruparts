@@ -6,6 +6,11 @@ import com.google.mlkit.vision.barcode.common.Barcode
 import com.ruparts.app.features.cart.data.repository.CartRepository
 import com.ruparts.app.features.cart.data.repository.CartScanException
 import com.ruparts.app.features.cart.model.CartListItem
+import com.ruparts.app.features.qrscan.presentation.model.BarcodeType
+import com.ruparts.app.features.qrscan.presentation.model.QrScanPurpose
+import com.ruparts.app.features.qrscan.presentation.model.QrScanScreenAction
+import com.ruparts.app.features.qrscan.presentation.model.QrScanScreenEvent
+import com.ruparts.app.features.qrscan.presentation.model.QrScanScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,18 +20,26 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+private val INITIAL_STATE = QrScanScreenState(
+    emptyList(),
+    false,
+    QrScanPurpose.TRANSFER_TO_CART,
+)
+
 @HiltViewModel
 class QrScanViewModel @Inject constructor(
     private val cartRepository: CartRepository,
+    private val barcodeTypeDetector: BarcodeTypeDetector,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(QrScanScreenState(emptyList(), false))
+    private val _state = MutableStateFlow(INITIAL_STATE)
     val state = _state.asStateFlow()
 
     private val _events = MutableSharedFlow<QrScanScreenEvent>()
     val events = _events.asSharedFlow()
 
     private var scannedCodes = mutableSetOf<String>()
+    private var firstItemScanned: Boolean = false
 
     fun handleAction(action: QrScanScreenAction) = viewModelScope.launch {
         when (action) {
@@ -60,12 +73,17 @@ class QrScanViewModel @Inject constructor(
             _state.update {
                 it.copy(isLoading = true)
             }
-            uniqueBarcodes.forEach { barcode ->
-                val rawValue = barcode.rawValue
-                if (rawValue != null) {
-                    doScan(rawValue)
-                }
-            }
+
+//            uniqueBarcodes.forEach { barcode ->
+//                val rawValue = barcode.rawValue
+//                if (rawValue != null) {
+//                    doScan(rawValue)
+//                }
+//            }
+
+            val barcode = uniqueBarcodes.first { !it.rawValue.isNullOrEmpty() }
+            doScan(requireNotNull(barcode.rawValue))
+
             _state.update {
                 it.copy(isLoading = false)
             }
@@ -83,16 +101,32 @@ class QrScanViewModel @Inject constructor(
     }
 
     private suspend fun doScan(code: String) {
+        if (
+            state.value.purpose == QrScanPurpose.TRANSFER_TO_LOCATION
+            && state.value.scannedItems.isNotEmpty()
+            && barcodeTypeDetector.detectCodeType(code) == BarcodeType.LOCATION
+        ) {
+            transferToLocation(code)
+            return
+        }
+
         if (code in scannedCodes) {
             return
         }
 
-        cartRepository.doScan(
+        checkScanPurpose(code)
+        scanProduct(code)
+    }
+
+    private suspend fun scanProduct(code: String) {
+        cartRepository.scanProduct(
             barcode = code,
+            purpose = state.value.purpose,
         ).fold(
             onSuccess = { scannedItem ->
                 onItemScanSuccess(scannedItem)
                 scannedCodes.add(code)
+                firstItemScanned = true
             },
             onFailure = { error ->
                 onItemScanFailure(code, error)
@@ -102,17 +136,15 @@ class QrScanViewModel @Inject constructor(
 
     private fun onItemScanSuccess(scannedItem: CartListItem) {
         val alreadyScanned = state.value.scannedItems.find { it.id == scannedItem.id } != null
-        val scannedItems = if (!alreadyScanned) {
-            state.value.scannedItems.toMutableList().apply {
+        if (!alreadyScanned) {
+            val scannedItems = state.value.scannedItems.toMutableList().apply {
                 add(scannedItem)
             }
-        } else {
-            state.value.scannedItems
-        }
-        _state.update {
-            it.copy(
-                scannedItems = scannedItems,
-            )
+            _state.update {
+                it.copy(
+                    scannedItems = scannedItems,
+                )
+            }
         }
     }
 
@@ -156,5 +188,41 @@ class QrScanViewModel @Inject constructor(
         _state.update {
             it.copy(isLoading = false)
         }
+    }
+
+    private suspend fun checkScanPurpose(code: String) {
+        if (firstItemScanned) {
+            return
+        }
+
+        val cartItems = cartRepository.getCart().getOrDefault(emptyList())
+        if (cartItems.any { it.barcode == code }) {
+            _state.update {
+                it.copy(purpose = QrScanPurpose.TRANSFER_TO_LOCATION)
+            }
+        } else {
+            _state.update {
+                it.copy(purpose = QrScanPurpose.TRANSFER_TO_CART)
+            }
+        }
+    }
+
+    private suspend fun transferToLocation(locationCode: String) {
+        cartRepository.transferToLocation(
+            barcodes = state.value.scannedItems.map { it.barcode },
+            location = locationCode,
+        ).fold(
+            onSuccess = {
+                _events.emit(
+                    QrScanScreenEvent.NavigateBack(
+                        updateCart = true,
+                        toastToShow = "Товары размещены в $locationCode"
+                    )
+                )
+            },
+            onFailure = { error ->
+                // TODO
+            }
+        )
     }
 }

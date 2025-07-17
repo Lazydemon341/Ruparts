@@ -17,6 +17,8 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import com.ruparts.app.core.ui.theme.RupartsTheme
 import com.ruparts.app.features.cart.presentation.CartFragment
+import com.ruparts.app.features.cart.presentation.CartFragment.Companion.CART_TOAST_TO_SHOW_KEY
+import com.ruparts.app.features.qrscan.presentation.model.QrScanScreenEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -43,8 +45,13 @@ class QrScanFragment : Fragment() {
                     viewModel.events.collect { event ->
                         when (event) {
                             is QrScanScreenEvent.NavigateBack -> {
-                                if (event.updateCart) {
-                                    setFragmentResult(CartFragment.CART_UPDATED_REQUEST_KEY, bundleOf())
+                                if (event.updateCart || !event.toastToShow.isNullOrEmpty()) {
+                                    setFragmentResult(
+                                        CartFragment.CART_UPDATED_REQUEST_KEY,
+                                        bundleOf(
+                                            CART_TOAST_TO_SHOW_KEY to event.toastToShow,
+                                        ),
+                                    )
                                 }
                                 findNavController().popBackStack()
                             }
