@@ -57,80 +57,81 @@ class CartTransferToLocationFragment : BottomSheetDialogFragment() {
             }
         }
     }
-    
+
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun CartTransferModalBottomSheetScreen(item: CartListItem) {
-//        Box(
-//            modifier = Modifier.fillMaxWidth(),
-//        ) {
-//            LazyColumn {
-//                stickyHeader(
-//                    contentType = "listHeader",
-//                ) {
-//                    Text(
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .padding(top = 16.dp, bottom = 4.dp),
-//                        color = colorResource(R.color.neutral60),
-//                        text = "Отсканируйте один или несколько товаров,\n" +
-//                                "а затем ячейку или отгрузочное место",
-//                        style = MaterialTheme.typography.bodyMedium,
-//                        textAlign = TextAlign.Center,
-//                    )
-//                }
-                ModalBottomSheet(
-                    onDismissRequest = {
-                        dismiss()
-                    },
-                    modifier = Modifier.padding(top = 16.dp),
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    dragHandle = {},
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            LazyColumn {
+                stickyHeader(
+                    contentType = "listHeader",
                 ) {
-                    Column(
+                    Text(
                         modifier = Modifier
-                            .background(color = MaterialTheme.colorScheme.surface)
-                            .padding(vertical = 12.dp, horizontal = 16.dp),
+                            .fillMaxWidth()
+                            .padding(top = 16.dp, bottom = 4.dp),
+                        color = colorResource(R.color.neutral60),
+                        text = "Отсканируйте один или несколько товаров,\n" +
+                                "а затем ячейку или отгрузочное место",
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center,
+                    )
+                }
+            }
+            ModalBottomSheet(
+                onDismissRequest = {
+                    dismiss()
+                },
+                modifier = Modifier.padding(top = 16.dp),
+                containerColor = MaterialTheme.colorScheme.surface,
+                dragHandle = {},
+            ) {
+                Column(
+                    modifier = Modifier
+                        .background(color = MaterialTheme.colorScheme.surface)
+                        .padding(vertical = 12.dp, horizontal = 16.dp),
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = item.article,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                style = TextStyle(fontWeight = FontWeight.Bold),
-                                fontSize = 22.sp
-                            )
-                            Text(
-                                text = item.quantity.toString(),
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontSize = 14.sp,
-                                modifier = Modifier
-                                    .border(1.dp, SolidColor(Color.Black), RoundedCornerShape(percent = 20))
-                                    .padding(horizontal = 6.dp, vertical = 3.dp)
-                            )
-                        }
-
                         Text(
-                            text = item.brand,
+                            text = item.article,
                             color = MaterialTheme.colorScheme.onSurface,
-                            fontSize = 16.sp,
-                            modifier = Modifier.padding(top = 4.dp)
+                            style = TextStyle(fontWeight = FontWeight.Bold),
+                            fontSize = 22.sp
                         )
                         Text(
-                            text = item.description,
+                            text = item.quantity.toString(),
                             color = MaterialTheme.colorScheme.onSurface,
-                            fontSize = 12.sp,
-                            modifier = Modifier.padding(top = 4.dp),
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis
+                            fontSize = 14.sp,
+                            modifier = Modifier
+                                .border(1.dp, SolidColor(Color.Black), RoundedCornerShape(percent = 20))
+                                .padding(horizontal = 6.dp, vertical = 3.dp)
                         )
                     }
+
+                    Text(
+                        text = item.brand,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                    Text(
+                        text = item.description,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(top = 4.dp),
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
                 }
-//            }
-//        }
+            }
+
+        }
     }
 
     @Preview
