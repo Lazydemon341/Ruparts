@@ -1,4 +1,4 @@
-package com.ruparts.app.features.qrscan.presentation
+package com.ruparts.app.features.cart.presentation
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -76,7 +76,7 @@ class CartTransferToLocationFragment : BottomSheetDialogFragment() {
                     contentType = "listHeader",
                 ) {
                     Text(
-                        modifier = Modifier
+                        modifier = Modifier.Companion
                             .fillMaxWidth()
                             .padding(top = 8.dp, bottom = 16.dp)
                             .padding(horizontal = 16.dp),
@@ -84,7 +84,7 @@ class CartTransferToLocationFragment : BottomSheetDialogFragment() {
                         text = "Отсканируйте один или несколько товаров,\n" +
                                 "а затем ячейку или отгрузочное место",
                         style = MaterialTheme.typography.bodyMedium,
-                        textAlign = TextAlign.Center,
+                        textAlign = TextAlign.Companion.Center,
                     )
                 }
 
@@ -102,27 +102,27 @@ class CartTransferToLocationFragment : BottomSheetDialogFragment() {
         item: CartListItem,
     ) {
         Column(
-            modifier = Modifier
+            modifier = Modifier.Companion
                 .background(color = MaterialTheme.colorScheme.surface)
                 .padding(vertical = 12.dp, horizontal = 16.dp),
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.Companion.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.Companion.CenterVertically
             ) {
                 Text(
                     text = item.article,
                     color = MaterialTheme.colorScheme.onSurface,
-                    style = TextStyle(fontWeight = FontWeight.Bold),
+                    style = TextStyle(fontWeight = FontWeight.Companion.Bold),
                     fontSize = 22.sp
                 )
                 Text(
                     text = item.quantity.toString(),
                     color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 14.sp,
-                    modifier = Modifier
-                        .border(1.dp, SolidColor(Color.Black), RoundedCornerShape(percent = 20))
+                    modifier = Modifier.Companion
+                        .border(1.dp, SolidColor(Color.Companion.Black), RoundedCornerShape(percent = 20))
                         .padding(horizontal = 6.dp, vertical = 3.dp)
                 )
             }
@@ -131,15 +131,15 @@ class CartTransferToLocationFragment : BottomSheetDialogFragment() {
                 text = item.brand,
                 color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 16.sp,
-                modifier = Modifier.padding(top = 4.dp)
+                modifier = Modifier.Companion.padding(top = 4.dp)
             )
             Text(
                 text = item.description,
                 color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 12.sp,
-                modifier = Modifier.padding(top = 4.dp),
+                modifier = Modifier.Companion.padding(top = 4.dp),
                 maxLines = 2,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Companion.Ellipsis
             )
         }
     }
@@ -162,5 +162,3 @@ class CartTransferToLocationFragment : BottomSheetDialogFragment() {
         )
     }
 }
-
-

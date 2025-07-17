@@ -20,12 +20,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -99,6 +104,9 @@ import com.google.mlkit.vision.barcode.common.Barcode
 import com.ruparts.app.R
 import com.ruparts.app.features.cart.model.CartListItem
 import com.ruparts.app.features.qrscan.presentation.camera.QrCodeImageAnalyzer
+import com.ruparts.app.features.qrscan.presentation.model.QrScanPurpose
+import com.ruparts.app.features.qrscan.presentation.model.QrScanScreenAction
+import com.ruparts.app.features.qrscan.presentation.model.QrScanScreenState
 import java.util.concurrent.Executors
 import androidx.camera.core.Preview as CameraPreview
 
@@ -108,7 +116,6 @@ fun QrScanScreen(
     onAction: (QrScanScreenAction) -> Unit,
     snackbarHostState: SnackbarHostState,
 ) {
-
     var permissionGranted by remember { mutableStateOf<Boolean>(false) }
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -159,13 +166,15 @@ fun QrScanScreen(
             SnackbarHost(hostState = snackbarHostState)
         },
         containerColor = Color.Black,
+        contentWindowInsets = WindowInsets.systemBars.only(
+            WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
+        )
     ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .consumeWindowInsets(paddingValues)
         ) {
-
             Box(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
@@ -211,20 +220,26 @@ fun QrScanScreen(
                         scannedItems = state.scannedItems,
                         onRemove = { onAction(QrScanScreenAction.RemoveItem(it)) },
                         onTransferToCart = { onAction(QrScanScreenAction.OnTransferToCart) },
+                        showTransferToBasketButton = state.purpose == QrScanPurpose.TRANSFER_TO_CART,
+                        headerText = when (state.purpose) {
+                            QrScanPurpose.TRANSFER_TO_CART -> "Отсканируйте товары в ячейке, они попадут в корзину"
+                            QrScanPurpose.TRANSFER_TO_LOCATION -> "Отсканируйте один или несколько товаров,\n" +
+                                    "а затем ячейку или отгрузочное место"
+                        },
                     )
                 }
             }
-        }
 
-        if (showInputDialog) {
-            ManualInputDialog(
-                onDismiss = {
-                    showInputDialog = false
-                },
-                onConfirmInput = { input ->
-                    onAction(QrScanScreenAction.ManualInput(input))
-                },
-            )
+            if (showInputDialog) {
+                ManualInputDialog(
+                    onDismiss = {
+                        showInputDialog = false
+                    },
+                    onConfirmInput = { input ->
+                        onAction(QrScanScreenAction.ManualInput(input))
+                    },
+                )
+            }
         }
     }
 }
@@ -304,6 +319,8 @@ private const val listHeaderContentType = "listHeader"
 @Composable
 private fun QrScanItemsContent(
     scannedItems: List<CartListItem>,
+    showTransferToBasketButton: Boolean,
+    headerText: String,
     onRemove: (CartListItem) -> Unit,
     onTransferToCart: () -> Unit,
 ) {
@@ -326,7 +343,7 @@ private fun QrScanItemsContent(
                 key = { _, it -> it.id },
                 contentType = { _, _ -> listItemContentType },
             ) { index, item ->
-                if (index == 0) {
+                if (index == 0 && showTransferToBasketButton) {
                     Spacer(modifier = Modifier.height(88.dp))
                 }
                 QrScanListItem(
@@ -346,33 +363,35 @@ private fun QrScanItemsContent(
                         .fillMaxWidth()
                         .padding(top = 16.dp, bottom = 4.dp),
                     color = colorResource(R.color.neutral60),
-                    text = "Отсканируйте один или несколько товаров",
+                    text = headerText,
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center,
                 )
             }
         }
-        Surface(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth(),
-            color = MaterialTheme.colorScheme.surface,
-            shadowElevation = 8.dp,
-            shape = RectangleShape,
-        ) {
-            Button(
-                onClick = onTransferToCart,
+        if (showTransferToBasketButton) {
+            Surface(
                 modifier = Modifier
-                    .padding(horizontal = 20.dp)
-                    .padding(top = 8.dp, bottom = 24.dp)
-                    .fillMaxWidth()
-                    .height(56.dp),
-                shape = RoundedCornerShape(16.dp),
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth(),
+                color = MaterialTheme.colorScheme.surface,
+                shadowElevation = 8.dp,
+                shape = RectangleShape,
             ) {
-                Text(
-                    text = "Переместить в корзину",
-                    fontSize = 16.sp,
-                )
+                Button(
+                    onClick = onTransferToCart,
+                    modifier = Modifier
+                        .padding(horizontal = 20.dp)
+                        .padding(top = 8.dp, bottom = 24.dp)
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    shape = RoundedCornerShape(16.dp),
+                ) {
+                    Text(
+                        text = "Переместить в корзину",
+                        fontSize = 16.sp,
+                    )
+                }
             }
         }
     }
@@ -782,6 +801,7 @@ private fun QrScanScreenPreview() {
                 )
             ),
             isLoading = false,
+            purpose = QrScanPurpose.TRANSFER_TO_CART
         ),
         onAction = {},
         snackbarHostState = remember { SnackbarHostState() }
@@ -795,6 +815,7 @@ private fun QrScanScreenEmptyPreview() {
         state = QrScanScreenState(
             scannedItems = emptyList(),
             isLoading = false,
+            purpose = QrScanPurpose.TRANSFER_TO_CART,
         ),
         onAction = {},
         snackbarHostState = remember { SnackbarHostState() }
@@ -808,6 +829,7 @@ private fun QrScanScreenLoadingPreview() {
         state = QrScanScreenState(
             scannedItems = emptyList(),
             isLoading = true,
+            purpose = QrScanPurpose.TRANSFER_TO_CART,
         ),
         onAction = {},
         snackbarHostState = remember { SnackbarHostState() }

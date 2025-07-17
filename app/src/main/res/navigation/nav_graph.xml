@@ -119,7 +119,7 @@
 
     <dialog
         android:id="@+id/cartTransferToLocationFragment"
-        android:name="com.ruparts.app.features.qrscan.presentation.CartTransferToLocationFragment"
+        android:name="com.ruparts.app.features.cart.presentation.CartTransferToLocationFragment"
         android:label="">
     </dialog>
     
