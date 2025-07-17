@@ -17,6 +17,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.progressindicator.CircularProgressIndicator
+import com.ruparts.app.ExternalCodeInputHandler
+import com.ruparts.app.MainActivity
 import com.ruparts.app.R
 import com.ruparts.app.core.ui.utils.alignAboveSystemBars
 import com.ruparts.app.core.ui.utils.dp
@@ -78,13 +80,31 @@ class CartFragment : Fragment() {
                 findNavController().navigate(
                     CartFragmentDirections.actionCartFragmentToCartItemFragment(listItem)
                 )
-            }
+            },
+            onCancelClick = { item ->
+                viewModel.cancelScannedItemTransfer()
+            },
+            cancelButtonLoaderState = viewModel.loaderState,
         )
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         observeScreenState()
         setupTaskUpdateListener()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        (activity as MainActivity).setExternalCodeInputHandler(
+            ExternalCodeInputHandler { code ->
+                viewModel.onExternalCodeReceived(code)
+            }
+        )
+    }
+
+    override fun onPause() {
+        super.onPause()
+        (activity as MainActivity).setExternalCodeInputHandler(null)
     }
 
     private fun observeScreenState() {
@@ -119,7 +139,9 @@ class CartFragment : Fragment() {
                 )
             }
         )
-        adapter.submitList(state.items)
+        adapter.submitList(state.items) {
+            recyclerView.smoothScrollToPosition(0)
+        }
     }
 
     private fun setupTaskUpdateListener() {
