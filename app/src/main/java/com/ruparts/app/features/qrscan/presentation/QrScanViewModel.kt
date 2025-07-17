@@ -114,10 +114,7 @@ class QrScanViewModel @Inject constructor(
             return
         }
 
-        if (!firstItemScanned) {
-            checkScanPurpose(code)
-        }
-
+        checkScanPurpose(code)
         scanProduct(code)
     }
 
@@ -194,10 +191,18 @@ class QrScanViewModel @Inject constructor(
     }
 
     private suspend fun checkScanPurpose(code: String) {
+        if (firstItemScanned) {
+            return
+        }
+
         val cartItems = cartRepository.getCart().getOrDefault(emptyList())
         if (cartItems.any { it.barcode == code }) {
             _state.update {
                 it.copy(purpose = QrScanPurpose.TRANSFER_TO_LOCATION)
+            }
+        } else {
+            _state.update {
+                it.copy(purpose = QrScanPurpose.TRANSFER_TO_CART)
             }
         }
     }
@@ -211,7 +216,7 @@ class QrScanViewModel @Inject constructor(
                 _events.emit(
                     QrScanScreenEvent.NavigateBack(
                         updateCart = true,
-                        toastToShow = "Все товары размещены в $locationCode"
+                        toastToShow = "Товары размещены в $locationCode"
                     )
                 )
             },
