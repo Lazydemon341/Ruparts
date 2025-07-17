@@ -116,5 +116,11 @@
             app:popExitAnim="@anim/slide_out_left" />
 
     </fragment>
+
+    <dialog
+        android:id="@+id/cartTransferToLocationFragment"
+        android:name="com.ruparts.app.features.qrscan.presentation.CartTransferToLocationFragment"
+        android:label="">
+    </dialog>
     
 </navigation>

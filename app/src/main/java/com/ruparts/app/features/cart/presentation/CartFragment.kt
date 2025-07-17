@@ -85,7 +85,9 @@ class CartFragment : Fragment() {
                 viewModel.cancelScannedItemTransfer()
             },
             cancelButtonLoaderState = viewModel.loaderState,
-        )
+        ).apply {
+            setHasStableIds(true)
+        }
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 

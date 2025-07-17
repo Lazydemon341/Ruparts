@@ -7,12 +7,12 @@ import android.view.ViewGroup
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -43,14 +43,16 @@ class CartTransferToLocationFragment : BottomSheetDialogFragment() {
             setContent {
                 RupartsTheme {
                     CartTransferModalBottomSheetScreen(
-                        item = CartListItem(
-                            id = 0,
-                            article = "11115555669987452131",
-                            brand = "Toyota",
-                            quantity = 13481,
-                            description = "Описание",
-                            barcode = "",
-                            cartOwner = "",
+                        items = listOf(
+                            CartListItem(
+                                id = 0,
+                                article = "11115555669987452131",
+                                brand = "Toyota",
+                                quantity = 13481,
+                                description = "Описание",
+                                barcode = "",
+                                cartOwner = "",
+                            )
                         )
                     )
                 }
@@ -60,9 +62,14 @@ class CartTransferToLocationFragment : BottomSheetDialogFragment() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun CartTransferModalBottomSheetScreen(item: CartListItem) {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
+    fun CartTransferModalBottomSheetScreen(
+        items: List<CartListItem>,
+    ) {
+        ModalBottomSheet(
+            onDismissRequest = {
+                dismiss()
+            },
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
         ) {
             LazyColumn {
                 stickyHeader(
@@ -71,7 +78,8 @@ class CartTransferToLocationFragment : BottomSheetDialogFragment() {
                     Text(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 16.dp, bottom = 4.dp),
+                            .padding(top = 8.dp, bottom = 16.dp)
+                            .padding(horizontal = 16.dp),
                         color = colorResource(R.color.neutral60),
                         text = "Отсканируйте один или несколько товаров,\n" +
                                 "а затем ячейку или отгрузочное место",
@@ -79,58 +87,60 @@ class CartTransferToLocationFragment : BottomSheetDialogFragment() {
                         textAlign = TextAlign.Center,
                     )
                 }
-            }
-            ModalBottomSheet(
-                onDismissRequest = {
-                    dismiss()
-                },
-                modifier = Modifier.padding(top = 16.dp),
-                containerColor = MaterialTheme.colorScheme.surface,
-                dragHandle = {},
-            ) {
-                Column(
-                    modifier = Modifier
-                        .background(color = MaterialTheme.colorScheme.surface)
-                        .padding(vertical = 12.dp, horizontal = 16.dp),
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = item.article,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            style = TextStyle(fontWeight = FontWeight.Bold),
-                            fontSize = 22.sp
-                        )
-                        Text(
-                            text = item.quantity.toString(),
-                            color = MaterialTheme.colorScheme.onSurface,
-                            fontSize = 14.sp,
-                            modifier = Modifier
-                                .border(1.dp, SolidColor(Color.Black), RoundedCornerShape(percent = 20))
-                                .padding(horizontal = 6.dp, vertical = 3.dp)
-                        )
-                    }
 
-                    Text(
-                        text = item.brand,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontSize = 16.sp,
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
-                    Text(
-                        text = item.description,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(top = 4.dp),
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                items(
+                    items = items,
+                ) { item ->
+                    CartTransferToLocationItem(item)
                 }
             }
+        }
+    }
 
+    @Composable
+    private fun CartTransferToLocationItem(
+        item: CartListItem,
+    ) {
+        Column(
+            modifier = Modifier
+                .background(color = MaterialTheme.colorScheme.surface)
+                .padding(vertical = 12.dp, horizontal = 16.dp),
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = item.article,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    style = TextStyle(fontWeight = FontWeight.Bold),
+                    fontSize = 22.sp
+                )
+                Text(
+                    text = item.quantity.toString(),
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontSize = 14.sp,
+                    modifier = Modifier
+                        .border(1.dp, SolidColor(Color.Black), RoundedCornerShape(percent = 20))
+                        .padding(horizontal = 6.dp, vertical = 3.dp)
+                )
+            }
+
+            Text(
+                text = item.brand,
+                color = MaterialTheme.colorScheme.onSurface,
+                fontSize = 16.sp,
+                modifier = Modifier.padding(top = 4.dp)
+            )
+            Text(
+                text = item.description,
+                color = MaterialTheme.colorScheme.onSurface,
+                fontSize = 12.sp,
+                modifier = Modifier.padding(top = 4.dp),
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
 
@@ -138,14 +148,16 @@ class CartTransferToLocationFragment : BottomSheetDialogFragment() {
     @Composable
     private fun QrScanScreenPreview() {
         CartTransferModalBottomSheetScreen(
-            item = CartListItem(
-                id = 0,
-                article = "11115555669987452131",
-                brand = "Toyota",
-                quantity = 13481,
-                description = "Описание",
-                barcode = "",
-                cartOwner = "",
+            items = listOf(
+                CartListItem(
+                    id = 0,
+                    article = "11115555669987452131",
+                    brand = "Toyota",
+                    quantity = 13481,
+                    description = "Описание",
+                    barcode = "",
+                    cartOwner = "",
+                )
             )
         )
     }
