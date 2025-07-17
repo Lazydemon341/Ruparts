@@ -76,7 +76,7 @@ class CartTransferToLocationFragment : BottomSheetDialogFragment() {
                     contentType = "listHeader",
                 ) {
                     Text(
-                        modifier = Modifier.Companion
+                        modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 8.dp, bottom = 16.dp)
                             .padding(horizontal = 16.dp),
@@ -84,7 +84,7 @@ class CartTransferToLocationFragment : BottomSheetDialogFragment() {
                         text = "Отсканируйте один или несколько товаров,\n" +
                                 "а затем ячейку или отгрузочное место",
                         style = MaterialTheme.typography.bodyMedium,
-                        textAlign = TextAlign.Companion.Center,
+                        textAlign = TextAlign.Center,
                     )
                 }
 
@@ -102,27 +102,27 @@ class CartTransferToLocationFragment : BottomSheetDialogFragment() {
         item: CartListItem,
     ) {
         Column(
-            modifier = Modifier.Companion
+            modifier = Modifier
                 .background(color = MaterialTheme.colorScheme.surface)
                 .padding(vertical = 12.dp, horizontal = 16.dp),
         ) {
             Row(
-                modifier = Modifier.Companion.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Companion.CenterVertically
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = item.article,
                     color = MaterialTheme.colorScheme.onSurface,
-                    style = TextStyle(fontWeight = FontWeight.Companion.Bold),
+                    style = TextStyle(fontWeight = FontWeight.Bold),
                     fontSize = 22.sp
                 )
                 Text(
                     text = item.quantity.toString(),
                     color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 14.sp,
-                    modifier = Modifier.Companion
-                        .border(1.dp, SolidColor(Color.Companion.Black), RoundedCornerShape(percent = 20))
+                    modifier = Modifier
+                        .border(1.dp, SolidColor(Color.Black), RoundedCornerShape(percent = 20))
                         .padding(horizontal = 6.dp, vertical = 3.dp)
                 )
             }
@@ -131,15 +131,15 @@ class CartTransferToLocationFragment : BottomSheetDialogFragment() {
                 text = item.brand,
                 color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 16.sp,
-                modifier = Modifier.Companion.padding(top = 4.dp)
+                modifier = Modifier.padding(top = 4.dp)
             )
             Text(
                 text = item.description,
                 color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 12.sp,
-                modifier = Modifier.Companion.padding(top = 4.dp),
+                modifier = Modifier.padding(top = 4.dp),
                 maxLines = 2,
-                overflow = TextOverflow.Companion.Ellipsis
+                overflow = TextOverflow.Ellipsis
             )
         }
     }
