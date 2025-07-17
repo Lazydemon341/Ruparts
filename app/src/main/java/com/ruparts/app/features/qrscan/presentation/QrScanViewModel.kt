@@ -30,16 +30,11 @@ class QrScanViewModel @Inject constructor(
 
     fun handleAction(action: QrScanScreenAction) = viewModelScope.launch {
         when (action) {
-            QrScanScreenAction.BackClick -> _events.emit(QrScanScreenEvent.NavigateBack)
+            QrScanScreenAction.BackClick -> _events.emit(QrScanScreenEvent.NavigateBack())
             is QrScanScreenAction.BarcodesScanned -> onBarcodesScanned(action.barcodes)
             is QrScanScreenAction.RemoveItem -> onRemoveItem(action.item)
             is QrScanScreenAction.ManualInput -> onManualInput(action.code)
-            QrScanScreenAction.OnTransferToCart -> {
-                cartRepository.transferToCart(
-                    barcodes = state.value.scannedItems.map {it.barcode}
-                )
-                _events.emit(QrScanScreenEvent.NavigateBack)
-            }
+            QrScanScreenAction.OnTransferToCart -> transferToCart()
         }
     }
 
@@ -100,20 +95,7 @@ class QrScanViewModel @Inject constructor(
                 scannedCodes.add(code)
             },
             onFailure = { error ->
-                val errorMessage = when (error) {
-                    is CartScanException -> {
-                        scannedCodes.add(code)
-
-                        error.message
-                    }
-
-                    else -> {
-                        null
-                    }
-                }
-                viewModelScope.launch {
-                    _events.emit(QrScanScreenEvent.ShowErrorToast(errorMessage))
-                }
+                onItemScanFailure(code, error)
             }
         )
     }
@@ -131,6 +113,48 @@ class QrScanViewModel @Inject constructor(
             it.copy(
                 scannedItems = scannedItems,
             )
+        }
+    }
+
+    private fun onItemScanFailure(code: String, error: Throwable) {
+        val errorMessage = when (error) {
+            is CartScanException -> {
+                scannedCodes.add(code)
+
+                error.message
+            }
+
+            else -> {
+                null
+            }
+        }
+        viewModelScope.launch {
+            _events.emit(QrScanScreenEvent.ShowErrorToast(errorMessage))
+        }
+    }
+
+    private fun transferToCart() {
+        if (state.value.isLoading) {
+            return
+        }
+
+        _state.update {
+            it.copy(isLoading = true)
+        }
+        viewModelScope.launch {
+            cartRepository.transferToCart(
+                barcodes = state.value.scannedItems.map { it.barcode },
+            ).fold(
+                onSuccess = {
+                    _events.emit(QrScanScreenEvent.NavigateBack(updateCart = true))
+                },
+                onFailure = { error ->
+                    // TODO show error toast
+                }
+            )
+        }
+        _state.update {
+            it.copy(isLoading = false)
         }
     }
 }

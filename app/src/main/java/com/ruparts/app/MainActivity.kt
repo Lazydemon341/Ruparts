@@ -1,6 +1,8 @@
 package com.ruparts.app
 
 import android.os.Bundle
+import android.util.Log
+import android.view.KeyEvent
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
@@ -47,6 +49,12 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
 
+    private var externalCodeInputHandler: ExternalCodeInputHandler? = null
+
+    fun setExternalCodeInputHandler(externalCodeInputHandler: ExternalCodeInputHandler?) {
+        this.externalCodeInputHandler = externalCodeInputHandler
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
@@ -76,11 +84,23 @@ class MainActivity : AppCompatActivity() {
                 || super.onSupportNavigateUp()
     }
 
-//    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-//        val pressedKey = event.unicodeChar.toChar()
-//        Log.d("MainActivity", "barcode key: $pressedKey")
-//        return true
-//    }
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if (event.keyCode == KeyEvent.KEYCODE_BACK) {
+            return super.dispatchKeyEvent(event)
+        }
+
+        if (event.action == KeyEvent.ACTION_DOWN && externalCodeInputHandler != null) {
+            val char = event.unicodeChar.toChar()
+            Log.d("MYTAG", char.toString())
+            externalCodeInputHandler?.handleInput(char)
+            return true
+//            if (handled) {
+//                return true
+//            }
+        }
+
+        return super.dispatchKeyEvent(event)
+    }
 
     private fun setupNavigation() {
         val navHostFragment =

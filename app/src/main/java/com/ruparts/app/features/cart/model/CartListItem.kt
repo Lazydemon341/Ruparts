@@ -11,7 +11,6 @@ data class CartListItem(
     val quantity: Int,
     val description: String,
     val barcode: String,
-    val cartOwner: String
+    val cartOwner: String,
+    val fromExternalInput: Boolean = false,
 ) : Parcelable
-
-

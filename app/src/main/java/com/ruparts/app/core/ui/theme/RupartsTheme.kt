@@ -3,7 +3,6 @@ package com.ruparts.app.core.ui.theme
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
-import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -46,31 +45,28 @@ fun RupartsTheme(
     // Other colors
     val outline = colorResource(id = R.color.purple)
 
-    val colorScheme = when (darkTheme) {
-        true -> darkColorScheme()
-        false -> lightColorScheme(
-            primary = primary,
-            onPrimary = onPrimary,
-            primaryContainer = primaryContainer,
-            onPrimaryContainer = onPrimaryContainer,
-            secondary = secondary,
-            onSecondary = Color.White,
-            secondaryContainer = secondaryContainer,
-            onSecondaryContainer = onSecondaryContainer,
-            tertiary = tertiary,
-            onTertiary = primaryDark,
-            tertiaryContainer = tertiaryContainer,
-            onTertiaryContainer = onTertiaryContainer,
-            background = background,
-            onBackground = Color.Black,
-            surface = surface,
-            surfaceContainer = surfaceContainer,
-            onSurface = onSurface,
-            surfaceVariant = surfaceVariant,
-            onSurfaceVariant = onSurfaceVariant,
-            outline = outline
-        )
-    }
+    val colorScheme = lightColorScheme(
+        primary = primary,
+        onPrimary = onPrimary,
+        primaryContainer = primaryContainer,
+        onPrimaryContainer = onPrimaryContainer,
+        secondary = secondary,
+        onSecondary = Color.White,
+        secondaryContainer = secondaryContainer,
+        onSecondaryContainer = onSecondaryContainer,
+        tertiary = tertiary,
+        onTertiary = primaryDark,
+        tertiaryContainer = tertiaryContainer,
+        onTertiaryContainer = onTertiaryContainer,
+        background = background,
+        onBackground = Color.Black,
+        surface = surface,
+        surfaceContainer = surfaceContainer,
+        onSurface = onSurface,
+        surfaceVariant = surfaceVariant,
+        onSurfaceVariant = onSurfaceVariant,
+        outline = outline
+    )
 
     val typography = Typography(
         bodyMedium = TextStyle(

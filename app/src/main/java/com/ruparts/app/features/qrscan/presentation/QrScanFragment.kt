@@ -10,10 +10,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.ComposeView
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import com.ruparts.app.core.ui.theme.RupartsTheme
+import com.ruparts.app.features.cart.presentation.CartFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -39,7 +42,10 @@ class QrScanFragment : Fragment() {
 
                     viewModel.events.collect { event ->
                         when (event) {
-                            QrScanScreenEvent.NavigateBack -> {
+                            is QrScanScreenEvent.NavigateBack -> {
+                                if (event.updateCart) {
+                                    setFragmentResult(CartFragment.CART_UPDATED_REQUEST_KEY, bundleOf())
+                                }
                                 findNavController().popBackStack()
                             }
 

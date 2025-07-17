@@ -1,10 +1,7 @@
-package com.ruparts.app.features.cart.presentation
+package com.ruparts.app.features.cart.presentation.cancelbutton
 
 import android.content.Context
 import android.util.AttributeSet
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
@@ -27,8 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
@@ -36,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.AbstractComposeView
 import androidx.compose.ui.unit.dp
 import com.ruparts.app.core.ui.theme.RupartsTheme
+import kotlinx.coroutines.flow.StateFlow
 
 class CartItemCancelButton @JvmOverloads constructor(
     context: Context,
@@ -43,8 +40,7 @@ class CartItemCancelButton @JvmOverloads constructor(
     defStyleAttr: Int = 0,
 ) : AbstractComposeView(context, attrs, defStyleAttr) {
 
-    private val backgroundAnimatable = Animatable(0f)
-    val animationState = mutableStateOf<Boolean>(false)
+    private var loaderState: StateFlow<Float>? = null
 
     private var onClickListener: (() -> Unit)? = null
 
@@ -52,71 +48,54 @@ class CartItemCancelButton @JvmOverloads constructor(
         onClickListener = listener
     }
 
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        animationState.value = true
-    }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        animationState.value = false
+    fun setLoaderState(loaderState: StateFlow<Float>?) {
+        this.loaderState = loaderState
     }
 
     @Composable
     override fun Content() {
         RupartsTheme {
-            LaunchedEffect(animationState.value) {
-                if (animationState.value == true) {
-                    backgroundAnimatable.animateTo(
-                        targetValue = 1f,
-                        animationSpec = tween(
-                            durationMillis = 3000,
-                            easing = LinearEasing,
-                        ),
-                    )
-                } else {
-                    backgroundAnimatable.snapTo(0f)
-                }
-            }
+            val loaderState = loaderState?.collectAsState()
+
             Button(
-                modifier = Modifier
+                modifier = Modifier.Companion
                     .fillMaxWidth()
                     .height(56.dp),
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondaryContainer),
                 shape = RoundedCornerShape(16.dp),
                 onClick = { onClickListener?.invoke() },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent,
+                    containerColor = Color.Companion.Transparent,
                     contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
                 ),
                 contentPadding = PaddingValues(),
             ) {
-                Box(modifier = Modifier.fillMaxSize()) {
+                Box(modifier = Modifier.Companion.fillMaxSize()) {
                     val backgroundColor = MaterialTheme.colorScheme.secondaryContainer
                     Canvas(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier.Companion.fillMaxSize(),
                     ) {
                         drawRect(
                             color = backgroundColor,
                             size = Size(
-                                width = size.width * backgroundAnimatable.value,
+                                width = size.width * (loaderState?.value ?: 0f),
                                 height = size.height,
                             )
                         )
                     }
                     Row(
-                        modifier = Modifier
+                        modifier = Modifier.Companion
                             .fillMaxSize()
                             .padding(ButtonDefaults.ContentPadding),
                         horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically,
+                        verticalAlignment = Alignment.Companion.CenterVertically,
                     ) {
                         Icon(
-                            modifier = Modifier.size(24.dp),
+                            modifier = Modifier.Companion.size(24.dp),
                             imageVector = Icons.Default.Close,
                             contentDescription = null,
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.Companion.width(8.dp))
                         Text("Отменить добавление")
                     }
                 }
