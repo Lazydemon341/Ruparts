@@ -13,6 +13,8 @@ class ExternalCodeInputHandler(
     fun handleInput(char: Char): Boolean {
         val currentTimeMillis = System.currentTimeMillis()
         val lastInputTimeMillis = lastInputTime ?: currentTimeMillis
+        // check if last input was more than 300ms ago.
+        // If so, drop last input values.
         if (currentTimeMillis - lastInputTimeMillis >= 300L) {
             inputInProgress = false
             codeInput = ""
@@ -38,7 +40,6 @@ class ExternalCodeInputHandler(
 
             return true
         } else if (codeInput.length == 1
-            && codeInput[0] == QR_STARTING_CHARS[0]
             && char == QR_STARTING_CHARS[1]
         ) {
             codeInput = ""
