@@ -116,7 +116,9 @@ class MainActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { controller, destination, _ ->
             toolbar.apply {
-                subtitle = null
+                if (destination.id != R.id.cartFragment && destination.id != R.id.cartTransferToLocationFragment) {
+                    subtitle = null
+                }
                 isVisible = destination.id != R.id.authFragment
                         && destination.id != R.id.qrScanFragment
             }
