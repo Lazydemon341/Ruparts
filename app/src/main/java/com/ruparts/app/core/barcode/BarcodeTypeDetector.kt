@@ -1,6 +1,5 @@
-package com.ruparts.app.features.qrscan.presentation
+package com.ruparts.app.core.barcode
 
-import com.ruparts.app.features.qrscan.presentation.model.BarcodeType
 import javax.inject.Inject
 
 class BarcodeTypeDetector @Inject constructor() {

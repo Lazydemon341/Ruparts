@@ -1,4 +1,4 @@
-package com.ruparts.app.features.qrscan.presentation.model
+package com.ruparts.app.core.barcode
 
 enum class BarcodeType {
     PRODUCT,
