@@ -3,9 +3,12 @@ package com.ruparts.app.features.cart.presentation
 import android.os.SystemClock
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ruparts.app.core.barcode.BarcodeType
 import com.ruparts.app.features.cart.data.repository.CartRepository
 import com.ruparts.app.features.cart.data.repository.CartScanException
 import com.ruparts.app.features.cart.model.CartListItem
+import com.ruparts.app.features.cart.model.CartScanPurpose
+import com.ruparts.app.features.cart.presentation.model.CartScreenEffect
 import com.ruparts.app.features.cart.presentation.model.CartScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -15,6 +18,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -33,6 +37,9 @@ class CartViewModel @Inject constructor(
 
     private val isLoading = MutableStateFlow(false)
     private val reloadRequests = MutableSharedFlow<Unit>()
+
+    private val _effects = MutableSharedFlow<CartScreenEffect>()
+    val effects = _effects.asSharedFlow()
 
     private val scannedItemState = MutableStateFlow<CartListItem?>(null)
     private var scannedItemTransferJob: Job? = null
@@ -58,12 +65,15 @@ class CartViewModel @Inject constructor(
         reloadRequests.tryEmit(Unit)
     }
 
-    fun onExternalCodeReceived(code: String) = viewModelScope.launch {
-        val codeInCart = state.value.items.any { it.barcode == code }
-        if (!codeInCart) {
-            doScan(code)
-        } else {
-            // TODO
+    fun onExternalCodeReceived(code: String, type: BarcodeType) {
+        when (type) {
+            BarcodeType.PRODUCT -> viewModelScope.launch {
+                val codeInCart = state.value.items.any { it.barcode == code }
+                scanExternalCode(code, codeInCart)
+            }
+
+            BarcodeType.LOCATION,
+            BarcodeType.UNKNOWN -> Unit
         }
     }
 
@@ -72,12 +82,17 @@ class CartViewModel @Inject constructor(
         scannedItemState.value = null
     }
 
-    private suspend fun doScan(code: String) {
+    private suspend fun scanExternalCode(code: String, isInCart: Boolean) {
         repository.scanProduct(
             barcode = code,
+            purpose = if (isInCart) CartScanPurpose.TRANSFER_TO_LOCATION else CartScanPurpose.TRANSFER_TO_CART
         ).fold(
             onSuccess = { scannedItem ->
-                onItemScanSuccess(scannedItem.copy(fromExternalInput = true))
+                if (isInCart) {
+                    onItemInCartScanSuccess(scannedItem)
+                } else {
+                    onNewItemScanSuccess(scannedItem.copy(fromExternalInput = true))
+                }
             },
             onFailure = { error ->
                 onItemScanFailure(code, error)
@@ -85,7 +100,11 @@ class CartViewModel @Inject constructor(
         )
     }
 
-    private suspend fun onItemScanSuccess(scannedItem: CartListItem) {
+    private fun onItemInCartScanSuccess(item: CartListItem) = viewModelScope.launch {
+        _effects.emit(CartScreenEffect.OpenTransferToLocationScreen(item))
+    }
+
+    private suspend fun onNewItemScanSuccess(scannedItem: CartListItem) {
         val currentScannedItem = scannedItemState.value
         if (currentScannedItem != null && scannedItemTransferJob?.isActive == true) {
             // new item scanned while previous item is still loading.
@@ -97,10 +116,10 @@ class CartViewModel @Inject constructor(
         scannedItemState.value = scannedItem
 
         scannedItemTransferJob = viewModelScope.launch {
-            _loaderState.value = 0f
 
             // wait for 20 seconds (user can cancel transfer during this time), then transfer to cart
-            waitBeforeTransferingScannedItem()
+            waitBeforeTransferringScannedItem()
+
             transferToCart(scannedItem)
 
             scannedItemState.value = null
@@ -108,10 +127,11 @@ class CartViewModel @Inject constructor(
     }
 
     /**
-     * Waits for 20 seconds before transfering scanned item to cart.
+     * Waits for 20 seconds before transferring scanned item to cart.
      * Also updates [loaderState] roughly each 16 ms (~60 fps) to show cancel button loading animation
      */
-    private suspend fun waitBeforeTransferingScannedItem() {
+    private suspend fun waitBeforeTransferringScannedItem() {
+        _loaderState.value = 0f
         val startTime = SystemClock.uptimeMillis()
         while (currentCoroutineContext().isActive) {
             val currentTime = SystemClock.uptimeMillis()
@@ -134,7 +154,7 @@ class CartViewModel @Inject constructor(
             barcodes = listOf(item.barcode),
         ).fold(
             onSuccess = {
-                //TODO: _events.emit(...)
+                // TODO
             },
             onFailure = { error ->
                 // TODO show error toast
@@ -153,9 +173,10 @@ class CartViewModel @Inject constructor(
                 null
             }
         }
-//        viewModelScope.launch {
-//            _events.emit(QrScanScreenEvent.ShowErrorToast(errorMessage))
-//        }
+        // TODO:
+        // viewModelScope.launch {
+        //     _effects.emit(CartScreenEffect.ShowErrorToast(errorMessage))
+        // }
     }
 
     private fun cartItemsFlow(): Flow<List<CartListItem>> {
