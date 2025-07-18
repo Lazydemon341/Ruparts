@@ -103,8 +103,8 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.ruparts.app.R
 import com.ruparts.app.features.cart.model.CartListItem
+import com.ruparts.app.features.cart.model.CartScanPurpose
 import com.ruparts.app.features.qrscan.presentation.camera.QrCodeImageAnalyzer
-import com.ruparts.app.features.qrscan.presentation.model.QrScanPurpose
 import com.ruparts.app.features.qrscan.presentation.model.QrScanScreenAction
 import com.ruparts.app.features.qrscan.presentation.model.QrScanScreenState
 import java.util.concurrent.Executors
@@ -220,10 +220,10 @@ fun QrScanScreen(
                         scannedItems = state.scannedItems,
                         onRemove = { onAction(QrScanScreenAction.RemoveItem(it)) },
                         onTransferToCart = { onAction(QrScanScreenAction.OnTransferToCart) },
-                        showTransferToBasketButton = state.purpose == QrScanPurpose.TRANSFER_TO_CART,
+                        showTransferToBasketButton = state.purpose == CartScanPurpose.TRANSFER_TO_CART,
                         headerText = when (state.purpose) {
-                            QrScanPurpose.TRANSFER_TO_CART -> "Отсканируйте товары в ячейке, они попадут в корзину"
-                            QrScanPurpose.TRANSFER_TO_LOCATION -> "Отсканируйте один или несколько товаров,\n" +
+                            CartScanPurpose.TRANSFER_TO_CART -> "Отсканируйте товары в ячейке, они попадут в корзину"
+                            CartScanPurpose.TRANSFER_TO_LOCATION -> "Отсканируйте один или несколько товаров,\n" +
                                     "а затем ячейку или отгрузочное место"
                         },
                     )
@@ -801,7 +801,7 @@ private fun QrScanScreenPreview() {
                 )
             ),
             isLoading = false,
-            purpose = QrScanPurpose.TRANSFER_TO_CART
+            purpose = CartScanPurpose.TRANSFER_TO_CART
         ),
         onAction = {},
         snackbarHostState = remember { SnackbarHostState() }
@@ -815,7 +815,7 @@ private fun QrScanScreenEmptyPreview() {
         state = QrScanScreenState(
             scannedItems = emptyList(),
             isLoading = false,
-            purpose = QrScanPurpose.TRANSFER_TO_CART,
+            purpose = CartScanPurpose.TRANSFER_TO_CART,
         ),
         onAction = {},
         snackbarHostState = remember { SnackbarHostState() }
@@ -829,7 +829,7 @@ private fun QrScanScreenLoadingPreview() {
         state = QrScanScreenState(
             scannedItems = emptyList(),
             isLoading = true,
-            purpose = QrScanPurpose.TRANSFER_TO_CART,
+            purpose = CartScanPurpose.TRANSFER_TO_CART,
         ),
         onAction = {},
         snackbarHostState = remember { SnackbarHostState() }

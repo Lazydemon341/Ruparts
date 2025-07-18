@@ -17,7 +17,7 @@ import com.ruparts.app.features.cart.data.network.model.CartTransferToBasketRequ
 import com.ruparts.app.features.cart.data.network.model.CartTransferToLocationRequestDataDto
 import com.ruparts.app.features.cart.data.network.model.CartTransferToLocationRequestDto
 import com.ruparts.app.features.cart.model.CartListItem
-import com.ruparts.app.features.qrscan.presentation.model.QrScanPurpose
+import com.ruparts.app.features.cart.model.CartScanPurpose
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -43,7 +43,7 @@ class CartRepository @Inject constructor(
 
     suspend fun scanProduct(
         barcode: String,
-        purpose: QrScanPurpose = QrScanPurpose.TRANSFER_TO_CART,
+        purpose: CartScanPurpose = CartScanPurpose.TRANSFER_TO_CART,
     ): Result<CartListItem> = withContext(Dispatchers.Default) {
         runCoroutineCatching {
             val response = endpointService.request<CartScanRequestDto, CartScanResponseDto>(
@@ -52,8 +52,8 @@ class CartRepository @Inject constructor(
                         barcode = barcode,
                         bcTypes = listOf(CartScanBCTypeDto.PRODUCT),
                         purpose = when (purpose) {
-                            QrScanPurpose.TRANSFER_TO_LOCATION -> CartScanRequestPurposeDto.TRANSFER_TO_LOCATION
-                            QrScanPurpose.TRANSFER_TO_CART -> CartScanRequestPurposeDto.TRANSFER_TO_BASKET
+                            CartScanPurpose.TRANSFER_TO_LOCATION -> CartScanRequestPurposeDto.TRANSFER_TO_LOCATION
+                            CartScanPurpose.TRANSFER_TO_CART -> CartScanRequestPurposeDto.TRANSFER_TO_BASKET
                         },
                     )
                 ),

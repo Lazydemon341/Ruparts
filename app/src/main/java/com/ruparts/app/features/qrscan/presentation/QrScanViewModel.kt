@@ -3,11 +3,12 @@ package com.ruparts.app.features.qrscan.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.mlkit.vision.barcode.common.Barcode
+import com.ruparts.app.core.barcode.BarcodeType
+import com.ruparts.app.core.barcode.BarcodeTypeDetector
 import com.ruparts.app.features.cart.data.repository.CartRepository
 import com.ruparts.app.features.cart.data.repository.CartScanException
 import com.ruparts.app.features.cart.model.CartListItem
-import com.ruparts.app.features.qrscan.presentation.model.BarcodeType
-import com.ruparts.app.features.qrscan.presentation.model.QrScanPurpose
+import com.ruparts.app.features.cart.model.CartScanPurpose
 import com.ruparts.app.features.qrscan.presentation.model.QrScanScreenAction
 import com.ruparts.app.features.qrscan.presentation.model.QrScanScreenEvent
 import com.ruparts.app.features.qrscan.presentation.model.QrScanScreenState
@@ -23,7 +24,7 @@ import javax.inject.Inject
 private val INITIAL_STATE = QrScanScreenState(
     emptyList(),
     false,
-    QrScanPurpose.TRANSFER_TO_CART,
+    CartScanPurpose.TRANSFER_TO_CART,
 )
 
 @HiltViewModel
@@ -102,7 +103,7 @@ class QrScanViewModel @Inject constructor(
 
     private suspend fun doScan(code: String) {
         if (
-            state.value.purpose == QrScanPurpose.TRANSFER_TO_LOCATION
+            state.value.purpose == CartScanPurpose.TRANSFER_TO_LOCATION
             && state.value.scannedItems.isNotEmpty()
             && barcodeTypeDetector.detectCodeType(code) == BarcodeType.LOCATION
         ) {
@@ -198,11 +199,11 @@ class QrScanViewModel @Inject constructor(
         val cartItems = cartRepository.getCart().getOrDefault(emptyList())
         if (cartItems.any { it.barcode == code }) {
             _state.update {
-                it.copy(purpose = QrScanPurpose.TRANSFER_TO_LOCATION)
+                it.copy(purpose = CartScanPurpose.TRANSFER_TO_LOCATION)
             }
         } else {
             _state.update {
-                it.copy(purpose = QrScanPurpose.TRANSFER_TO_CART)
+                it.copy(purpose = CartScanPurpose.TRANSFER_TO_CART)
             }
         }
     }
