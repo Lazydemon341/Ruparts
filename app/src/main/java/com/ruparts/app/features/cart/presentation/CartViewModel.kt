@@ -61,13 +61,14 @@ class CartViewModel @Inject constructor(
         initialValue = initialScreenState,
     )
 
-    fun reloadCart() {
-        reloadRequests.tryEmit(Unit)
+    fun reloadCart() = viewModelScope.launch {
+        reloadRequests.emit(Unit)
     }
 
     fun onExternalCodeReceived(code: String, type: BarcodeType) {
         when (type) {
             BarcodeType.PRODUCT -> viewModelScope.launch {
+                transferLastScannedToCart()
                 val codeInCart = state.value.items.any { it.barcode == code }
                 scanExternalCode(code, codeInCart)
             }
@@ -100,21 +101,23 @@ class CartViewModel @Inject constructor(
         )
     }
 
-    private fun onItemInCartScanSuccess(item: CartListItem) = viewModelScope.launch {
-        _effects.emit(CartScreenEffect.OpenTransferToLocationScreen(item))
-    }
-
-    private suspend fun onNewItemScanSuccess(scannedItem: CartListItem) {
+    private suspend fun transferLastScannedToCart() {
         val currentScannedItem = scannedItemState.value
         if (currentScannedItem != null && scannedItemTransferJob?.isActive == true) {
             // new item scanned while previous item is still loading.
             // in this case we immediately transfer previous scanned item to basket.
             scannedItemTransferJob?.cancel()
+            scannedItemState.value = null
             transferToCart(currentScannedItem)
         }
+    }
 
+    private fun onItemInCartScanSuccess(item: CartListItem) = viewModelScope.launch {
+        _effects.emit(CartScreenEffect.OpenTransferToLocationScreen(item))
+    }
+
+    private fun onNewItemScanSuccess(scannedItem: CartListItem) {
         scannedItemState.value = scannedItem
-
         scannedItemTransferJob = viewModelScope.launch {
 
             // wait for 20 seconds (user can cancel transfer during this time), then transfer to cart
