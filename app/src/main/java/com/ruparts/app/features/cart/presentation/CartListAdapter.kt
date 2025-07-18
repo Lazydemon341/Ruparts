@@ -122,7 +122,7 @@ class CartListAdapter(
 class CartListItemDiffCallback : DiffUtil.ItemCallback<CartListItem>() {
 
     override fun areItemsTheSame(oldItem: CartListItem, newItem: CartListItem): Boolean {
-        return oldItem.id == newItem.id && oldItem.fromExternalInput == newItem.fromExternalInput
+        return oldItem.article == newItem.article
     }
 
     override fun areContentsTheSame(oldItem: CartListItem, newItem: CartListItem): Boolean {

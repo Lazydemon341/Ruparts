@@ -21,7 +21,6 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
-import com.ruparts.app.core.barcode.ExternalCodeInputHandler
 import com.ruparts.app.core.navigation.NavigationManager
 import com.ruparts.app.core.ui.utils.paddingAllSystemBars
 import com.ruparts.app.core.ui.utils.paddingBelowSystemBars

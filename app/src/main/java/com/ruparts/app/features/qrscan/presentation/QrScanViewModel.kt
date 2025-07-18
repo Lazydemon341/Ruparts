@@ -138,7 +138,9 @@ class QrScanViewModel @Inject constructor(
     private fun onItemScanSuccess(scannedItem: CartListItem) {
         val alreadyScanned = state.value.scannedItems.find { it.id == scannedItem.id } != null
         if (!alreadyScanned) {
-            val scannedItems = state.value.scannedItems.plus(scannedItem)
+            val scannedItems = state.value.scannedItems.toMutableList().apply {
+                add(scannedItem)
+            }
             _state.update {
                 it.copy(
                     scannedItems = scannedItems,

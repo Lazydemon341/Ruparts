@@ -18,14 +18,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.snackbar.Snackbar
+import com.ruparts.app.ExternalCodeInputHandler
 import com.ruparts.app.MainActivity
 import com.ruparts.app.R
-import com.ruparts.app.core.barcode.ExternalCodeInputHandler
 import com.ruparts.app.core.ui.utils.alignAboveSystemBars
 import com.ruparts.app.core.ui.utils.dp
 import com.ruparts.app.core.ui.utils.enableEdgeToEdge
 import com.ruparts.app.core.utils.collectWhileStarted
-import com.ruparts.app.features.cart.presentation.model.CartScreenEffect
 import com.ruparts.app.features.cart.presentation.model.CartScreenState
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -100,8 +99,8 @@ class CartFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         (activity as MainActivity).setExternalCodeInputHandler(
-            ExternalCodeInputHandler { code, type ->
-                viewModel.onExternalCodeReceived(code, type)
+            ExternalCodeInputHandler { code ->
+                viewModel.onExternalCodeReceived(code)
             }
         )
     }
@@ -114,23 +113,6 @@ class CartFragment : Fragment() {
     private fun observeScreenState() {
         viewModel.state.collectWhileStarted(viewLifecycleOwner) { state ->
             updateUI(state)
-        }
-
-        viewModel.effects.collectWhileStarted(viewLifecycleOwner) { effect ->
-            handleEffect(effect)
-        }
-    }
-
-    private fun handleEffect(effect: CartScreenEffect) {
-        when (effect) {
-            is CartScreenEffect.OpenTransferToLocationScreen -> {
-                findNavController().navigate(
-                    CartFragmentDirections.actionCartFragmentToCartTransferToLocationFragment(
-                        scannedItem = effect.scannedItem,
-                        cartItems = viewModel.state.value.items.toTypedArray(),
-                    )
-                )
-            }
         }
     }
 
@@ -161,7 +143,7 @@ class CartFragment : Fragment() {
             }
         )
         adapter.submitList(state.items) {
-            recyclerView.scrollToPosition(0)
+            recyclerView.smoothScrollToPosition(0)
         }
     }
 
