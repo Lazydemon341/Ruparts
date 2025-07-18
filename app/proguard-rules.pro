@@ -19,3 +19,9 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-keep class com.ruparts.app.**.*Directions { *; }
+-keep class com.example.app.**.*Args { *; }
+
+-keepnames class * extends android.os.Parcelable
+-keepnames class * extends java.io.Serializable

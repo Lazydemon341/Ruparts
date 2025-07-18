@@ -7,6 +7,7 @@ class CartScanResponseDto(
     val type: Int,
     @SerializedName("data")
     val data: CartScanResponseDataDto?,
+    @SerializedName("error")
     val error: CartScanResponseErrorDto?,
 )
 
