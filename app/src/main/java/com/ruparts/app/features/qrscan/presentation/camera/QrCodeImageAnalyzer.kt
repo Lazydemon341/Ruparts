@@ -104,7 +104,7 @@ internal class QrCodeImageAnalyzer(
         val cropWidth = (width * 0.5).toInt()  // 50% width
 
         val cropTop = (height * 0.25).toInt()   // 25% from the top
-        val cropHeight = (height * 0.5).toInt() // 75% height
+        val cropHeight = (height * 0.5).toInt() // 50% height
 
         return Bitmap.createBitmap(bitmap, cropStart, cropTop, cropWidth, cropHeight)
     }

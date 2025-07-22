@@ -53,6 +53,7 @@ class QrScanViewModel @Inject constructor(
     }
 
     private fun onRemoveItem(item: CartListItem) {
+        scannedCodes.remove(item.barcode)
         _state.update {
             it.copy(scannedItems = it.scannedItems.filter { it.id != item.id })
         }
@@ -95,13 +96,13 @@ class QrScanViewModel @Inject constructor(
         _state.update {
             it.copy(isLoading = true)
         }
-        doScan(code)
+        doScan(code, ignoreAlreadyScanned = true)
         _state.update {
             it.copy(isLoading = false)
         }
     }
 
-    private suspend fun doScan(code: String) {
+    private suspend fun doScan(code: String, ignoreAlreadyScanned: Boolean = true) {
         if (
             state.value.purpose == CartScanPurpose.TRANSFER_TO_LOCATION
             && state.value.scannedItems.isNotEmpty()
@@ -111,7 +112,7 @@ class QrScanViewModel @Inject constructor(
             return
         }
 
-        if (code in scannedCodes) {
+        if (!ignoreAlreadyScanned && code in scannedCodes) {
             return
         }
 

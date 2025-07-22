@@ -398,7 +398,7 @@ private fun QrScanItemsContent(
 }
 
 @Composable
-private fun QrScanListItem(
+fun QrScanListItem(
     item: CartListItem,
     onRemove: (CartListItem) -> Unit,
     enableSwipeToDismiss: Boolean,
@@ -695,7 +695,7 @@ private fun ManualInputDialog(
 
             OutlinedTextField(
                 value = inputText,
-                onValueChange = { inputText = it },
+                onValueChange = { inputText = it.uppercase() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(focusRequester),
@@ -749,6 +749,7 @@ private suspend fun startCamera(
         }
     val imageAnalysisUseCase = ImageAnalysis.Builder()
         .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+        .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_NV21)
         .build()
         .apply {
             setAnalyzer(

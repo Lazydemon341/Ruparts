@@ -1,58 +1,50 @@
 package com.ruparts.app.core.barcode
 
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 
-private const val QR_STARTING_CHARS = "&s"
-private const val PRODUCT_FIRST_SYMBOL = 'T'
-private const val LOCATION_FIRST_SYMBOL = '#'
+private const val QR_PREFIX = "&s"
+private const val QR_SUFFIX = '\n'
 
 class ExternalCodeInputHandler(
     private val onCodeReceived: (String, BarcodeType) -> Unit,
 ) {
 
+    private val barcodeTypeDetector = BarcodeTypeDetector()
+
     private var codeInput = ""
     private var inputInProgress: Boolean = false
     private var lastInputTime: Long? = null
 
-    private val handler = Handler(Looper.getMainLooper())
-
     fun handleInput(char: Char): Boolean {
 
-        checkTime()
+        checkLastInputTime()
 
-        if (codeInput.isEmpty()
-            && char == QR_STARTING_CHARS[0]
-        ) {
+        if (codeInput.isEmpty() && char == QR_PREFIX[0]) {
+
             codeInput = char.toString()
-
             return true
-        } else if (codeInput.length == 1
-            && char == QR_STARTING_CHARS[1]
-        ) {
+
+        } else if (codeInput.length == 1 && char == QR_PREFIX[1]) {
+
             codeInput = ""
             inputInProgress = true
-
             return true
+
         } else if (inputInProgress && char.isAllowedSymbol()) {
-            handler.removeCallbacksAndMessages(null)
 
             codeInput += char
+            return true
 
-            Log.d("ExternalCodeInputHandler", "codeInput: $codeInput")
+        } else if (inputInProgress && char == QR_SUFFIX) {
 
-            if (!checkProductCode()) {
-                postCheckLocationCode(codeInput)
-            }
-
+            handleInput()
             return true
         }
 
         return false
     }
 
-    private fun checkTime() {
+    private fun checkLastInputTime() {
         val currentTimeMillis = System.currentTimeMillis()
         val lastInputTimeMillis = lastInputTime ?: currentTimeMillis
         // check if last input was more than 300ms ago.
@@ -64,38 +56,14 @@ class ExternalCodeInputHandler(
         lastInputTime = currentTimeMillis
     }
 
-    private fun postCheckLocationCode(code: String) {
-        if (code.length in (3..16)) {
-            handler.postDelayed(
-                { checkLocationCode(code) },
-                300L
-            )
-        }
-    }
+    private fun handleInput() {
+        Log.d("ExternalCodeInputHandler", "code input finished: $codeInput")
 
-    private fun checkLocationCode(code: String) {
-        // location code is from 3 to 16 characters long
-        if (code.first() == LOCATION_FIRST_SYMBOL) {
+        val codeType = barcodeTypeDetector.detectCodeType(codeInput)
+        onCodeReceived(codeInput, codeType)
 
-            onCodeReceived(codeInput, BarcodeType.LOCATION)
-
-            inputInProgress = false
-            codeInput = ""
-        }
-    }
-
-    private fun checkProductCode(): Boolean {
-        // product code is 18 characters long
-        if (codeInput.first() == PRODUCT_FIRST_SYMBOL && codeInput.length == 18) {
-
-            onCodeReceived(codeInput, BarcodeType.PRODUCT)
-
-            inputInProgress = false
-            codeInput = ""
-
-            return true
-        }
-        return false
+        inputInProgress = false
+        codeInput = ""
     }
 
     private fun Char.isAllowedSymbol(): Boolean {
