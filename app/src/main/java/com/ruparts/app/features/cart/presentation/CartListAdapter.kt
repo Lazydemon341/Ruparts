@@ -53,6 +53,7 @@ class CartListAdapter(
         private val amount = itemView.findViewById<TextView>(R.id.amount)
         private val description = itemView.findViewById<TextView>(R.id.description)
         private val barcode = itemView.findViewById<TextView>(R.id.scanner)
+        private val barcodeBold = itemView.findViewById<TextView>(R.id.scanner1)
         private val cartOwner = itemView.findViewById<TextView>(R.id.cart_owner)
         private val cancelButton = itemView.findViewById<CartItemCancelButton>(R.id.cart_cancel_button)
 
@@ -67,7 +68,8 @@ class CartListAdapter(
             brand.text = listItem.brand
             amount.text = listItem.quantity.toString()
             description.text = listItem.description
-            barcode.text = listItem.barcode
+            barcode.text = listItem.barcode.substring(0, listItem.barcode.length - 3)
+            barcodeBold.text = listItem.barcode.substring(listItem.barcode.length - 3)
             cartOwner.text = listItem.cartOwner
 
             menu.setOnClickListener { view ->
