@@ -5,18 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.focusable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -33,8 +27,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
@@ -42,13 +34,9 @@ import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
@@ -62,6 +50,7 @@ import com.ruparts.app.features.cart.model.CartListItem
 import com.ruparts.app.features.cart.presentation.CartFragment
 import com.ruparts.app.features.cart.presentation.CartFragment.Companion.CART_TOAST_TO_SHOW_KEY
 import com.ruparts.app.features.cart.presentation.transfertolocation.model.CartTransferToLocationScreenEffect
+import com.ruparts.app.features.qrscan.presentation.QrScanListItem
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 
@@ -168,7 +157,20 @@ class CartTransferToLocationFragment : DialogFragment() {
             Box(
                 contentAlignment = Alignment.BottomCenter,
             ) {
-                LazyColumn {
+                LazyColumn(reverseLayout = true) {
+                    itemsIndexed(
+                        items = items,
+                        key = { _, item -> item.id },
+                        contentType = { _, _ -> "listItem" },
+                    ) { index, item ->
+                        QrScanListItem(
+                            item = item,
+                            onRemove = { viewModel.onRemoveItem(item) },
+                            enableSwipeToDismiss = index == items.lastIndex,
+                            isRowVisible = index == items.lastIndex,
+                            modifier = Modifier.animateItem(),
+                        )
+                    }
                     stickyHeader(
                         contentType = "listHeader",
                     ) {
@@ -184,65 +186,11 @@ class CartTransferToLocationFragment : DialogFragment() {
                             textAlign = TextAlign.Companion.Center,
                         )
                     }
-
-                    items(
-                        items = items,
-                        key = { it.id },
-                        contentType = { "listItem" },
-                    ) { item ->
-                        CartTransferToLocationItem(item)
-                    }
                 }
                 SnackbarHost(
                     hostState = snackbarHostState,
                 )
             }
-        }
-    }
-
-    @Composable
-    private fun CartTransferToLocationItem(
-        item: CartListItem,
-    ) {
-        Column(
-            modifier = Modifier.Companion
-                .background(color = MaterialTheme.colorScheme.surface)
-                .padding(vertical = 12.dp, horizontal = 16.dp),
-        ) {
-            Row(
-                modifier = Modifier.Companion.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Companion.CenterVertically
-            ) {
-                Text(
-                    text = item.article,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = TextStyle(fontWeight = FontWeight.Companion.Bold),
-                    fontSize = 22.sp
-                )
-                Text(
-                    text = item.quantity.toString(),
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontSize = 14.sp,
-                    modifier = Modifier.Companion
-                        .border(1.dp, SolidColor(Color.Companion.Black), RoundedCornerShape(percent = 20))
-                        .padding(horizontal = 6.dp, vertical = 3.dp)
-                )
-            }
-            Text(
-                text = item.brand,
-                color = MaterialTheme.colorScheme.onSurface,
-                fontSize = 16.sp,
-                modifier = Modifier.Companion.padding(top = 4.dp)
-            )
-            Text(
-                text = item.description,
-                color = MaterialTheme.colorScheme.onSurface,
-                fontSize = 12.sp,
-                modifier = Modifier.Companion.padding(top = 4.dp),
-                maxLines = 2,
-                overflow = TextOverflow.Companion.Ellipsis
-            )
         }
     }
 

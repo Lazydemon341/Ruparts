@@ -45,6 +45,16 @@ class CartTransferToLocationViewModel @AssistedInject constructor(
         }
     }
 
+    fun onRemoveItem(item: CartListItem) = viewModelScope.launch {
+        val filteredItems = state.value.items.filter { it.id != item.id }
+        _state.update {
+            it.copy(items = filteredItems)
+        }
+        if (filteredItems.isEmpty()) {
+            _effects.emit(CartTransferToLocationScreenEffect.NavigateBack())
+        }
+    }
+
     private suspend fun scanProductCode(code: String) {
         if (state.value.items.any { it.barcode == code }) {
             return
