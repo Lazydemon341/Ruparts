@@ -92,6 +92,7 @@ class CartFragment : Fragment() {
         }
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        recyclerView.addItemDecoration(CartItemDecoration(requireContext()))
 
         observeScreenState()
         setupTaskUpdateListener()
