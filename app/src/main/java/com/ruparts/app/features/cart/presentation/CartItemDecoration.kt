@@ -12,13 +12,13 @@ import com.ruparts.app.R
 class CartItemDecoration(context: Context) : RecyclerView.ItemDecoration() {
 
     private val dividerPaint = Paint().apply {
-        color = ContextCompat.getColor(context, R.color.based_background)
+        color = ContextCompat.getColor(context, R.color.surfaceContainer)
         style = Paint.Style.STROKE
-        strokeWidth = context.resources.getDimension(R.dimen.task_list_item_spacing)
+        strokeWidth = context.resources.getDimension(R.dimen.cart_item_spacing)
     }
 
-    private val dividerHeight = context.resources.getDimension(R.dimen.task_list_item_spacing).toInt()
-    private val itemSpacing = context.resources.getDimensionPixelSize(R.dimen.task_list_item_spacing)
+    private val dividerHeight = context.resources.getDimension(R.dimen.cart_item_spacing).toInt()
+    private val itemSpacing = context.resources.getDimensionPixelSize(R.dimen.cart_item_spacing)
 
     override fun getItemOffsets(
         outRect: Rect,

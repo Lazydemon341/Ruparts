@@ -1,6 +1,10 @@
 package com.ruparts.app.features.cart.presentation
 
 import android.annotation.SuppressLint
+import android.graphics.Typeface
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.MenuInflater
 import android.view.View
@@ -26,6 +30,9 @@ class CartListAdapter(
     private val onCancelClick: (CartListItem) -> Unit,
     private val cancelButtonLoaderState: StateFlow<Float>,
 ) : ListAdapter<CartListItem, CartListAdapter.CartItemViewHolder>(CartListItemDiffCallback()) {
+
+
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CartItemViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.cart_list_child, parent, false)
@@ -53,7 +60,6 @@ class CartListAdapter(
         private val amount = itemView.findViewById<TextView>(R.id.amount)
         private val description = itemView.findViewById<TextView>(R.id.description)
         private val barcode = itemView.findViewById<TextView>(R.id.scanner)
-        private val barcodeBold = itemView.findViewById<TextView>(R.id.scanner1)
         private val cartOwner = itemView.findViewById<TextView>(R.id.cart_owner)
         private val cancelButton = itemView.findViewById<CartItemCancelButton>(R.id.cart_cancel_button)
 
@@ -68,8 +74,16 @@ class CartListAdapter(
             brand.text = listItem.brand
             amount.text = listItem.quantity.toString()
             description.text = listItem.description
-            barcode.text = listItem.barcode.substring(0, listItem.barcode.length - 3)
-            barcodeBold.text = listItem.barcode.substring(listItem.barcode.length - 3)
+//            barcode.text = listItem.barcode
+
+            val spannable = SpannableStringBuilder(listItem.barcode)
+            spannable.setSpan(
+                StyleSpan(Typeface.BOLD),
+                listItem.barcode.length - 3, listItem.barcode.length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE
+            )
+
+            barcode.text = spannable
+
             cartOwner.text = listItem.cartOwner
 
             menu.setOnClickListener { view ->

@@ -4,7 +4,8 @@
     <dimen name="divider_height">1dp</dimen>
     <dimen name="group_spacing">16dp</dimen>
     <dimen name="task_list_item_spacing">8dp</dimen>
-    
+    <dimen name="cart_item_spacing">8dp</dimen>
+
     <!-- SearchView dimensions -->
     <dimen name="search_corner_radius">16dp</dimen>
     
