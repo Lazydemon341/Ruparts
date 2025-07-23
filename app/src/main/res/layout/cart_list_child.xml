@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/basket"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingHorizontal="12dp"
     android:paddingTop="12dp"
-    android:paddingBottom="20dp">
+    android:paddingBottom="12dp"
+    android:background="?colorSurface">
 
     <TextView
         android:id="@+id/article"
@@ -52,9 +54,9 @@
         android:background="@drawable/amount"
         android:gravity="right|top"
         android:letterSpacing="0.02"
-        android:paddingHorizontal="4dp"
-        android:paddingVertical="2dp"
-        android:text="12345"
+        android:paddingHorizontal="6dp"
+        android:paddingVertical="3dp"
+        android:text="123"
         android:textColor="#1D1B20"
         android:textSize="14sp"
         app:layout_constraintRight_toLeftOf="@+id/menu_button"
@@ -75,25 +77,48 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/brand" />
 
-    <TextView
-        android:id="@+id/scanner"
+    <LinearLayout
+        android:id="@+id/scanner_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
         android:layout_marginTop="8dp"
         android:background="@drawable/barcode"
-        android:drawablePadding="5dp"
-        android:letterSpacing="0.02"
-        android:lineSpacingExtra="4sp"
-        android:paddingHorizontal="4dp"
-        android:paddingVertical="2dp"
-        android:text="A20250521T214852JL"
-        android:textColor="#1D1B20"
-        android:textSize="14sp"
-        app:drawableStartCompat="@drawable/scanner"
-        app:drawableTint="@color/black"
+        android:orientation="horizontal"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/description" />
+        app:layout_constraintTop_toBottomOf="@id/description">
+
+        <TextView
+            android:id="@+id/scanner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:drawablePadding="5dp"
+            android:letterSpacing="0.02"
+            android:lineSpacingExtra="4sp"
+            android:paddingVertical="2dp"
+            android:paddingLeft="4dp"
+            android:text="A20250521T21485"
+            android:textColor="#1D1B20"
+            android:textSize="14sp"
+            app:drawableStartCompat="@drawable/scanner"
+            app:drawableTint="@color/black" />
+
+        <TextView
+            android:id="@+id/scanner1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:letterSpacing="0.02"
+            android:lineSpacingExtra="4sp"
+            android:paddingVertical="2dp"
+            android:paddingRight="4dp"
+            android:text="2JL"
+            android:textColor="#1D1B20"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:drawableTint="@color/black" />
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/cart_owner"
@@ -102,7 +127,7 @@
         android:layout_marginStart="4dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/position"
-        android:drawableStart="@drawable/cart2"
+        android:drawableStart="@drawable/cart3"
         android:drawablePadding="5dp"
         android:letterSpacing="0.02"
         android:lineSpacingExtra="4sp"
@@ -111,7 +136,7 @@
         android:text="PETROV N.A."
         android:textColor="#1D1B20"
         android:textSize="14sp"
-        app:layout_constraintLeft_toRightOf="@id/scanner"
+        app:layout_constraintLeft_toRightOf="@id/scanner_layout"
         app:layout_constraintTop_toBottomOf="@id/description" />
 
     <ImageButton
@@ -124,7 +149,7 @@
         android:padding="4dp"
         android:src="@drawable/ruler"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/scanner" />
+        app:layout_constraintTop_toBottomOf="@id/scanner_layout" />
 
     <ImageButton
         android:id="@+id/weight"
@@ -137,7 +162,7 @@
         android:padding="4dp"
         android:src="@drawable/weight"
         app:layout_constraintLeft_toRightOf="@id/ruler"
-        app:layout_constraintTop_toBottomOf="@id/scanner" />
+        app:layout_constraintTop_toBottomOf="@id/scanner_layout" />
 
     <ImageButton
         android:id="@+id/photo"
@@ -150,7 +175,7 @@
         android:padding="4dp"
         android:src="@drawable/photo"
         app:layout_constraintLeft_toRightOf="@id/weight"
-        app:layout_constraintTop_toBottomOf="@id/scanner" />
+        app:layout_constraintTop_toBottomOf="@id/scanner_layout" />
 
     <ImageButton
         android:id="@+id/build"
@@ -163,7 +188,7 @@
         android:padding="4dp"
         android:src="@drawable/build"
         app:layout_constraintLeft_toRightOf="@id/photo"
-        app:layout_constraintTop_toBottomOf="@id/scanner" />
+        app:layout_constraintTop_toBottomOf="@id/scanner_layout" />
 
     <ImageButton
         android:id="@+id/recycling"
@@ -176,7 +201,7 @@
         android:padding="4dp"
         android:src="@drawable/recycling"
         app:layout_constraintLeft_toRightOf="@id/build"
-        app:layout_constraintTop_toBottomOf="@id/scanner" />
+        app:layout_constraintTop_toBottomOf="@id/scanner_layout" />
 
     <TextView
         android:id="@+id/warning"
@@ -197,7 +222,10 @@
         android:textSize="12sp"
         android:visibility="gone"
         app:layout_constraintLeft_toRightOf="@id/recycling"
-        app:layout_constraintTop_toBottomOf="@id/scanner" />
+        app:layout_constraintTop_toBottomOf="@id/scanner_layout"
+        tools:layout_editor_absoluteX="158dp"
+        tools:layout_editor_absoluteY="115dp" />
+
 
     <TextView
         android:id="@+id/cell"

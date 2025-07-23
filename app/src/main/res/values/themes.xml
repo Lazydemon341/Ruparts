@@ -5,6 +5,7 @@
         <!--  Text colors -->
         <item name="android:textColorSecondary">@color/secondary60</item>
         <item name="android:textColorPrimary">@color/onSurface</item>
+        <item name="colorSecondary">@color/secondary</item>
 
         <item name="colorPrimary">@color/primary</item>
         <item name="colorOnPrimary">@color/onPrimary</item>
@@ -16,6 +17,8 @@
         <item name="colorSurface">@color/surface</item>
         <item name="colorOnSurface">@color/onSurface</item>
         <item name="colorOnSurfaceVariant">@color/onSurfaceVariant</item>
+
+        <item name="colorOutline">@color/outline</item>
 
         <!--  Status bar color -->
         <item name="android:statusBarColor">?colorSurface</item>

@@ -48,4 +48,7 @@
     <color name="surface">#FEF7FF</color>
     <color name="onSurface">#1D1B20</color>
     <color name="onSurfaceVariant">#FF49454F</color>
+
+    <color name="secondary">#625B71</color>
+    <color name="outline">#79747E</color>
 </resources>
