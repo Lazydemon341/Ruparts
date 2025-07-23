@@ -361,7 +361,8 @@ private fun QrScanItemsContent(
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 16.dp, bottom = 4.dp),
+                        .padding(top = 16.dp, bottom = 4.dp)
+                        .animateItem(),
                     color = colorResource(R.color.neutral60),
                     text = headerText,
                     style = MaterialTheme.typography.bodyMedium,
@@ -409,16 +410,13 @@ fun QrScanListItem(
 
     val swipeToDismissBoxState = rememberSwipeToDismissBoxState(
         confirmValueChange = { value ->
+            if (value == SwipeToDismissBoxValue.EndToStart) {
+                onRemove(item)
+            }
             value != SwipeToDismissBoxValue.StartToEnd
         },
         positionalThreshold = { screenWidth / 3f }
     )
-
-    LaunchedEffect(swipeToDismissBoxState.currentValue) {
-        if (swipeToDismissBoxState.currentValue == SwipeToDismissBoxValue.EndToStart) {
-            onRemove(item)
-        }
-    }
 
     SwipeToDismissBox(
         state = swipeToDismissBoxState,

@@ -85,19 +85,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-        if (event.keyCode == KeyEvent.KEYCODE_BACK) {
-            return super.dispatchKeyEvent(event)
-        }
+        val handled = externalCodeInputHandler?.onKeyEvent(event) == true
 
-        if (externalCodeInputHandler != null) {
-            if (event.action == KeyEvent.ACTION_DOWN) {
-                val char = event.unicodeChar.toChar()
-                externalCodeInputHandler?.handleInput(char)
-            }
-            return true
+        return if (handled) {
+            true
+        } else {
+            super.dispatchKeyEvent(event)
         }
-
-        return super.dispatchKeyEvent(event)
     }
 
     private fun setupNavigation() {

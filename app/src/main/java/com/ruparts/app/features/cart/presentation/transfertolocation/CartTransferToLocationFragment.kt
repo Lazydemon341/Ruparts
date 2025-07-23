@@ -27,11 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEventType
-import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
-import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
@@ -139,13 +135,7 @@ class CartTransferToLocationFragment : DialogFragment() {
             sheetState = bottomSheetState,
             modifier = Modifier
                 .onKeyEvent { event ->
-                    if (event.key != Key.Back && event.type == KeyEventType.KeyDown) {
-                        val char = event.nativeKeyEvent.unicodeChar.toChar()
-                        externalCodeInputHandler.handleInput(char)
-                        return@onKeyEvent true
-                    }
-
-                    return@onKeyEvent false
+                    externalCodeInputHandler.onKeyEvent(event.nativeKeyEvent)
                 }
                 .focusRequester(focusRequester)
                 .focusable(),
@@ -178,12 +168,13 @@ class CartTransferToLocationFragment : DialogFragment() {
                             modifier = Modifier.Companion
                                 .fillMaxWidth()
                                 .padding(top = 8.dp, bottom = 16.dp)
-                                .padding(horizontal = 16.dp),
+                                .padding(horizontal = 16.dp)
+                                .animateItem(),
                             color = colorResource(R.color.neutral60),
                             text = "Отсканируйте один или несколько товаров,\n" +
                                     "а затем ячейку или отгрузочное место",
                             style = MaterialTheme.typography.bodyMedium,
-                            textAlign = TextAlign.Companion.Center,
+                            textAlign = TextAlign.Center,
                         )
                     }
                 }

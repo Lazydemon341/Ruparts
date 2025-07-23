@@ -57,6 +57,9 @@ class QrScanViewModel @Inject constructor(
         _state.update {
             it.copy(scannedItems = it.scannedItems.filter { it.id != item.id })
         }
+        if (state.value.scannedItems.isEmpty()) {
+            firstItemScanned = false
+        }
     }
 
     private fun onBarcodesScanned(barcodes: List<Barcode>) {
@@ -75,13 +78,6 @@ class QrScanViewModel @Inject constructor(
             _state.update {
                 it.copy(isLoading = true)
             }
-
-//            uniqueBarcodes.forEach { barcode ->
-//                val rawValue = barcode.rawValue
-//                if (rawValue != null) {
-//                    doScan(rawValue)
-//                }
-//            }
 
             val barcode = uniqueBarcodes.first { !it.rawValue.isNullOrEmpty() }
             doScan(requireNotNull(barcode.rawValue))
