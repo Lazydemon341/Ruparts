@@ -198,6 +198,7 @@ class CartTransferToLocationFragment : DialogFragment() {
                     description = "Описание",
                     barcode = "",
                     cartOwner = "",
+                    info = "",
                 )
             )
         )

@@ -2,7 +2,6 @@
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -11,8 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingHorizontal="16dp"
-        android:background="@color/based_background">
+        android:paddingHorizontal="16dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -151,10 +149,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/barcode"
-                android:paddingHorizontal="6dp"
                 android:gravity="center_vertical"
                 android:letterSpacing="0.03"
                 android:lineSpacingExtra="5sp"
+                android:paddingHorizontal="6dp"
                 android:text="A20250521T214852JL"
                 android:textColor="?android:textColorPrimary"
                 android:textSize="16sp"
@@ -165,8 +163,8 @@
                 android:id="@+id/address_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
                 android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
                 android:letterSpacing="0.03"
                 android:lineSpacingExtra="5sp"
                 android:text="Адрес"
@@ -181,10 +179,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/position"
-                android:paddingHorizontal="6dp"
                 android:gravity="center_vertical"
                 android:letterSpacing="0.03"
                 android:lineSpacingExtra="5sp"
+                android:paddingHorizontal="6dp"
                 android:text="L2-A01-11-16-12"
                 android:textColor="?android:textColorPrimary"
                 android:textSize="16sp"
@@ -636,15 +634,15 @@
                 android:id="@+id/comment_info_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
                 android:layout_marginTop="16dp"
+                android:gravity="center_vertical"
                 android:letterSpacing="0.03"
                 android:lineSpacingExtra="5sp"
                 android:text="Комментарий"
                 android:textColor="?colorSecondary"
                 android:textSize="16sp"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/mark11"/>
+                app:layout_constraintTop_toBottomOf="@id/mark11" />
 
             <TextView
                 android:id="@+id/comment_info_value"
@@ -658,7 +656,7 @@
                 android:textColor="?android:textColorPrimary"
                 android:textSize="16sp"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/comment_info_name"/>
+                app:layout_constraintTop_toBottomOf="@id/comment_info_name" />
 
             <ImageButton
                 android:id="@+id/photo7"

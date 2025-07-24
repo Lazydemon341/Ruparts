@@ -5,22 +5,22 @@
     android:id="@+id/basket"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="?colorSurface"
     android:paddingHorizontal="12dp"
-    android:paddingTop="12dp"
-    android:paddingBottom="12dp"
-    android:background="?colorSurface">
+    android:paddingVertical="12dp">
 
     <TextView
         android:id="@+id/article"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:text="123456789123456789"
-        android:textColor="#1D1B20"
+        android:textColor="?colorOnSurface"
         android:textSize="22sp"
         android:textStyle="bold"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toStartOf="@id/amount"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="123456789123456789" />
 
     <ImageButton
         android:id="@+id/menu_button"
@@ -29,20 +29,22 @@
         android:background="@android:color/transparent"
         android:clickable="true"
         android:src="@drawable/more_vert"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/brand"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:letterSpacing="0.03"
-        android:text="GENERAL MOTORS"
-        android:textColor="#1D1B20"
+        android:maxLines="1"
+        android:textColor="?colorOnSurface"
         android:textSize="16sp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/article" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/article"
+        tools:text="GENERAL MOTORS" />
 
     <TextView
         android:id="@+id/amount"
@@ -50,94 +52,84 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginTop="2dp"
-        android:layout_marginRight="12dp"
+        android:layout_marginEnd="12dp"
         android:background="@drawable/amount"
-        android:gravity="right|top"
+        android:gravity="end|top"
         android:letterSpacing="0.02"
         android:paddingHorizontal="6dp"
         android:paddingVertical="3dp"
-        android:text="123"
-        android:textColor="#1D1B20"
+        android:textColor="?colorOnSurface"
         android:textSize="14sp"
-        app:layout_constraintRight_toLeftOf="@+id/menu_button"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toStartOf="@+id/menu_button"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="123" />
 
     <TextView
         android:id="@+id/description"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:gravity="top"
         android:letterSpacing="0.02"
         android:lineSpacingExtra="2sp"
         android:maxLines="1"
-        android:text="Описание"
-        android:textColor="#1D1B20"
+        android:textColor="?colorOnSurface"
         android:textSize="14sp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/brand" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/brand"
+        tools:text="Описание" />
 
     <LinearLayout
-        android:id="@+id/scanner_layout"
+        android:id="@+id/barcode_and_owner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:background="@drawable/barcode"
         android:orientation="horizontal"
-        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/description">
 
         <TextView
-            android:id="@+id/scanner"
+            android:id="@+id/barcode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:background="@drawable/barcode"
             android:drawablePadding="5dp"
+            android:ellipsize="end"
             android:letterSpacing="0.02"
             android:lineSpacingExtra="4sp"
+            android:maxLines="1"
+            android:orientation="horizontal"
+            android:paddingHorizontal="4dp"
             android:paddingVertical="2dp"
-            android:paddingLeft="4dp"
-            android:text="A20250521T21485"
-            android:textColor="#1D1B20"
+            android:textColor="?colorOnSurface"
             android:textSize="14sp"
             app:drawableStartCompat="@drawable/scanner"
-            app:drawableTint="@color/black" />
+            app:drawableTint="@color/black"
+            tools:text="TE250701T000002LR4" />
 
         <TextView
-            android:id="@+id/scanner1"
+            android:id="@+id/cart_owner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
+            android:layout_marginStart="4dp"
+            android:background="@drawable/position"
+            android:drawableStart="@drawable/cart3"
+            android:drawablePadding="5dp"
+            android:ellipsize="end"
             android:letterSpacing="0.02"
             android:lineSpacingExtra="4sp"
+            android:maxLines="1"
+            android:paddingHorizontal="4dp"
             android:paddingVertical="2dp"
-            android:paddingRight="4dp"
-            android:text="2JL"
-            android:textColor="#1D1B20"
+            android:textColor="?colorOnSurface"
             android:textSize="14sp"
-            android:textStyle="bold"
-            app:drawableTint="@color/black" />
-
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/barcode"
+            app:layout_constraintTop_toBottomOf="@id/description"
+            tools:text="PETROV N.A." />
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/cart_owner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/position"
-        android:drawableStart="@drawable/cart3"
-        android:drawablePadding="5dp"
-        android:letterSpacing="0.02"
-        android:lineSpacingExtra="4sp"
-        android:paddingHorizontal="4dp"
-        android:paddingVertical="2dp"
-        android:text="PETROV N.A."
-        android:textColor="#1D1B20"
-        android:textSize="14sp"
-        app:layout_constraintLeft_toRightOf="@id/scanner_layout"
-        app:layout_constraintTop_toBottomOf="@id/description" />
 
     <ImageButton
         android:id="@+id/ruler"
@@ -149,65 +141,65 @@
         android:padding="4dp"
         android:src="@drawable/ruler"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/scanner_layout" />
+        app:layout_constraintTop_toBottomOf="@id/barcode_and_owner" />
 
     <ImageButton
         android:id="@+id/weight"
         android:layout_width="26dp"
         android:layout_height="26dp"
-        android:layout_marginLeft="4dp"
+        android:layout_marginStart="4dp"
         android:layout_marginTop="4dp"
         android:background="@drawable/mark"
         android:clickable="true"
         android:padding="4dp"
         android:src="@drawable/weight"
         app:layout_constraintLeft_toRightOf="@id/ruler"
-        app:layout_constraintTop_toBottomOf="@id/scanner_layout" />
+        app:layout_constraintTop_toBottomOf="@id/barcode_and_owner" />
 
     <ImageButton
         android:id="@+id/photo"
         android:layout_width="26dp"
         android:layout_height="26dp"
-        android:layout_marginLeft="4dp"
+        android:layout_marginStart="4dp"
         android:layout_marginTop="4dp"
         android:background="@drawable/mark"
         android:clickable="true"
         android:padding="4dp"
         android:src="@drawable/photo"
         app:layout_constraintLeft_toRightOf="@id/weight"
-        app:layout_constraintTop_toBottomOf="@id/scanner_layout" />
+        app:layout_constraintTop_toBottomOf="@id/barcode_and_owner" />
 
     <ImageButton
         android:id="@+id/build"
         android:layout_width="26dp"
         android:layout_height="26dp"
-        android:layout_marginLeft="4dp"
+        android:layout_marginStart="4dp"
         android:layout_marginTop="4dp"
         android:background="@drawable/mark"
         android:clickable="true"
         android:padding="4dp"
         android:src="@drawable/build"
         app:layout_constraintLeft_toRightOf="@id/photo"
-        app:layout_constraintTop_toBottomOf="@id/scanner_layout" />
+        app:layout_constraintTop_toBottomOf="@id/barcode_and_owner" />
 
     <ImageButton
         android:id="@+id/recycling"
         android:layout_width="26dp"
         android:layout_height="26dp"
-        android:layout_marginLeft="4dp"
+        android:layout_marginStart="4dp"
         android:layout_marginTop="4dp"
         android:background="@drawable/mark"
         android:clickable="true"
         android:padding="4dp"
         android:src="@drawable/recycling"
         app:layout_constraintLeft_toRightOf="@id/build"
-        app:layout_constraintTop_toBottomOf="@id/scanner_layout" />
+        app:layout_constraintTop_toBottomOf="@id/barcode_and_owner" />
 
     <TextView
         android:id="@+id/warning"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="4dp"
+        android:layout_marginStart="4dp"
         android:layout_marginTop="4dp"
         android:background="@drawable/mark_red"
         android:drawableStart="@drawable/warning"
@@ -217,19 +209,18 @@
         android:paddingVertical="4dp"
         android:paddingStart="4dp"
         android:paddingEnd="8dp"
-        android:text="5 дней в корзине"
         android:textColor="@color/white"
         android:textSize="12sp"
         android:visibility="gone"
         app:layout_constraintLeft_toRightOf="@id/recycling"
-        app:layout_constraintTop_toBottomOf="@id/scanner_layout"
+        app:layout_constraintTop_toBottomOf="@id/barcode_and_owner"
         tools:layout_editor_absoluteX="158dp"
-        tools:layout_editor_absoluteY="115dp" />
-
+        tools:layout_editor_absoluteY="115dp"
+        tools:text="5 дней в корзине" />
 
     <TextView
-        android:id="@+id/cell"
-        android:layout_width="wrap_content"
+        android:id="@+id/info"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:background="@drawable/text"
@@ -238,11 +229,12 @@
         android:lineSpacingExtra="2sp"
         android:paddingHorizontal="8dp"
         android:paddingVertical="4dp"
-        android:text="Номер последней ячейки: L2-А13-2-5-8"
         android:textColor="?android:textColorPrimary"
         android:textSize="12sp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/recycling" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/recycling"
+        tools:text="Номер последней ячейки: L2-А13-2-5-8" />
 
     <com.ruparts.app.features.cart.presentation.cancelbutton.CartItemCancelButton
         android:id="@+id/cart_cancel_button"
@@ -250,6 +242,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/cell" />
+        app:layout_constraintTop_toBottomOf="@id/info" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

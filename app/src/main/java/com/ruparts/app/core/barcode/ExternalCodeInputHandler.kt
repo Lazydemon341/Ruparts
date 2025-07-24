@@ -4,7 +4,7 @@ import android.util.Log
 import android.view.KeyEvent
 
 private const val QR_PREFIX = "&s"
-private const val QR_SUFFIX = '\n'
+private const val QR_SUFFIX = '&'
 
 private const val LOG_TAG = "ExternalCodeInputHandler"
 
@@ -22,13 +22,8 @@ class ExternalCodeInputHandler(
         if (event.keyCode != KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_DOWN) {
 
             Log.d(LOG_TAG, "keyEvent received: $event")
-
-            if (event.keyCode == KeyEvent.KEYCODE_ENTER) {
-                endInput()
-            } else {
-                val char = event.unicodeChar.toChar()
-                handleInput(char)
-            }
+            val char = event.unicodeChar.toChar()
+            handleInput(char)
 
             return true
         }
@@ -53,23 +48,23 @@ class ExternalCodeInputHandler(
 
             codeInput += char
             return true
+
+        } else if (inputInProgress && char == QR_SUFFIX) {
+            endInput()
+            return true
         }
 
         return false
     }
 
     private fun endInput() {
-        checkLastInputTime()
+        Log.d(LOG_TAG, "code input finished: $codeInput")
 
-        if (inputInProgress) {
-            Log.d(LOG_TAG, "code input finished: $codeInput")
+        val codeType = barcodeTypeDetector.detectCodeType(codeInput)
+        onCodeReceived(codeInput, codeType)
 
-            val codeType = barcodeTypeDetector.detectCodeType(codeInput)
-            onCodeReceived(codeInput, codeType)
-
-            inputInProgress = false
-            codeInput = ""
-        }
+        inputInProgress = false
+        codeInput = ""
     }
 
     private fun checkLastInputTime() {

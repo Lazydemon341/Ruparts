@@ -11,4 +11,7 @@
     <!-- BottomSheetImplementer dimensions -->
     <dimen name="implementer_item_height">56dp</dimen>
     <dimen name="implementer_item_padding_left">35dp</dimen>
+
+    <!-- Cart list dimensions -->
+    <dimen name="cart_list_item_spacing">8dp</dimen>
 </resources>
