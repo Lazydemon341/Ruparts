@@ -86,11 +86,11 @@ class AuthFragment : Fragment() {
                     AuthScreen(
                         snackbarHostState = snackbarHostState,
                         state = state,
-                        onDigitPressed = { digit ->
-                            viewModel.handleAction(AuthUiAction.DigitPressed(digit))
+                        onDigitClick = { digit ->
+                            viewModel.handleAction(AuthUiAction.DigitClick(digit))
                         },
-                        onClearPressed = { viewModel.handleAction(AuthUiAction.ClearPin) },
-                        onDeletePressed = { viewModel.handleAction(AuthUiAction.DeleteLastDigit) }
+                        onClearClick = { viewModel.handleAction(AuthUiAction.ClearPin) },
+                        onDeleteClick = { viewModel.handleAction(AuthUiAction.DeleteLastDigit) }
                     )
                 }
             }
@@ -102,9 +102,9 @@ class AuthFragment : Fragment() {
 private fun AuthScreen(
     snackbarHostState: SnackbarHostState,
     state: AuthUiState,
-    onDigitPressed: (Int) -> Unit,
-    onClearPressed: () -> Unit,
-    onDeletePressed: () -> Unit
+    onDigitClick: (Int) -> Unit,
+    onClearClick: () -> Unit,
+    onDeleteClick: () -> Unit
 ) {
     Scaffold(
         snackbarHost = {
@@ -140,9 +140,9 @@ private fun AuthScreen(
                     PinCodeDisplay(pinCode = state.pinCode)
                 }
                 NumericKeyboard(
-                    onDigitPressed = onDigitPressed,
-                    onClearPressed = onClearPressed,
-                    onDeletePressed = onDeletePressed,
+                    onDigitClick = onDigitClick,
+                    onClearClick = onClearClick,
+                    onDeleteClick = onDeleteClick,
                     modifier = Modifier.padding(bottom = 24.dp)
                 )
             }
@@ -198,9 +198,9 @@ private fun PinDigitBox(
 
 @Composable
 private fun NumericKeyboard(
-    onDigitPressed: (Int) -> Unit,
-    onClearPressed: () -> Unit,
-    onDeletePressed: () -> Unit,
+    onDigitClick: (Int) -> Unit,
+    onClearClick: () -> Unit,
+    onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -208,14 +208,14 @@ private fun NumericKeyboard(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        KeyboardRow(digits = listOf(1, 2, 3), onDigitPressed = onDigitPressed)
-        KeyboardRow(digits = listOf(4, 5, 6), onDigitPressed = onDigitPressed)
-        KeyboardRow(digits = listOf(7, 8, 9), onDigitPressed = onDigitPressed)
+        KeyboardRow(digits = listOf(1, 2, 3), onDigitClick = onDigitClick)
+        KeyboardRow(digits = listOf(4, 5, 6), onDigitClick = onDigitClick)
+        KeyboardRow(digits = listOf(7, 8, 9), onDigitClick = onDigitClick)
         Row(
             horizontalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             KeyboardButton(
-                onClick = onClearPressed,
+                onClick = onClearClick,
                 content = {
                     Text(
                         text = "C",
@@ -224,7 +224,7 @@ private fun NumericKeyboard(
                 }
             )
             KeyboardButton(
-                onClick = { onDigitPressed(0) },
+                onClick = { onDigitClick(0) },
                 content = {
                     Text(
                         text = "0",
@@ -233,7 +233,7 @@ private fun NumericKeyboard(
                 }
             )
             KeyboardButton(
-                onClick = onDeletePressed,
+                onClick = onDeleteClick,
                 content = {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -246,13 +246,13 @@ private fun NumericKeyboard(
 }
 
 @Composable
-private fun KeyboardRow(digits: List<Int>, onDigitPressed: (Int) -> Unit) {
+private fun KeyboardRow(digits: List<Int>, onDigitClick: (Int) -> Unit) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         digits.forEach { digit ->
             KeyboardButton(
-                onClick = { onDigitPressed(digit) },
+                onClick = { onDigitClick(digit) },
                 content = {
                     Text(
                         text = digit.toString(),
@@ -292,9 +292,9 @@ private fun AuthScreenPreview() {
     RupartsTheme {
         AuthScreen(
             state = AuthUiState(pinCode = "123"),
-            onDigitPressed = {},
-            onClearPressed = {},
-            onDeletePressed = {},
+            onDigitClick = {},
+            onClearClick = {},
+            onDeleteClick = {},
             snackbarHostState = SnackbarHostState()
         )
     }

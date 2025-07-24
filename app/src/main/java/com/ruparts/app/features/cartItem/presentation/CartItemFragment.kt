@@ -49,11 +49,11 @@ class CartItemFragment : Fragment(){
         description = view.findViewById(R.id.description_value)
         barcode = view.findViewById(R.id.barcode_value)
 
-        article.setText(cartItem.article)
-        brand.setText(cartItem.brand)
-        quantity.setText(cartItem.quantity.toString())
-        description.setText(cartItem.description)
-        barcode.setText(cartItem.barcode)
+        article.text = cartItem.article
+        brand.text = cartItem.brand
+        quantity.text = cartItem.quantity.toString()
+        description.text = cartItem.description
+        barcode.text = cartItem.barcode
 
         setupMenu()
 

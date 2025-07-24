@@ -33,28 +33,30 @@ class ExternalCodeInputHandler(
     private fun handleInput(char: Char): Boolean {
         checkLastInputTime()
 
-        if (codeInput.isEmpty() && char == QR_PREFIX[0]) {
+        return if (codeInput.isEmpty() && char == QR_PREFIX[0]) {
 
             codeInput = char.toString()
-            return true
+            true
 
         } else if (codeInput.length == 1 && char == QR_PREFIX[1]) {
 
             codeInput = ""
             inputInProgress = true
-            return true
+            true
 
         } else if (inputInProgress && char.isAllowedSymbol()) {
 
             codeInput += char
-            return true
+            true
 
         } else if (inputInProgress && char == QR_SUFFIX) {
-            endInput()
-            return true
-        }
 
-        return false
+            endInput()
+            true
+
+        } else {
+            false
+        }
     }
 
     private fun endInput() {
