@@ -3,6 +3,7 @@ package com.ruparts.app.features.qrscan.presentation.camera
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageFormat
+import android.graphics.Matrix
 import android.graphics.Rect
 import android.graphics.YuvImage
 import android.media.Image
@@ -11,6 +12,7 @@ import androidx.annotation.OptIn
 import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
+import androidx.compose.ui.unit.IntSize
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
@@ -31,15 +33,18 @@ internal class QrCodeImageAnalyzer(
         .build()
     private val scanner = BarcodeScanning.getClient(options)
 
+    private var previewSize: IntSize = IntSize.Zero
+
+    fun setPreviewSize(size: IntSize) {
+        previewSize = size
+    }
+
     @OptIn(ExperimentalGetImage::class)
     override fun analyze(imageProxy: ImageProxy) {
         val mediaImage = imageProxy.image
         if (mediaImage != null) {
-            val croppedBitmap = cropImage(mediaImage)
-            val image = InputImage.fromBitmap(
-                croppedBitmap,
-                imageProxy.imageInfo.rotationDegrees
-            )
+            val bitmap = getBitmap(mediaImage, imageProxy.imageInfo.rotationDegrees)
+            val image = InputImage.fromBitmap(bitmap, 0)
 
             scanner.process(image)
                 .addOnSuccessListener { barcodes ->
@@ -59,15 +64,16 @@ internal class QrCodeImageAnalyzer(
         }
     }
 
-    private fun cropImage(image: Image): Bitmap {
-        val bitmap = imageToBitmap(image)
-        return cropBitmap(bitmap)
+    private fun getBitmap(image: Image, rotationDegrees: Int): Bitmap {
+        val bitmap = nv21ToBitmap(image)
+        val correctedBitmap = matchPreviewImage(bitmap, rotationDegrees)
+        return cropBitmap(correctedBitmap)
     }
 
     /**
      * https://stackoverflow.com/a/79464017
      */
-    private fun imageToBitmap(image: Image): Bitmap {
+    private fun nv21ToBitmap(image: Image): Bitmap {
         val yBuffer = image.planes[0].buffer
         val uBuffer = image.planes[1].buffer
         val vBuffer = image.planes[2].buffer
@@ -90,7 +96,29 @@ internal class QrCodeImageAnalyzer(
 
         val imageBytes = out.toByteArray()
         return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+    }
 
+    /**
+     * https://stackoverflow.com/a/60228420
+     */
+    private fun matchPreviewImage(original: Bitmap, rotationDegrees: Int): Bitmap {
+        val rotationMatrix = Matrix().apply {
+            postRotate(rotationDegrees.toFloat())
+        }
+        val rotatedBitmap = Bitmap.createBitmap(original, 0, 0, original.width, original.height, rotationMatrix, true)
+
+        val cropHeight = if (rotatedBitmap.width < previewSize.width) {
+            // if preview area larger than analysing image
+            val koeff = rotatedBitmap.width.toFloat() / previewSize.width.toFloat()
+            previewSize.height.toFloat() * koeff
+        } else {
+            // if preview area smaller than analysing image
+            val prc = 100 - (previewSize.width.toFloat() / (rotatedBitmap.width.toFloat() / 100f))
+            previewSize.height + ((previewSize.height.toFloat() / 100f) * prc)
+        }
+
+        val cropTop = (rotatedBitmap.height / 2f) - (cropHeight / 2f)
+        return Bitmap.createBitmap(rotatedBitmap, 0, cropTop.toInt(), rotatedBitmap.width, cropHeight.toInt())
     }
 
     /**

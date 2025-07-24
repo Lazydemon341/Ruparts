@@ -110,13 +110,16 @@ class CartViewModel @Inject constructor(
     }
 
     private suspend fun transferLastScannedToCart() {
-        val currentScannedItem = scannedItemState.value
-        if (currentScannedItem != null && scannedItemTransferJob?.isActive == true) {
+        if (scannedItemTransferJob?.isActive == true) {
             // new item scanned while previous item is still loading.
-            // in this case we immediately transfer previous scanned item to basket.
+            // in this case we immediately transfer previous scanned item to cart.
             scannedItemTransferJob?.cancel()
-            scannedItemState.value = currentScannedItem.copy(fromExternalInput = false)
-            transferToCart(currentScannedItem)
+
+            val currentScannedItem = scannedItemState.value
+            if (currentScannedItem != null) {
+                scannedItemState.value = currentScannedItem.copy(fromExternalInput = false)
+                transferToCart(currentScannedItem)
+            }
         }
     }
 

@@ -20,7 +20,8 @@ class CartMapper @Inject constructor() {
             quantity = item.quantity,
             description = item.description,
             barcode = item.barcode,
-            cartOwner = item.location
+            cartOwner = item.location,
+            info = item.info.orEmpty(),
         )
     }
 }

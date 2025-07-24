@@ -1,9 +1,12 @@
 package com.ruparts.app.core.barcode
 
 import android.util.Log
+import android.view.KeyEvent
 
 private const val QR_PREFIX = "&s"
-private const val QR_SUFFIX = '\n'
+private const val QR_SUFFIX = '&'
+
+private const val LOG_TAG = "ExternalCodeInputHandler"
 
 class ExternalCodeInputHandler(
     private val onCodeReceived: (String, BarcodeType) -> Unit,
@@ -15,8 +18,19 @@ class ExternalCodeInputHandler(
     private var inputInProgress: Boolean = false
     private var lastInputTime: Long? = null
 
-    fun handleInput(char: Char): Boolean {
+    fun onKeyEvent(event: KeyEvent): Boolean {
+        if (event.keyCode != KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_DOWN) {
 
+            Log.d(LOG_TAG, "keyEvent received: $event")
+            val char = event.unicodeChar.toChar()
+            handleInput(char)
+
+            return true
+        }
+        return false
+    }
+
+    private fun handleInput(char: Char): Boolean {
         checkLastInputTime()
 
         if (codeInput.isEmpty() && char == QR_PREFIX[0]) {
@@ -36,12 +50,21 @@ class ExternalCodeInputHandler(
             return true
 
         } else if (inputInProgress && char == QR_SUFFIX) {
-
-            handleInput()
+            endInput()
             return true
         }
 
         return false
+    }
+
+    private fun endInput() {
+        Log.d(LOG_TAG, "code input finished: $codeInput")
+
+        val codeType = barcodeTypeDetector.detectCodeType(codeInput)
+        onCodeReceived(codeInput, codeType)
+
+        inputInProgress = false
+        codeInput = ""
     }
 
     private fun checkLastInputTime() {
@@ -54,16 +77,6 @@ class ExternalCodeInputHandler(
             codeInput = ""
         }
         lastInputTime = currentTimeMillis
-    }
-
-    private fun handleInput() {
-        Log.d("ExternalCodeInputHandler", "code input finished: $codeInput")
-
-        val codeType = barcodeTypeDetector.detectCodeType(codeInput)
-        onCodeReceived(codeInput, codeType)
-
-        inputInProgress = false
-        codeInput = ""
     }
 
     private fun Char.isAllowedSymbol(): Boolean {

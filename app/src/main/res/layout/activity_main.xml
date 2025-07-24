@@ -5,6 +5,7 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?colorSurfaceContainer"
     tools:context=".MainActivity">
 
     <LinearLayout
@@ -17,8 +18,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:subtitleCentered="true"
-            app:titleCentered="true"
-            app:subtitleTextAppearance="@style/TextAppearance.Ruparts.LabelMedium"/>
+            app:subtitleTextAppearance="@style/TextAppearance.Ruparts.LabelMedium"
+            app:titleCentered="true" />
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/nav_host_fragment"
@@ -36,6 +37,7 @@
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         android:paddingTop="16dp"
+        android:background="?colorSurfaceContainer"
         app:headerLayout="@layout/navigation_header">
 
         <Button

@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,7 +30,6 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -62,11 +60,11 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -76,12 +74,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.ClipOp
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -100,7 +106,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
-import com.google.mlkit.vision.barcode.common.Barcode
 import com.ruparts.app.R
 import com.ruparts.app.features.cart.model.CartListItem
 import com.ruparts.app.features.cart.model.CartScanPurpose
@@ -135,6 +140,11 @@ fun QrScanScreen(
 
     var surfaceRequestState = remember { mutableStateOf<SurfaceRequest?>(null) }
     var cameraState = remember { mutableStateOf<Camera?>(null) }
+    val imageAnalyzer = remember {
+        QrCodeImageAnalyzer(
+            onBarcodesScanned = { onAction(QrScanScreenAction.BarcodesScanned(it)) },
+        )
+    }
 
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(permissionGranted, context, lifecycleOwner) {
@@ -143,8 +153,8 @@ fun QrScanScreen(
                 cameraState.value = startCamera(
                     context = context,
                     lifecycleOwner = lifecycleOwner,
+                    imageAnalyzer = imageAnalyzer,
                     onSurfaceRequest = { surfaceRequestState.value = it },
-                    onBarcodesScanned = { onAction(QrScanScreenAction.BarcodesScanned(it)) },
                 )
             }
         }
@@ -173,7 +183,7 @@ fun QrScanScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .consumeWindowInsets(paddingValues)
+                .padding(paddingValues),
         ) {
             Box(
                 modifier = Modifier
@@ -183,11 +193,13 @@ fun QrScanScreen(
             ) {
                 val surfaceRequest = surfaceRequestState.value
                 if (surfaceRequest != null) {
-                    CameraXViewfinder(
+                    CameraPreview(
                         surfaceRequest = surfaceRequest,
                         modifier = Modifier
                             .align(Alignment.TopCenter)
-                            .fillMaxSize(),
+                            .onGloballyPositioned { coordinates ->
+                                imageAnalyzer.setPreviewSize(coordinates.size)
+                            },
                     )
                 }
 
@@ -242,6 +254,39 @@ fun QrScanScreen(
             }
         }
     }
+}
+
+@Composable
+private fun CameraPreview(
+    surfaceRequest: SurfaceRequest,
+    modifier: Modifier = Modifier,
+) {
+    CameraXViewfinder(
+        surfaceRequest = surfaceRequest,
+        modifier = modifier
+            .fillMaxSize()
+            .drawWithCache {
+                val rect = Rect(
+                    left = size.width * 0.25f,
+                    right = size.width * 0.75f,
+                    top = size.height * 0.25f,
+                    bottom = size.height * 0.75f,
+                )
+                val rectPath = Path().apply {
+                    addRect(rect)
+                }
+                val rectColor = SolidColor(Color.Black.copy(alpha = 0.5f))
+                val strokeStyle = Stroke(width = 4f)
+
+                onDrawWithContent {
+                    drawContent()
+                    clipPath(rectPath, clipOp = ClipOp.Difference) {
+                        drawRect(rectColor)
+                        drawPath(rectPath, style = strokeStyle, color = Color.White)
+                    }
+                }
+            },
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -361,7 +406,8 @@ private fun QrScanItemsContent(
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 16.dp, bottom = 4.dp),
+                        .padding(top = 16.dp, bottom = 4.dp)
+                        .animateItem(),
                     color = colorResource(R.color.neutral60),
                     text = headerText,
                     style = MaterialTheme.typography.bodyMedium,
@@ -406,13 +452,17 @@ fun QrScanListItem(
     modifier: Modifier = Modifier,
 ) {
     val screenWidth = LocalWindowInfo.current.containerSize.width
-
-    val swipeToDismissBoxState = rememberSwipeToDismissBoxState(
-        confirmValueChange = { value ->
-            value != SwipeToDismissBoxValue.StartToEnd
-        },
-        positionalThreshold = { screenWidth / 3f }
-    )
+    val density = LocalDensity.current
+    val swipeToDismissBoxState = remember {
+        SwipeToDismissBoxState(
+            initialValue = SwipeToDismissBoxValue.Settled,
+            density = density,
+            confirmValueChange = { value ->
+                value != SwipeToDismissBoxValue.StartToEnd
+            },
+            positionalThreshold = { screenWidth / 3f },
+        )
+    }
 
     LaunchedEffect(swipeToDismissBoxState.currentValue) {
         if (swipeToDismissBoxState.currentValue == SwipeToDismissBoxValue.EndToStart) {
@@ -465,7 +515,6 @@ fun QrScanListItem(
                         .padding(horizontal = 6.dp, vertical = 3.dp)
                 )
             }
-
             Text(
                 text = item.brand,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -489,24 +538,25 @@ fun QrScanListItem(
                             .background(
                                 shape = RoundedCornerShape(CornerSize(5.dp)),
                                 color = Color(0xFFFFE8A3)
-                            ),
-                        verticalAlignment = Alignment.CenterVertically
+                            )
+                            .padding(horizontal = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(5.dp),
                     ) {
                         Icon(
-                            modifier = Modifier.padding(start = 4.dp),
                             painter = painterResource(id = R.drawable.scanner),
                             contentDescription = "",
                         )
-                        Spacer(Modifier.width(5.dp))
                         Text(
-                            buildAnnotatedString {
+                            text = buildAnnotatedString {
                                 append(item.barcode.substring(0, item.barcode.length - 3))
+
                                 withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = Color.Black)) {
                                     append(item.barcode.substring(item.barcode.length - 3))
                                 }
                             },
                             fontSize = 14.sp,
-                            modifier = Modifier.padding(end = 4.dp)
+                            maxLines = 1,
                         )
                     }
                     Row(
@@ -516,19 +566,19 @@ fun QrScanListItem(
                             .background(
                                 shape = RoundedCornerShape(CornerSize(5.dp)),
                                 color = Color(0xFFE8DEF8)
-                            ),
-                        verticalAlignment = Alignment.CenterVertically
+                            )
+                            .padding(horizontal = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(5.dp)
                     ) {
                         Icon(
-                            modifier = Modifier.padding(start = 4.dp),
                             painter = painterResource(id = R.drawable.cart2),
                             contentDescription = "",
                         )
-                        Spacer(Modifier.width(5.dp))
                         Text(
                             text = item.cartOwner.substring(1),
                             fontSize = 14.sp,
-                            modifier = Modifier.padding(end = 4.dp)
+                            maxLines = 1,
                         )
                     }
                 }
@@ -735,8 +785,8 @@ private fun ManualInputDialog(
 private suspend fun startCamera(
     context: Context,
     lifecycleOwner: LifecycleOwner,
+    imageAnalyzer: ImageAnalysis.Analyzer,
     onSurfaceRequest: (SurfaceRequest) -> Unit,
-    onBarcodesScanned: (List<Barcode>) -> Unit,
 ): Camera {
     val processCameraProvider = ProcessCameraProvider.awaitInstance(context.applicationContext)
 
@@ -754,9 +804,7 @@ private suspend fun startCamera(
         .apply {
             setAnalyzer(
                 Executors.newSingleThreadExecutor(),
-                QrCodeImageAnalyzer(
-                    onBarcodesScanned = onBarcodesScanned,
-                )
+                imageAnalyzer
             )
         }
     return processCameraProvider.bindToLifecycle(
@@ -781,6 +829,7 @@ private fun QrScanScreenPreview() {
                     description = "Описание",
                     barcode = "",
                     cartOwner = "",
+                    info = "",
                 ),
                 CartListItem(
                     id = 1,
@@ -790,6 +839,7 @@ private fun QrScanScreenPreview() {
                     description = "Длинное описание, которое не влезает в одну строчку",
                     barcode = "",
                     cartOwner = "",
+                    info = "",
                 ),
                 CartListItem(
                     id = 2,
@@ -799,6 +849,7 @@ private fun QrScanScreenPreview() {
                     description = "Очень длинное описание, которое не влезает в одну строчку, которое не влезает в одну строчку, которое не влезает в одну строчку, которое не влезает в одну строчку,",
                     barcode = "",
                     cartOwner = "",
+                    info = "",
                 )
             ),
             isLoading = false,

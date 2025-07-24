@@ -11,6 +11,8 @@ import android.widget.Toast
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.view.menu.MenuPopupHelper
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.text.bold
+import androidx.core.text.buildSpannedString
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -52,13 +54,12 @@ class CartListAdapter(
         private val brand = itemView.findViewById<TextView>(R.id.brand)
         private val amount = itemView.findViewById<TextView>(R.id.amount)
         private val description = itemView.findViewById<TextView>(R.id.description)
-        private val barcode = itemView.findViewById<TextView>(R.id.scanner)
-        private val barcodeBold = itemView.findViewById<TextView>(R.id.scanner1)
+        private val barcode = itemView.findViewById<TextView>(R.id.barcode)
         private val cartOwner = itemView.findViewById<TextView>(R.id.cart_owner)
         private val cancelButton = itemView.findViewById<CartItemCancelButton>(R.id.cart_cancel_button)
+        private val info = itemView.findViewById<TextView>(R.id.info)
 
         private val menu = itemView.findViewById<ImageButton>(R.id.menu_button)
-
 
         fun bind(listItem: CartListItem) {
             itemView.setOnClickListener { onItemClick(listItem) }
@@ -68,9 +69,19 @@ class CartListAdapter(
             brand.text = listItem.brand
             amount.text = listItem.quantity.toString()
             description.text = listItem.description
-            barcode.text = listItem.barcode.substring(0, listItem.barcode.length - 3)
-            barcodeBold.text = listItem.barcode.substring(listItem.barcode.length - 3)
+            barcode.text = buildSpannedString {
+                val boldStartIndex = listItem.barcode.length - 3
+                append(listItem.barcode.substring(0, boldStartIndex))
+                bold { append(listItem.barcode.substring(boldStartIndex)) }
+            }
             cartOwner.text = listItem.cartOwner
+
+            if (listItem.info.isEmpty()) {
+                info.isVisible = false
+            } else  {
+                info.isVisible = true
+                info.text = listItem.info
+            }
 
             menu.setOnClickListener { view ->
                 showPopupMenu(view)

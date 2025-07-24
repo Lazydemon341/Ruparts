@@ -1,5 +1,7 @@
 package com.ruparts.app.features.qrscan.presentation
 
+import android.os.SystemClock
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.mlkit.vision.barcode.common.Barcode
@@ -27,6 +29,8 @@ private val INITIAL_STATE = QrScanScreenState(
     CartScanPurpose.TRANSFER_TO_CART,
 )
 
+private const val BARCODE_REQUIRED_FOCUS_DURATION = 1000L
+
 @HiltViewModel
 class QrScanViewModel @Inject constructor(
     private val cartRepository: CartRepository,
@@ -41,6 +45,10 @@ class QrScanViewModel @Inject constructor(
 
     private var scannedCodes = mutableSetOf<String>()
     private var firstItemScanned: Boolean = false
+
+    // For tracking barcode focus duration
+    private var currentTrackedBarcode: String? = null
+    private var barcodeFirstDetectedAt: Long = 0
 
     fun handleAction(action: QrScanScreenAction) = viewModelScope.launch {
         when (action) {
@@ -57,6 +65,9 @@ class QrScanViewModel @Inject constructor(
         _state.update {
             it.copy(scannedItems = it.scannedItems.filter { it.id != item.id })
         }
+        if (state.value.scannedItems.isEmpty()) {
+            firstItemScanned = false
+        }
     }
 
     private fun onBarcodesScanned(barcodes: List<Barcode>) {
@@ -64,10 +75,35 @@ class QrScanViewModel @Inject constructor(
             return
         }
 
-        val uniqueBarcodes = barcodes.filter { barcode ->
-            barcode.rawValue !in scannedCodes
+        val barcode = barcodes.firstOrNull {
+            !it.rawValue.isNullOrEmpty() && it.rawValue !in scannedCodes
+        } ?: return
+        val barcodeValue = requireNotNull(barcode.rawValue)
+
+        // Track this barcode for focus duration requirement
+        trackBarcodeDetection(barcodeValue)
+    }
+
+    private fun trackBarcodeDetection(barcode: String) {
+        val currentTime = SystemClock.uptimeMillis()
+
+        if (barcode == currentTrackedBarcode) {
+            if (currentTime - barcodeFirstDetectedAt >= BARCODE_REQUIRED_FOCUS_DURATION) {
+                // Barcode has been focused long enough, process it
+                Log.d("QrScanViewModel", "Barcode $barcode focused for ${BARCODE_REQUIRED_FOCUS_DURATION}ms, processing")
+                processBarcodeAfterFocus(barcode)
+            }
+        } else {
+            // New barcode detected, start tracking it
+            Log.d("QrScanViewModel", "New barcode detected: $barcode, starting focus timer")
+            currentTrackedBarcode = barcode
+            barcodeFirstDetectedAt = currentTime
         }
-        if (uniqueBarcodes.isEmpty()) {
+    }
+
+    private fun processBarcodeAfterFocus(barcode: String) {
+        // Skip if already processed or loading
+        if (state.value.isLoading) {
             return
         }
 
@@ -76,15 +112,7 @@ class QrScanViewModel @Inject constructor(
                 it.copy(isLoading = true)
             }
 
-//            uniqueBarcodes.forEach { barcode ->
-//                val rawValue = barcode.rawValue
-//                if (rawValue != null) {
-//                    doScan(rawValue)
-//                }
-//            }
-
-            val barcode = uniqueBarcodes.first { !it.rawValue.isNullOrEmpty() }
-            doScan(requireNotNull(barcode.rawValue))
+            doScan(barcode)
 
             _state.update {
                 it.copy(isLoading = false)

@@ -20,9 +20,9 @@ class CartItemDto(
     @SerializedName("flags")
     val flags: List<Int>,
     @SerializedName("info")
-    val info: String,
+    val info: String?,
     @SerializedName("actions")
-    val actions: Actions,
+    val actions: Actions?,
 ) {
     class Actions(
         @SerializedName("split")
