@@ -23,6 +23,9 @@ ksp = "2.1.10-1.0.31"
 camerax = "1.5.0-beta02"
 datastore = "1.1.7"
 
+detekt = "1.23.8"
+detektCompose = "0.4.26"
+
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 
@@ -79,6 +82,9 @@ camerax-compose = { group = "androidx.camera", name = "camera-compose", version.
 androidx-datastore-core = { group = "androidx.datastore", name = "datastore", version.ref = "datastore" }
 androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
 
+#Detekt
+detekt-compose-rules = { group = "io.nlopez.compose.rules", name = "detekt", version.ref = "detektCompose" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
@@ -87,4 +93,5 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-parcelize = { id = "kotlin-parcelize" }
 navigation-safeargs = { id = "androidx.navigation.safeargs.kotlin" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 

@@ -60,6 +60,7 @@ fun RupartsCartItem(
         )
     }
 
+    //val onRemove by rememberUpdatedState(onRemove)
     LaunchedEffect(swipeToDismissBoxState.currentValue) {
         if (swipeToDismissBoxState.currentValue == SwipeToDismissBoxValue.EndToStart) {
             onRemove(item)

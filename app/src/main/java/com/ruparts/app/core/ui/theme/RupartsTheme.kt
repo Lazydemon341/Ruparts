@@ -1,6 +1,5 @@
 package com.ruparts.app.core.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.material3.lightColorScheme
@@ -14,7 +13,6 @@ import com.ruparts.app.R
 
 @Composable
 fun RupartsTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
     // Primary colors

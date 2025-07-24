@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.navigation.safeargs)
+    alias(libs.plugins.detekt)
 }
 
 android {
@@ -50,24 +51,36 @@ android {
     }
 }
 
+detekt {
+    toolVersion = libs.versions.detekt.get()
+
+    config.setFrom("../detekt/config.yml")
+    buildUponDefaultConfig = true
+
+    debug = true
+    ignoredBuildTypes = listOf("release")
+
+    basePath = projectDir.path
+}
+
 dependencies {
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
-    
+
     // Jetpack ViewModel
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
-    
+
     // Jetpack Navigation
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
-    
+
     // Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     ksp(libs.hilt.androidx.compiler)
-    
+
     // Jetpack Compose
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
@@ -80,7 +93,7 @@ dependencies {
     implementation(libs.activity.compose)
     implementation(libs.lifecycle.viewmodel.compose)
     debugImplementation(libs.compose.ui.tooling)
-    
+
     // Retrofit & Networking
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.gson)
@@ -98,4 +111,7 @@ dependencies {
     // DataStore
     implementation(libs.androidx.datastore.core)
     implementation(libs.androidx.datastore.preferences)
+
+    // Detekt
+    detektPlugins(libs.detekt.compose.rules)
 }

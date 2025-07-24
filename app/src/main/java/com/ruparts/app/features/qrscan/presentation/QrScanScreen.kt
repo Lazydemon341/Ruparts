@@ -371,7 +371,7 @@ private fun QrScanItemsContent(
         ) {
             itemsIndexed(
                 items = scannedItems,
-                key = { _, it -> it.id },
+                key = { _, item -> item.id },
                 contentType = { _, _ -> listItemContentType },
             ) { index, item ->
                 if (index == 0 && showTransferToBasketButton) {
@@ -688,7 +688,9 @@ private fun QrScanScreenPreview() {
                     article = "36575",
                     brand = "Porsche",
                     quantity = 5843,
-                    description = "Очень длинное описание, которое не влезает в одну строчку, которое не влезает в одну строчку, которое не влезает в одну строчку, которое не влезает в одну строчку,",
+                    description = "Очень длинное описание, которое не влезает в одну строчку, " +
+                            "которое не влезает в одну строчку, которое не влезает в одну строчку, " +
+                            "которое не влезает в одну строчку,",
                     barcode = "",
                     cartOwner = "",
                     info = "",

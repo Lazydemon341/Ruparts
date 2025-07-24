@@ -41,7 +41,7 @@ class CartItemActionsFragment : BottomSheetDialogFragment() {
     private fun ModalBottomSheetScreen() {
         ModalBottomSheet(
             onDismissRequest = {
-                dismiss()
+                dismissNow()
             },
             modifier = Modifier.padding(top = 16.dp),
             containerColor = MaterialTheme.colorScheme.surface,

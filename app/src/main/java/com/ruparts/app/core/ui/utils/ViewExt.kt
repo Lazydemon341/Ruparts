@@ -44,7 +44,7 @@ fun View.paddingAllSystemBars() {
     }
 }
 
-fun View.alignAboveSystemBars(left: Int = 0, right: Int = 0, bottom: Int = 0, top: Int = 0) {
+fun View.alignAboveSystemBars(left: Int = 0, right: Int = 0, bottom: Int = 0) {
     ViewCompat.setOnApplyWindowInsetsListener(this) { view, insets ->
         val systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
         view.updateLayoutParams<MarginLayoutParams> {

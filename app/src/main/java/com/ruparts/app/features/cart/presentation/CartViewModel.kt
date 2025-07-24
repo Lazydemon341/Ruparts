@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ruparts.app.core.barcode.BarcodeType
 import com.ruparts.app.features.cart.data.repository.CartRepository
-import com.ruparts.app.features.cart.data.repository.CartScanException
 import com.ruparts.app.features.cart.model.CartListItem
 import com.ruparts.app.features.cart.model.CartScanPurpose
 import com.ruparts.app.features.cart.presentation.model.CartScreenEffect
@@ -103,8 +102,8 @@ class CartViewModel @Inject constructor(
                     onNewItemScanSuccess(scannedItem.copy(fromExternalInput = true))
                 }
             },
-            onFailure = { error ->
-                onItemScanFailure(code, error)
+            onFailure = {
+                // TODO
             }
         )
     }
@@ -174,22 +173,6 @@ class CartViewModel @Inject constructor(
             }
         )
         reloadCart()
-    }
-
-    private fun onItemScanFailure(code: String, error: Throwable) {
-        val errorMessage = when (error) {
-            is CartScanException -> {
-                error.message
-            }
-
-            else -> {
-                null
-            }
-        }
-        // TODO:
-        // viewModelScope.launch {
-        //     _effects.emit(CartScreenEffect.ShowErrorToast(errorMessage))
-        // }
     }
 
     private fun cartItemsFlow(): Flow<List<CartListItem>> {
