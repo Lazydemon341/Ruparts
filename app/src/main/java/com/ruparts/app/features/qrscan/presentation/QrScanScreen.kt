@@ -14,7 +14,6 @@ import androidx.camera.core.TorchState
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.lifecycle.awaitInstance
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,12 +29,9 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -59,9 +55,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
-import androidx.compose.material3.SwipeToDismissBox
-import androidx.compose.material3.SwipeToDismissBoxState
-import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
@@ -87,17 +80,9 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -107,6 +92,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.ruparts.app.R
+import com.ruparts.app.core.ui.components.RupartsCartItem
 import com.ruparts.app.features.cart.model.CartListItem
 import com.ruparts.app.features.cart.model.CartScanPurpose
 import com.ruparts.app.features.qrscan.presentation.camera.QrCodeImageAnalyzer
@@ -391,7 +377,7 @@ private fun QrScanItemsContent(
                 if (index == 0 && showTransferToBasketButton) {
                     Spacer(modifier = Modifier.height(88.dp))
                 }
-                QrScanListItem(
+                RupartsCartItem(
                     item = item,
                     onRemove = onRemove,
                     enableSwipeToDismiss = index == scannedItems.lastIndex,
@@ -437,150 +423,6 @@ private fun QrScanItemsContent(
                         text = "Переместить в корзину",
                         fontSize = 16.sp,
                     )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun QrScanListItem(
-    item: CartListItem,
-    onRemove: (CartListItem) -> Unit,
-    enableSwipeToDismiss: Boolean,
-    isRowVisible: Boolean,
-    modifier: Modifier = Modifier,
-) {
-    val screenWidth = LocalWindowInfo.current.containerSize.width
-    val density = LocalDensity.current
-    val swipeToDismissBoxState = remember {
-        SwipeToDismissBoxState(
-            initialValue = SwipeToDismissBoxValue.Settled,
-            density = density,
-            confirmValueChange = { value ->
-                value != SwipeToDismissBoxValue.StartToEnd
-            },
-            positionalThreshold = { screenWidth / 3f },
-        )
-    }
-
-    LaunchedEffect(swipeToDismissBoxState.currentValue) {
-        if (swipeToDismissBoxState.currentValue == SwipeToDismissBoxValue.EndToStart) {
-            onRemove(item)
-        }
-    }
-
-    SwipeToDismissBox(
-        state = swipeToDismissBoxState,
-        modifier = modifier.fillMaxSize(),
-        enableDismissFromStartToEnd = false,
-        gesturesEnabled = enableSwipeToDismiss,
-        backgroundContent = {
-            if (swipeToDismissBoxState.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
-                Icon(
-                    painter = painterResource(id = R.drawable.delete_white),
-                    contentDescription = "Remove item",
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color(0xFFB3261E))
-                        .wrapContentSize(Alignment.CenterEnd)
-                        .padding(12.dp),
-                    tint = Color.White
-                )
-            }
-        }
-    ) {
-        Column(
-            modifier = Modifier
-                .background(color = MaterialTheme.colorScheme.surface)
-                .padding(vertical = 12.dp, horizontal = 16.dp),
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = item.article,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = TextStyle(fontWeight = FontWeight.Bold),
-                    fontSize = 22.sp
-                )
-                Text(
-                    text = item.quantity.toString(),
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontSize = 14.sp,
-                    modifier = Modifier
-                        .border(1.dp, SolidColor(Color.Black), RoundedCornerShape(percent = 20))
-                        .padding(horizontal = 6.dp, vertical = 3.dp)
-                )
-            }
-            Text(
-                text = item.brand,
-                color = MaterialTheme.colorScheme.onSurface,
-                fontSize = 16.sp,
-                modifier = Modifier.padding(top = 4.dp)
-            )
-            Text(
-                text = item.description,
-                color = MaterialTheme.colorScheme.onSurface,
-                fontSize = 12.sp,
-                modifier = Modifier.padding(top = 4.dp),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            if (isRowVisible) {
-                Row {
-                    Row(
-                        modifier = Modifier
-                            .padding(top = 8.dp)
-                            .wrapContentWidth()
-                            .background(
-                                shape = RoundedCornerShape(CornerSize(5.dp)),
-                                color = Color(0xFFFFE8A3)
-                            )
-                            .padding(horizontal = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(5.dp),
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.scanner),
-                            contentDescription = "",
-                        )
-                        Text(
-                            text = buildAnnotatedString {
-                                append(item.barcode.substring(0, item.barcode.length - 3))
-
-                                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = Color.Black)) {
-                                    append(item.barcode.substring(item.barcode.length - 3))
-                                }
-                            },
-                            fontSize = 14.sp,
-                            maxLines = 1,
-                        )
-                    }
-                    Row(
-                        modifier = Modifier
-                            .padding(top = 8.dp, start = 4.dp)
-                            .wrapContentWidth()
-                            .background(
-                                shape = RoundedCornerShape(CornerSize(5.dp)),
-                                color = Color(0xFFE8DEF8)
-                            )
-                            .padding(horizontal = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(5.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.cart2),
-                            contentDescription = "",
-                        )
-                        Text(
-                            text = item.cartOwner.substring(1),
-                            fontSize = 14.sp,
-                            maxLines = 1,
-                        )
-                    }
                 }
             }
         }

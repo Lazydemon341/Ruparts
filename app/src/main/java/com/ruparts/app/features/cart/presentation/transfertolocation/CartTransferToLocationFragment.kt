@@ -40,13 +40,13 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.ruparts.app.R
 import com.ruparts.app.core.barcode.ExternalCodeInputHandler
+import com.ruparts.app.core.ui.components.RupartsCartItem
 import com.ruparts.app.core.ui.theme.RupartsTheme
 import com.ruparts.app.core.ui.viewmodel.assistedViewModels
 import com.ruparts.app.features.cart.model.CartListItem
 import com.ruparts.app.features.cart.presentation.CartFragment
 import com.ruparts.app.features.cart.presentation.CartFragment.Companion.CART_TOAST_TO_SHOW_KEY
 import com.ruparts.app.features.cart.presentation.transfertolocation.model.CartTransferToLocationScreenEffect
-import com.ruparts.app.features.qrscan.presentation.QrScanListItem
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 
@@ -153,7 +153,7 @@ class CartTransferToLocationFragment : DialogFragment() {
                         key = { _, item -> item.id },
                         contentType = { _, _ -> "listItem" },
                     ) { index, item ->
-                        QrScanListItem(
+                        RupartsCartItem(
                             item = item,
                             onRemove = { viewModel.onRemoveItem(item) },
                             enableSwipeToDismiss = index == items.lastIndex,
