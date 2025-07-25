@@ -14,15 +14,20 @@ import com.ruparts.app.R
 import com.ruparts.app.core.ui.utils.paddingAboveSystemBars
 import com.ruparts.app.core.ui.viewmodel.assistedViewModels
 import com.ruparts.app.core.utils.collectWhileStarted
+import com.ruparts.app.core.utils.formatSafely
 import com.ruparts.app.features.product.domain.ProductCard
 import com.ruparts.app.features.product.domain.ProductDefect
 import com.ruparts.app.features.product.domain.ProductPhotoItem
 import com.ruparts.app.features.product.presentation.adapter.ProductPhotosAdapter
 import com.ruparts.app.features.product.presentation.model.ProductDetailsScreenState
 import dagger.hilt.android.AndroidEntryPoint
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @AndroidEntryPoint
 class ProductDetailsFragment : Fragment() {
+
+    private val dateFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy").withLocale(Locale("ru", "RU"))
 
     private lateinit var content: ViewGroup
     private lateinit var article: TextView
@@ -144,11 +149,11 @@ class ProductDetailsFragment : Fragment() {
                 article.text = state.product.vendorCode
                 brand.text = state.product.brand
                 quantity.text = state.product.quantity.toString()
-                description.text = state.product.description ?: ""
+                description.text = state.product.description
                 barcode.text = state.product.barcode
                 address.text = state.product.location
-                date.text = state.product.acceptedAt ?: ""
-                comment.text = state.product.unitComment ?: ""
+                date.text = state.product.acceptedAt.formatSafely(dateFormatter)
+                comment.text = state.product.unitComment
 
                 updatePhotos(productPhotosRecyclerView, state.product.photos)
 
@@ -175,7 +180,7 @@ class ProductDetailsFragment : Fragment() {
         heightValue.text = productCard.sizeHeight?.let { "$it мм" } ?: "-"
         widthValue.text = productCard.sizeWidth?.let { "$it мм" } ?: "-"
         lengthValue.text = productCard.sizeLength?.let { "$it мм" } ?: "-"
-        cardComment.text = productCard.comment ?: ""
+        cardComment.text = productCard.comment
 
         updatePhotos(productCardPhotosRecyclerView, productCard.photos)
     }
@@ -187,7 +192,7 @@ class ProductDetailsFragment : Fragment() {
         }
         productDefectsLayout.visibility = View.VISIBLE
 
-        defectInfo.text = productDefect.comment ?: ""
+        defectInfo.text = productDefect.comment
 
         updatePhotos(productDefectPhotosRecyclerView, productDefect.photos)
     }

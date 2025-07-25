@@ -1,5 +1,7 @@
 package com.ruparts.app.features.product.domain
 
+import java.time.LocalDate
+
 data class Product(
     val unitId: Int,
     val vendorCode: String,
@@ -8,7 +10,7 @@ data class Product(
     val quantity: Int,
     val barcode: String,
     val location: String,
-    val acceptedAt: String?,
+    val acceptedAt: LocalDate?,
     val unitComment: String?,
     val flags: List<Int>?,
     val photos: List<ProductPhotoItem>,

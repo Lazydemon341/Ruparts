@@ -1,5 +1,6 @@
 package com.ruparts.app.features.product.data.mapper
 
+import com.ruparts.app.core.utils.toLocalDate
 import com.ruparts.app.features.product.data.network.model.ProductActionsDto
 import com.ruparts.app.features.product.data.network.model.ProductCardDto
 import com.ruparts.app.features.product.data.network.model.ProductDefectDto
@@ -9,9 +10,12 @@ import com.ruparts.app.features.product.domain.ProductActions
 import com.ruparts.app.features.product.domain.ProductCard
 import com.ruparts.app.features.product.domain.ProductDefect
 import com.ruparts.app.features.product.domain.ProductPhotoItem
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 class ProductMapper @Inject constructor() {
+    private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss xxx")
+
     fun mapProduct(dto: ProductDto): Product = Product(
         unitId = dto.unitId,
         vendorCode = dto.vendorCode,
@@ -20,10 +24,10 @@ class ProductMapper @Inject constructor() {
         quantity = dto.quantity,
         barcode = dto.barcode,
         location = dto.location,
-        acceptedAt = dto.acceptedAt,
+        acceptedAt = dto.acceptedAt.toLocalDate(dateFormatter),
         unitComment = dto.unitComment,
         flags = dto.flags,
-        photos = dto.photos?.map { ProductPhotoItem(it.key, it. value) }.orEmpty(),
+        photos = dto.photos?.map { ProductPhotoItem(it.key, it.value) }.orEmpty(),
         card = dto.card?.let { mapCard(it) },
         defect = dto.defect?.let { mapDefect(it) },
         actions = dto.actions?.let { mapActions(it) }
@@ -37,12 +41,12 @@ class ProductMapper @Inject constructor() {
         sizeLength = dto.sizeLength,
         comment = dto.comment,
         flags = dto.flags,
-        photos = dto.photos?.map { ProductPhotoItem(it.key, it. value) }.orEmpty(),
+        photos = dto.photos?.map { ProductPhotoItem(it.key, it.value) }.orEmpty(),
     )
 
     private fun mapDefect(dto: ProductDefectDto): ProductDefect = ProductDefect(
         comment = dto.comment,
-        photos = dto.photos?.map { ProductPhotoItem(it.key, it. value) }.orEmpty(),
+        photos = dto.photos?.map { ProductPhotoItem(it.key, it.value) }.orEmpty(),
     )
 
     private fun mapActions(dto: ProductActionsDto): ProductActions = ProductActions(
