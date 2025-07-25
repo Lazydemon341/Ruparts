@@ -45,7 +45,7 @@ class AuthViewModel @Inject constructor(
 
     fun handleAction(action: AuthUiAction) {
         when (action) {
-            is AuthUiAction.DigitPressed -> handleDigitPressed(action.digit)
+            is AuthUiAction.DigitClick -> handleDigitPressed(action.digit)
             is AuthUiAction.ClearPin -> handleClearPin()
             is AuthUiAction.DeleteLastDigit -> handleDeleteLastDigit()
             is AuthUiAction.Login -> handleLogin()

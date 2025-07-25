@@ -66,8 +66,8 @@
         tools:layout="@layout/fragment_cart">
 
         <action
-            android:id="@+id/action_cartFragment_to_cartItemFragment"
-            app:destination="@id/cartItemFragment"
+            android:id="@+id/action_cartFragment_to_productFragment"
+            app:destination="@id/productFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
@@ -88,17 +88,17 @@
     </fragment>
 
     <fragment
-        android:id="@+id/cartItemFragment"
-        android:name="com.ruparts.app.features.cartItem.presentation.CartItemFragment"
+        android:id="@+id/productFragment"
+        android:name="com.ruparts.app.features.product.presentation.ProductDetailsFragment"
         android:label="Товарная единица"
         tools:layout="@layout/product_unit">
 
         <argument
-            android:name="cartItem"
-            app:argType="com.ruparts.app.features.cart.model.CartListItem" />
+            android:name="barcode"
+            app:argType="string" />
 
         <action
-            android:id="@+id/action_cartItemFragment_to_cartFragment"
+            android:id="@+id/action_productFragment_to_cartFragment"
             app:destination="@id/cartFragment"
             app:enterAnim="@anim/slide_in_left"
             app:exitAnim="@anim/slide_out_right"

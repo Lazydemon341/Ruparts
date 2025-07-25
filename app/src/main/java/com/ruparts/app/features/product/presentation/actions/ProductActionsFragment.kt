@@ -1,4 +1,4 @@
-package com.ruparts.app.features.cartItem.presentation
+package com.ruparts.app.features.product.presentation.actions
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -25,7 +25,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.ruparts.app.R
 import com.ruparts.app.core.ui.theme.RupartsTheme
 
-class CartItemActionsFragment : BottomSheetDialogFragment() {
+class ProductActionsFragment : BottomSheetDialogFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return ComposeView(requireContext()).apply {
             setContent {
@@ -43,14 +43,14 @@ class CartItemActionsFragment : BottomSheetDialogFragment() {
             onDismissRequest = {
                 dismissNow()
             },
-            modifier = Modifier.padding(top = 16.dp),
+            modifier = Modifier.Companion.padding(top = 16.dp),
             containerColor = MaterialTheme.colorScheme.surface,
             dragHandle = {},
         ) {
             Column {
                 Button(
                     onClick = { },
-                    modifier = Modifier.padding(vertical = 8.dp),
+                    modifier = Modifier.Companion.padding(vertical = 8.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.surface,
                         contentColor = MaterialTheme.colorScheme.onSurface
@@ -60,7 +60,7 @@ class CartItemActionsFragment : BottomSheetDialogFragment() {
                         painter = painterResource(id = R.drawable.split),
                         contentDescription = "",
                     )
-                    Spacer(Modifier.width(16.dp))
+                    Spacer(Modifier.Companion.width(16.dp))
                     Text(
                         text = "Разделить",
                         fontSize = 16.sp,
@@ -68,7 +68,7 @@ class CartItemActionsFragment : BottomSheetDialogFragment() {
                 }
                 Button(
                     onClick = { },
-                    modifier = Modifier.padding(vertical = 8.dp),
+                    modifier = Modifier.Companion.padding(vertical = 8.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.surface,
                         contentColor = MaterialTheme.colorScheme.onSurface
@@ -78,7 +78,7 @@ class CartItemActionsFragment : BottomSheetDialogFragment() {
                         painter = painterResource(id = R.drawable.alert),
                         contentDescription = "",
                     )
-                    Spacer(Modifier.width(16.dp))
+                    Spacer(Modifier.Companion.width(16.dp))
                     Text(
                         text = "Дефект",
                         fontSize = 16.sp,
@@ -86,7 +86,7 @@ class CartItemActionsFragment : BottomSheetDialogFragment() {
                 }
                 Button(
                     onClick = { },
-                    modifier = Modifier.padding(vertical = 8.dp),
+                    modifier = Modifier.Companion.padding(vertical = 8.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.surface,
                         contentColor = MaterialTheme.colorScheme.onSurface
@@ -96,7 +96,7 @@ class CartItemActionsFragment : BottomSheetDialogFragment() {
                         painter = painterResource(id = R.drawable.print),
                         contentDescription = "",
                     )
-                    Spacer(Modifier.width(16.dp))
+                    Spacer(Modifier.Companion.width(16.dp))
                     Text(
                         text = "Перепечатать",
                         fontSize = 16.sp,
@@ -104,7 +104,7 @@ class CartItemActionsFragment : BottomSheetDialogFragment() {
                 }
                 Button(
                     onClick = { },
-                    modifier = Modifier.padding(vertical = 8.dp),
+                    modifier = Modifier.Companion.padding(vertical = 8.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.surface,
                         contentColor = MaterialTheme.colorScheme.onSurface
@@ -114,7 +114,7 @@ class CartItemActionsFragment : BottomSheetDialogFragment() {
                         painter = painterResource(id = R.drawable.delete_white),
                         contentDescription = "",
                     )
-                    Spacer(Modifier.width(16.dp))
+                    Spacer(Modifier.Companion.width(16.dp))
                     Text(
                         text = "Списать",
                         fontSize = 16.sp,
@@ -122,7 +122,7 @@ class CartItemActionsFragment : BottomSheetDialogFragment() {
                 }
                 Button(
                     onClick = { },
-                    modifier = Modifier.padding(vertical = 8.dp),
+                    modifier = Modifier.Companion.padding(vertical = 8.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.surface,
                         contentColor = MaterialTheme.colorScheme.onSurface
@@ -132,7 +132,7 @@ class CartItemActionsFragment : BottomSheetDialogFragment() {
                         painter = painterResource(id = R.drawable.edit),
                         contentDescription = "",
                     )
-                    Spacer(Modifier.width(16.dp))
+                    Spacer(Modifier.Companion.width(16.dp))
                     Text(
                         text = "Редактировать",
                         fontSize = 16.sp,
@@ -142,4 +142,3 @@ class CartItemActionsFragment : BottomSheetDialogFragment() {
         }
     }
 }
-

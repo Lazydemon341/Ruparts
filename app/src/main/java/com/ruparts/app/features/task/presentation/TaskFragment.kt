@@ -24,6 +24,7 @@ import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textview.MaterialTextView
 import com.ruparts.app.R
+import com.ruparts.app.core.ui.utils.dp
 import com.ruparts.app.core.ui.utils.paddingAboveSystemBars
 import com.ruparts.app.core.utils.collectWhileStarted
 import com.ruparts.app.core.utils.formatSafely
@@ -92,7 +93,10 @@ class TaskFragment : Fragment() {
         progressIndicator = view.findViewById(R.id.progress_indicator)
 
         val buttonsLayout = view.findViewById<ViewGroup>(R.id.three_buttons_layout)
-        buttonsLayout.paddingAboveSystemBars()
+        buttonsLayout.paddingAboveSystemBars(
+            start = 12.dp(requireContext()),
+            end = 12.dp(requireContext()),
+        )
 
         description.setText(viewModel.screenState.value.task.description)
         description.doOnTextChanged { text, start, before, count ->

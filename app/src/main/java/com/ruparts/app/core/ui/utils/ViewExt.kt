@@ -9,23 +9,23 @@ import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.RecyclerView
 
-fun View.paddingBelowSystemBars() {
+fun View.paddingBelowSystemBars(top: Int = 0) {
     ViewCompat.setOnApplyWindowInsetsListener(this) { view, insets ->
         val systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
         view.updatePadding(
-            top = systemBarsInsets.top
+            top = top + systemBarsInsets.top
         )
         WindowInsetsCompat.CONSUMED
     }
 }
 
-fun View.paddingAboveSystemBars() {
+fun View.paddingAboveSystemBars(bottom: Int = 0, start: Int = 0, end: Int = 0) {
     ViewCompat.setOnApplyWindowInsetsListener(this) { view, insets ->
         val systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
         view.updatePadding(
-            left = view.paddingLeft + systemBarsInsets.left,
-            bottom = view.paddingBottom + systemBarsInsets.bottom,
-            right = view.paddingRight + systemBarsInsets.right,
+            left = start + systemBarsInsets.left,
+            bottom = bottom + systemBarsInsets.bottom,
+            right = end + systemBarsInsets.right,
         )
         WindowInsetsCompat.CONSUMED
     }
