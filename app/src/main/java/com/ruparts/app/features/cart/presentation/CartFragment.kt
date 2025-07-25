@@ -80,7 +80,7 @@ class CartFragment : Fragment() {
         adapter = CartListAdapter(
             onItemClick = { listItem ->
                 findNavController().navigate(
-                    CartFragmentDirections.actionCartFragmentToCartItemFragment(listItem)
+                    CartFragmentDirections.actionCartFragmentToProductFragment(listItem.barcode)
                 )
             },
             onCancelClick = { item ->

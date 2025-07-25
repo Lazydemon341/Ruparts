@@ -111,6 +111,10 @@ dependencies {
     // DataStore
     implementation(libs.androidx.datastore.core)
     implementation(libs.androidx.datastore.preferences)
+    
+    // Coil Image Loading
+    implementation(libs.coil)
+    implementation(libs.coil.network.okhttp)
 
     // Detekt
     detektPlugins(libs.detekt.compose.rules)
