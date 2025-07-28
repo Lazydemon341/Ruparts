@@ -11,7 +11,7 @@
             android:icon="@drawable/shopping_cart"
             android:title="Корзина" />
         <item
-            android:id="@+id/nav_search"
+            android:id="@+id/searchFragment"
             android:icon="@drawable/search_image"
             android:title="Поиск" />
     </group>
