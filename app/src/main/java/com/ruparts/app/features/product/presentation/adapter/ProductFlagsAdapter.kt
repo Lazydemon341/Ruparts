@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.ruparts.app.R
+import com.ruparts.app.core.utils.capitalize
 import com.ruparts.app.features.commonlibrary.ProductFlag
 
 class ProductFlagsAdapter : ListAdapter<ProductFlag, ProductFlagsAdapter.FlagViewHolder>(FlagDiffCallback()) {
@@ -32,7 +33,7 @@ class ProductFlagsAdapter : ListAdapter<ProductFlag, ProductFlagsAdapter.FlagVie
 
     class FlagViewHolder(private val textView: TextView) : RecyclerView.ViewHolder(textView) {
         fun bind(flag: ProductFlag) {
-            textView.text = flag.title
+            textView.text = flag.title.capitalize()
             // TODO: set an appropriate icon
             //textView.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ruler_black, 0, 0, 0)
         }

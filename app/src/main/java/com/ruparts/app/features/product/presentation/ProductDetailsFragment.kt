@@ -50,11 +50,15 @@ class ProductDetailsFragment : Fragment() {
     private lateinit var barcode: TextView
     private lateinit var address: TextView
     private lateinit var date: TextView
+    private lateinit var commentTitle: TextView
     private lateinit var comment: TextView
 
     // Product photos and flags
     private lateinit var productPhotosRecyclerView: RecyclerView
     private lateinit var productFlagsRecyclerView: RecyclerView
+    private lateinit var productFlagsTitle: TextView
+    private lateinit var productInfoFlagsRecyclerView: RecyclerView
+    private lateinit var productInfoFlagsTitle: TextView
 
     // Product card views
     private lateinit var productCardLayout: View
@@ -62,6 +66,7 @@ class ProductDetailsFragment : Fragment() {
     private lateinit var lengthValue: TextView
     private lateinit var widthValue: TextView
     private lateinit var heightValue: TextView
+    private lateinit var commentInfoTitle: TextView
     private lateinit var cardComment: TextView
     private lateinit var productCardPhotosRecyclerView: RecyclerView
 
@@ -93,13 +98,19 @@ class ProductDetailsFragment : Fragment() {
         barcode = content.findViewById(R.id.barcode_value)
         address = content.findViewById(R.id.address_value)
         date = content.findViewById(R.id.date_value)
+        commentTitle = content.findViewById(R.id.comment_name)
         comment = content.findViewById(R.id.comment_value)
 
         productPhotosRecyclerView = content.findViewById(R.id.product_photos)
         setupPhotosRecycler(productPhotosRecyclerView)
 
         productFlagsRecyclerView = content.findViewById(R.id.product_flags_list)
+        productFlagsTitle = content.findViewById(R.id.product_flags)
         setupFlagsRecycler(productFlagsRecyclerView)
+        
+        productInfoFlagsRecyclerView = content.findViewById(R.id.product_info_flags_list)
+        productInfoFlagsTitle = content.findViewById(R.id.product_info_flags)
+        setupFlagsRecycler(productInfoFlagsRecyclerView)
 
         // Initialize product card views
         productCardLayout = content.findViewById(R.id.product_card)
@@ -107,6 +118,7 @@ class ProductDetailsFragment : Fragment() {
         lengthValue = content.findViewById(R.id.length_value)
         widthValue = content.findViewById(R.id.width_value)
         heightValue = content.findViewById(R.id.height_value)
+        commentInfoTitle = content.findViewById(R.id.comment_info_name)
         cardComment = content.findViewById(R.id.comment_info_value)
 
         productCardPhotosRecyclerView = content.findViewById(R.id.product_card_photos)
@@ -165,6 +177,9 @@ class ProductDetailsFragment : Fragment() {
                 barcode.text = state.product.barcode
                 address.text = state.product.location
                 date.text = state.product.acceptedAt.formatSafely(dateFormatter)
+                val hasComment = !state.product.unitComment.isNullOrBlank()
+                commentTitle.isVisible = hasComment
+                comment.isVisible = hasComment
                 comment.text = state.product.unitComment
 
                 updatePhotos(productPhotosRecyclerView, state.product.photos)
@@ -192,8 +207,12 @@ class ProductDetailsFragment : Fragment() {
         heightValue.text = productCard.sizeHeight?.let { "$it мм" } ?: "-"
         widthValue.text = productCard.sizeWidth?.let { "$it мм" } ?: "-"
         lengthValue.text = productCard.sizeLength?.let { "$it мм" } ?: "-"
+        val hasCardComment = !productCard.comment.isNullOrBlank()
+        commentInfoTitle.isVisible = hasCardComment
+        cardComment.isVisible = hasCardComment
         cardComment.text = productCard.comment
 
+        updateProductFlags(productInfoFlagsRecyclerView, productInfoFlagsTitle, productCard.flags)
         updatePhotos(productCardPhotosRecyclerView, productCard.photos)
     }
 
@@ -237,7 +256,13 @@ class ProductDetailsFragment : Fragment() {
     }
 
     private fun updateProductFlags(flags: List<ProductFlag>) {
-        productFlagsRecyclerView.isVisible = flags.isNotEmpty()
-        (productFlagsRecyclerView.adapter as ProductFlagsAdapter).submitList(flags)
+        updateProductFlags(productFlagsRecyclerView, productFlagsTitle, flags)
+    }
+    
+    private fun updateProductFlags(recyclerView: RecyclerView, titleView: TextView, flags: List<ProductFlag>) {
+        val hasFlags = flags.isNotEmpty()
+        recyclerView.isVisible = hasFlags
+        titleView.isVisible = hasFlags
+        (recyclerView.adapter as ProductFlagsAdapter).submitList(flags)
     }
 }

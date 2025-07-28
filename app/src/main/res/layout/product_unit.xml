@@ -429,7 +429,7 @@
                     app:layout_constraintTop_toBottomOf="@id/width_value" />
 
                 <TextView
-                    android:id="@+id/marks6"
+                    android:id="@+id/product_info_flags"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -442,98 +442,15 @@
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/height_value" />
 
-                <TextView
-                    android:id="@+id/mark7"
-                    android:layout_width="wrap_content"
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/product_info_flags_list"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:background="@drawable/product_flag_background"
-                    android:drawableStart="@drawable/ruler_black"
-                    android:drawablePadding="5dp"
-                    android:letterSpacing="0.01"
-                    android:lineSpacingExtra="4sp"
-                    android:paddingVertical="6dp"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="16dp"
-                    android:text="Признак"
-                    android:textColor="#49454F"
-                    android:textSize="14sp"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/marks6" />
-
-                <TextView
-                    android:id="@+id/mark8"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@drawable/product_flag_background"
-                    android:drawableStart="@drawable/build_black"
-                    android:drawablePadding="5dp"
-                    android:letterSpacing="0.01"
-                    android:lineSpacingExtra="4sp"
-                    android:paddingVertical="6dp"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="16dp"
-                    android:text="Признак"
-                    android:textColor="#49454F"
-                    android:textSize="14sp"
-                    app:layout_constraintLeft_toRightOf="@id/mark7"
-                    app:layout_constraintTop_toBottomOf="@id/marks6" />
-
-                <TextView
-                    android:id="@+id/mark9"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/product_flag_background"
-                    android:drawableStart="@drawable/recycling_black"
-                    android:drawablePadding="5dp"
-                    android:letterSpacing="0.01"
-                    android:lineSpacingExtra="4sp"
-                    android:paddingVertical="6dp"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="16dp"
-                    android:text="Признак"
-                    android:textColor="#49454F"
-                    android:textSize="14sp"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/mark7" />
-
-                <TextView
-                    android:id="@+id/mark10"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/product_flag_background"
-                    android:gravity="center"
-                    android:letterSpacing="0.01"
-                    android:lineSpacingExtra="4sp"
-                    android:paddingHorizontal="16dp"
-                    android:paddingVertical="6dp"
-                    android:text="Признак"
-                    android:textColor="#49454F"
-                    android:textSize="14sp"
-                    app:layout_constraintLeft_toRightOf="@id/mark9"
-                    app:layout_constraintTop_toBottomOf="@id/mark8" />
-
-                <TextView
-                    android:id="@+id/mark11"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/product_flag_background"
-                    android:gravity="center"
-                    android:letterSpacing="0.01"
-                    android:lineSpacingExtra="4sp"
-                    android:paddingHorizontal="16dp"
-                    android:paddingVertical="6dp"
-                    android:text="Признак"
-                    android:textColor="#49454F"
-                    android:textSize="14sp"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/mark9" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/product_info_flags"
+                    app:layoutManager="com.google.android.flexbox.FlexboxLayoutManager"/>
 
                 <TextView
                     android:id="@+id/comment_info_name"
@@ -546,8 +463,8 @@
                     android:text="Комментарий"
                     android:textColor="?colorSecondary"
                     android:textSize="16sp"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/mark11" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/product_info_flags_list" />
 
                 <TextView
                     android:id="@+id/comment_info_value"
