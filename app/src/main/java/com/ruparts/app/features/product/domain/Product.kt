@@ -1,5 +1,6 @@
 package com.ruparts.app.features.product.domain
 
+import com.ruparts.app.features.commonlibrary.ProductFlag
 import java.time.LocalDate
 
 data class Product(
@@ -12,7 +13,7 @@ data class Product(
     val location: String,
     val acceptedAt: LocalDate?,
     val unitComment: String?,
-    val flags: List<Int>?,
+    val flags: List<ProductFlag>,
     val photos: List<ProductPhotoItem>,
     val card: ProductCard?,
     val defect: ProductDefect?,
@@ -26,7 +27,7 @@ data class ProductCard(
     val sizeWidth: Int?,
     val sizeLength: Int?,
     val comment: String?,
-    val flags: List<Int>?,
+    val flags: List<ProductFlag>,
     val photos: List<ProductPhotoItem>,
 )
 

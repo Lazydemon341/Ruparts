@@ -225,7 +225,7 @@
                     tools:text="2 января 2024 г. (132 дня)" />
 
                 <TextView
-                    android:id="@+id/marks"
+                    android:id="@+id/product_flags"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -238,98 +238,15 @@
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/date_value" />
 
-                <TextView
-                    android:id="@+id/mark1"
-                    android:layout_width="wrap_content"
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/product_flags_list"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:background="@drawable/filter_chip"
-                    android:drawableStart="@drawable/ruler_black"
-                    android:drawablePadding="5dp"
-                    android:letterSpacing="0.01"
-                    android:lineSpacingExtra="4sp"
-                    android:paddingVertical="6dp"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="16dp"
-                    android:text="Признак"
-                    android:textColor="#49454F"
-                    android:textSize="14sp"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/marks" />
-
-                <TextView
-                    android:id="@+id/mark2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@drawable/filter_chip"
-                    android:drawableStart="@drawable/build_black"
-                    android:drawablePadding="5dp"
-                    android:letterSpacing="0.01"
-                    android:lineSpacingExtra="4sp"
-                    android:paddingVertical="6dp"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="16dp"
-                    android:text="Признак"
-                    android:textColor="#49454F"
-                    android:textSize="14sp"
-                    app:layout_constraintLeft_toRightOf="@id/mark1"
-                    app:layout_constraintTop_toBottomOf="@id/marks" />
-
-                <TextView
-                    android:id="@+id/mark3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/filter_chip"
-                    android:drawableStart="@drawable/recycling_black"
-                    android:drawablePadding="5dp"
-                    android:letterSpacing="0.01"
-                    android:lineSpacingExtra="4sp"
-                    android:paddingVertical="6dp"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="16dp"
-                    android:text="Признак"
-                    android:textColor="#49454F"
-                    android:textSize="14sp"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/mark1" />
-
-                <TextView
-                    android:id="@+id/mark4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/filter_chip"
-                    android:gravity="center"
-                    android:letterSpacing="0.01"
-                    android:lineSpacingExtra="4sp"
-                    android:paddingHorizontal="16dp"
-                    android:paddingVertical="6dp"
-                    android:text="Признак"
-                    android:textColor="#49454F"
-                    android:textSize="14sp"
-                    app:layout_constraintLeft_toRightOf="@id/mark3"
-                    app:layout_constraintTop_toBottomOf="@id/mark2" />
-
-                <TextView
-                    android:id="@+id/mark5"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/filter_chip"
-                    android:gravity="center"
-                    android:letterSpacing="0.01"
-                    android:lineSpacingExtra="4sp"
-                    android:paddingHorizontal="16dp"
-                    android:paddingVertical="6dp"
-                    android:text="Признак"
-                    android:textColor="#49454F"
-                    android:textSize="14sp"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/mark3" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/product_flags"
+                    app:layoutManager="com.google.android.flexbox.FlexboxLayoutManager"/>
 
                 <TextView
                     android:id="@+id/comment_name"
@@ -343,7 +260,7 @@
                     android:textColor="?colorSecondary"
                     android:textSize="16sp"
                     app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/mark5" />
+                    app:layout_constraintTop_toBottomOf="@id/product_flags_list" />
 
                 <TextView
                     android:id="@+id/comment_value"
@@ -530,7 +447,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:background="@drawable/filter_chip"
+                    android:background="@drawable/product_flag_background"
                     android:drawableStart="@drawable/ruler_black"
                     android:drawablePadding="5dp"
                     android:letterSpacing="0.01"
@@ -550,7 +467,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_marginTop="8dp"
-                    android:background="@drawable/filter_chip"
+                    android:background="@drawable/product_flag_background"
                     android:drawableStart="@drawable/build_black"
                     android:drawablePadding="5dp"
                     android:letterSpacing="0.01"
@@ -569,7 +486,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:background="@drawable/filter_chip"
+                    android:background="@drawable/product_flag_background"
                     android:drawableStart="@drawable/recycling_black"
                     android:drawablePadding="5dp"
                     android:letterSpacing="0.01"
@@ -589,7 +506,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_marginTop="10dp"
-                    android:background="@drawable/filter_chip"
+                    android:background="@drawable/product_flag_background"
                     android:gravity="center"
                     android:letterSpacing="0.01"
                     android:lineSpacingExtra="4sp"
@@ -606,7 +523,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:background="@drawable/filter_chip"
+                    android:background="@drawable/product_flag_background"
                     android:gravity="center"
                     android:letterSpacing="0.01"
                     android:lineSpacingExtra="4sp"

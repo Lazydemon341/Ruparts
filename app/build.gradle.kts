@@ -116,6 +116,8 @@ dependencies {
     implementation(libs.coil)
     implementation(libs.coil.network.okhttp)
 
+    implementation(libs.google.android.flexbox)
+
     // Detekt
     detektPlugins(libs.detekt.compose.rules)
 }

@@ -5,29 +5,42 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.flexbox.FlexDirection
+import com.google.android.flexbox.FlexboxItemDecoration
+import com.google.android.flexbox.FlexboxLayoutManager
+import com.google.android.flexbox.JustifyContent
 import com.ruparts.app.R
 import com.ruparts.app.core.ui.utils.paddingAboveSystemBars
 import com.ruparts.app.core.ui.viewmodel.assistedViewModels
 import com.ruparts.app.core.utils.collectWhileStarted
 import com.ruparts.app.core.utils.formatSafely
+import com.ruparts.app.features.commonlibrary.ProductFlag
 import com.ruparts.app.features.product.domain.ProductCard
 import com.ruparts.app.features.product.domain.ProductDefect
 import com.ruparts.app.features.product.domain.ProductPhotoItem
+import com.ruparts.app.features.product.presentation.adapter.ProductFlagsAdapter
 import com.ruparts.app.features.product.presentation.adapter.ProductPhotosAdapter
 import com.ruparts.app.features.product.presentation.model.ProductDetailsScreenState
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
+
 @AndroidEntryPoint
 class ProductDetailsFragment : Fragment() {
 
     private val dateFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy").withLocale(Locale("ru", "RU"))
+
+    private val args: ProductDetailsFragmentArgs by navArgs()
+    private val viewModel by assistedViewModels<ProductDetailsViewModel, ProductDetailsViewModel.Factory> {
+        create(barcode = args.barcode)
+    }
 
     private lateinit var content: ViewGroup
     private lateinit var article: TextView
@@ -39,8 +52,9 @@ class ProductDetailsFragment : Fragment() {
     private lateinit var date: TextView
     private lateinit var comment: TextView
 
-    // Product photos
+    // Product photos and flags
     private lateinit var productPhotosRecyclerView: RecyclerView
+    private lateinit var productFlagsRecyclerView: RecyclerView
 
     // Product card views
     private lateinit var productCardLayout: View
@@ -57,11 +71,6 @@ class ProductDetailsFragment : Fragment() {
     private lateinit var productDefectPhotosRecyclerView: RecyclerView
 
     private lateinit var loadingIndicator: View
-
-    private val args: ProductDetailsFragmentArgs by navArgs()
-    private val viewModel by assistedViewModels<ProductDetailsViewModel, ProductDetailsViewModel.Factory> {
-        create(barcode = args.barcode)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -88,6 +97,9 @@ class ProductDetailsFragment : Fragment() {
 
         productPhotosRecyclerView = content.findViewById(R.id.product_photos)
         setupPhotosRecycler(productPhotosRecyclerView)
+
+        productFlagsRecyclerView = content.findViewById(R.id.product_flags_list)
+        setupFlagsRecycler(productFlagsRecyclerView)
 
         // Initialize product card views
         productCardLayout = content.findViewById(R.id.product_card)
@@ -156,9 +168,9 @@ class ProductDetailsFragment : Fragment() {
                 comment.text = state.product.unitComment
 
                 updatePhotos(productPhotosRecyclerView, state.product.photos)
+                updateProductFlags(state.product.flags)
 
                 updateProductCard(state.product.card)
-
                 updateProductDefects(state.product.defect)
             }
 
@@ -207,5 +219,25 @@ class ProductDetailsFragment : Fragment() {
     private fun updatePhotos(recyclerView: RecyclerView, photos: List<ProductPhotoItem>) {
         recyclerView.isVisible = photos.isNotEmpty()
         (recyclerView.adapter as ProductPhotosAdapter).submitList(photos)
+    }
+
+    private fun setupFlagsRecycler(recyclerView: RecyclerView) {
+        recyclerView.layoutManager = FlexboxLayoutManager(context).apply {
+            flexDirection = FlexDirection.ROW
+            justifyContent = JustifyContent.FLEX_START
+        }
+
+        val itemDecoration = FlexboxItemDecoration(context).apply {
+            setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.product_flag_spacer))
+            setOrientation(FlexboxItemDecoration.HORIZONTAL)
+        }
+        recyclerView.addItemDecoration(itemDecoration)
+
+        recyclerView.adapter = ProductFlagsAdapter()
+    }
+
+    private fun updateProductFlags(flags: List<ProductFlag>) {
+        productFlagsRecyclerView.isVisible = flags.isNotEmpty()
+        (productFlagsRecyclerView.adapter as ProductFlagsAdapter).submitList(flags)
     }
 }

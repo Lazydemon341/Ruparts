@@ -1,6 +1,7 @@
 package com.ruparts.app.features.product.data.mapper
 
 import com.ruparts.app.core.utils.toLocalDate
+import com.ruparts.app.features.commonlibrary.ProductFlag
 import com.ruparts.app.features.product.data.network.model.ProductActionsDto
 import com.ruparts.app.features.product.data.network.model.ProductCardDto
 import com.ruparts.app.features.product.data.network.model.ProductDefectDto
@@ -16,7 +17,7 @@ import javax.inject.Inject
 class ProductMapper @Inject constructor() {
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss xxx")
 
-    fun mapProduct(dto: ProductDto): Product = Product(
+    fun mapProduct(dto: ProductDto, flags: Map<Long, ProductFlag>): Product = Product(
         unitId = dto.unitId,
         vendorCode = dto.vendorCode,
         brand = dto.brand,
@@ -26,21 +27,21 @@ class ProductMapper @Inject constructor() {
         location = dto.location,
         acceptedAt = dto.acceptedAt.toLocalDate(dateFormatter),
         unitComment = dto.unitComment,
-        flags = dto.flags,
+        flags = dto.flags?.mapNotNull { flags[it] }.orEmpty(),
         photos = dto.photos?.map { ProductPhotoItem(it.key, it.value) }.orEmpty(),
-        card = dto.card?.let { mapCard(it) },
+        card = dto.card?.let { mapCard(it, flags) },
         defect = dto.defect?.let { mapDefect(it) },
         actions = dto.actions?.let { mapActions(it) }
     )
 
-    private fun mapCard(dto: ProductCardDto): ProductCard = ProductCard(
+    private fun mapCard(dto: ProductCardDto, flags: Map<Long, ProductFlag>): ProductCard = ProductCard(
         id = dto.id,
         weight = dto.weight,
         sizeHeight = dto.sizeHeight,
         sizeWidth = dto.sizeWidth,
         sizeLength = dto.sizeLength,
         comment = dto.comment,
-        flags = dto.flags,
+        flags = dto.flags?.mapNotNull { flags[it] }.orEmpty(),
         photos = dto.photos?.map { ProductPhotoItem(it.key, it.value) }.orEmpty(),
     )
 
