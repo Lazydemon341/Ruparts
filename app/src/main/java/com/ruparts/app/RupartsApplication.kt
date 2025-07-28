@@ -20,9 +20,7 @@ class RupartsApplication : Application(), SingletonImageLoader.Factory {
             .components {
                 add(
                     OkHttpNetworkFetcherFactory(
-                        callFactory = {
-                            okhttpClient.newBuilder().build()
-                        }
+                        callFactory = { okhttpClient }
                     )
                 )
             }
