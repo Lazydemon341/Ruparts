@@ -185,10 +185,12 @@ class CartViewModel @Inject constructor(
             scannedItemState
         ) { cartItems, scannedItem ->
             if (scannedItem != null && cartItems.none { it.id == scannedItem.id }) {
-                cartItems + scannedItem
+                cartItems.toMutableList().apply {
+                    add(0, scannedItem)
+                }
             } else {
                 cartItems
-            }.reversed()
+            }
         }
     }
 }

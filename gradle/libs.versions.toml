@@ -23,6 +23,7 @@ ksp = "2.1.10-1.0.31"
 camerax = "1.5.0-beta02"
 datastore = "1.1.7"
 coil = "3.3.0"
+flexboxLayout = "3.0.0"
 
 detekt = "1.23.8"
 detektCompose = "0.4.26"
@@ -89,6 +90,9 @@ coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp"
 
 #Detekt
 detekt-compose-rules = { group = "io.nlopez.compose.rules", name = "detekt", version.ref = "detektCompose" }
+
+#Google
+google-android-flexbox = { group = "com.google.android.flexbox", name = "flexbox", version.ref = "flexboxLayout" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

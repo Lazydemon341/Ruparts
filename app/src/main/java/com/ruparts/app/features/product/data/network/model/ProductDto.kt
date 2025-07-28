@@ -12,7 +12,7 @@ class ProductDto(
     @SerializedName("location") val location: String,
     @SerializedName("accepted_at") val acceptedAt: String?,
     @SerializedName("unit_comment") val unitComment: String?,
-    @SerializedName("flags") val flags: List<Int>?,
+    @SerializedName("flags") val flags: List<Long>?,
     @SerializedName("photos") val photos: Map<String, String>?,
     @SerializedName("card") val card: ProductCardDto?,
     @SerializedName("defect") val defect: ProductDefectDto?,
@@ -26,7 +26,7 @@ class ProductCardDto(
     @SerializedName("size_width") val sizeWidth: Int?,
     @SerializedName("size_length") val sizeLength: Int?,
     @SerializedName("comment") val comment: String?,
-    @SerializedName("flags") val flags: List<Int>?,
+    @SerializedName("flags") val flags: List<Long>?,
     @SerializedName("photos") val photos: Map<String, String>?
 )
 

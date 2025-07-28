@@ -45,6 +45,7 @@ android {
     }
     buildFeatures {
         compose = true
+        viewBinding = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
@@ -115,6 +116,8 @@ dependencies {
     // Coil Image Loading
     implementation(libs.coil)
     implementation(libs.coil.network.okhttp)
+
+    implementation(libs.google.android.flexbox)
 
     // Detekt
     detektPlugins(libs.detekt.compose.rules)
