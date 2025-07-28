@@ -11,13 +11,12 @@ import android.widget.Toast
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.view.menu.MenuPopupHelper
 import androidx.appcompat.widget.PopupMenu
-import androidx.core.text.bold
-import androidx.core.text.buildSpannedString
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.ruparts.app.R
+import com.ruparts.app.core.utils.makeBold
 import com.ruparts.app.features.cart.model.CartListItem
 import com.ruparts.app.features.cart.presentation.cancelbutton.CartItemCancelButton
 import kotlinx.coroutines.flow.StateFlow
@@ -69,11 +68,7 @@ class CartListAdapter(
             brand.text = listItem.brand
             amount.text = listItem.quantity.toString()
             description.text = listItem.description
-            barcode.text = buildSpannedString {
-                val boldStartIndex = listItem.barcode.length - 3
-                append(listItem.barcode.substring(0, boldStartIndex))
-                bold { append(listItem.barcode.substring(boldStartIndex)) }
-            }
+            barcode.text = listItem.barcode.makeBold(listItem.barcode.length - 3)
             cartOwner.text = listItem.cartOwner
 
             if (listItem.info.isEmpty()) {

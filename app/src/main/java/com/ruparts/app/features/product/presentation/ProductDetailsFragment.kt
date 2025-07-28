@@ -20,6 +20,7 @@ import com.ruparts.app.core.ui.utils.paddingAboveSystemBars
 import com.ruparts.app.core.ui.viewmodel.assistedViewModels
 import com.ruparts.app.core.utils.collectWhileStarted
 import com.ruparts.app.core.utils.formatSafely
+import com.ruparts.app.core.utils.makeBold
 import com.ruparts.app.databinding.ProductUnitBinding
 import com.ruparts.app.features.commonlibrary.ProductFlag
 import com.ruparts.app.features.product.domain.ProductCard
@@ -114,7 +115,7 @@ class ProductDetailsFragment : Fragment() {
                 binding.brandValue.text = state.product.brand
                 binding.quantityValue.text = state.product.quantity.toString()
                 binding.descriptionValue.text = state.product.description
-                binding.barcodeValue.text = state.product.barcode
+                binding.barcodeValue.text = state.product.barcode.makeBold(state.product.barcode.length - 3)
                 binding.addressValue.text = state.product.location
                 binding.dateValue.text = state.product.acceptedAt.formatSafely(dateFormatter)
 
@@ -196,7 +197,7 @@ class ProductDetailsFragment : Fragment() {
 
         recyclerView.adapter = ProductFlagsAdapter()
     }
-    
+
     private fun updateProductFlags(recyclerView: RecyclerView, titleView: TextView, flags: List<ProductFlag>) {
         val hasFlags = flags.isNotEmpty()
         recyclerView.isVisible = hasFlags
