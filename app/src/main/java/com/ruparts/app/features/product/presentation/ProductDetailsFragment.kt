@@ -20,6 +20,7 @@ import com.ruparts.app.core.ui.utils.paddingAboveSystemBars
 import com.ruparts.app.core.ui.viewmodel.assistedViewModels
 import com.ruparts.app.core.utils.collectWhileStarted
 import com.ruparts.app.core.utils.formatSafely
+import com.ruparts.app.databinding.ProductUnitBinding
 import com.ruparts.app.features.commonlibrary.ProductFlag
 import com.ruparts.app.features.product.domain.ProductCard
 import com.ruparts.app.features.product.domain.ProductDefect
@@ -31,7 +32,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-
 @AndroidEntryPoint
 class ProductDetailsFragment : Fragment() {
 
@@ -42,47 +42,21 @@ class ProductDetailsFragment : Fragment() {
         create(barcode = args.barcode)
     }
 
-    private lateinit var content: ViewGroup
-    private lateinit var article: TextView
-    private lateinit var brand: TextView
-    private lateinit var quantity: TextView
-    private lateinit var description: TextView
-    private lateinit var barcode: TextView
-    private lateinit var address: TextView
-    private lateinit var date: TextView
-    private lateinit var commentTitle: TextView
-    private lateinit var comment: TextView
-
-    // Product photos and flags
-    private lateinit var productPhotosRecyclerView: RecyclerView
-    private lateinit var productFlagsRecyclerView: RecyclerView
-    private lateinit var productFlagsTitle: TextView
-    private lateinit var productInfoFlagsRecyclerView: RecyclerView
-    private lateinit var productInfoFlagsTitle: TextView
-
-    // Product card views
-    private lateinit var productCardLayout: View
-    private lateinit var weightValue: TextView
-    private lateinit var lengthValue: TextView
-    private lateinit var widthValue: TextView
-    private lateinit var heightValue: TextView
-    private lateinit var commentInfoTitle: TextView
-    private lateinit var cardComment: TextView
-    private lateinit var productCardPhotosRecyclerView: RecyclerView
-
-    // Product defects views
-    private lateinit var productDefectsLayout: View
-    private lateinit var defectInfo: TextView
-    private lateinit var productDefectPhotosRecyclerView: RecyclerView
-
-    private lateinit var loadingIndicator: View
+    private var _binding: ProductUnitBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.product_unit, container, false)
+    ): View {
+        _binding = ProductUnitBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -90,50 +64,16 @@ class ProductDetailsFragment : Fragment() {
 
         view.paddingAboveSystemBars()
 
-        content = view.findViewById(R.id.product_content)
-        article = content.findViewById(R.id.article_value)
-        brand = content.findViewById(R.id.brand_value)
-        quantity = content.findViewById(R.id.quantity_value)
-        description = content.findViewById(R.id.description_value)
-        barcode = content.findViewById(R.id.barcode_value)
-        address = content.findViewById(R.id.address_value)
-        date = content.findViewById(R.id.date_value)
-        commentTitle = content.findViewById(R.id.comment_name)
-        comment = content.findViewById(R.id.comment_value)
-
-        productPhotosRecyclerView = content.findViewById(R.id.product_photos)
-        setupPhotosRecycler(productPhotosRecyclerView)
-
-        productFlagsRecyclerView = content.findViewById(R.id.product_flags_list)
-        productFlagsTitle = content.findViewById(R.id.product_flags)
-        setupFlagsRecycler(productFlagsRecyclerView)
-        
-        productInfoFlagsRecyclerView = content.findViewById(R.id.product_info_flags_list)
-        productInfoFlagsTitle = content.findViewById(R.id.product_info_flags)
-        setupFlagsRecycler(productInfoFlagsRecyclerView)
-
-        // Initialize product card views
-        productCardLayout = content.findViewById(R.id.product_card)
-        weightValue = content.findViewById(R.id.weight_value)
-        lengthValue = content.findViewById(R.id.length_value)
-        widthValue = content.findViewById(R.id.width_value)
-        heightValue = content.findViewById(R.id.height_value)
-        commentInfoTitle = content.findViewById(R.id.comment_info_name)
-        cardComment = content.findViewById(R.id.comment_info_value)
-
-        productCardPhotosRecyclerView = content.findViewById(R.id.product_card_photos)
-        setupPhotosRecycler(productCardPhotosRecyclerView)
-
-        // Initialize product defects views
-        productDefectsLayout = content.findViewById(R.id.product_defects)
-        defectInfo = content.findViewById(R.id.defect_info)
-
-        productDefectPhotosRecyclerView = content.findViewById(R.id.product_defect_photos)
-        setupPhotosRecycler(productDefectPhotosRecyclerView)
-
-        loadingIndicator = view.findViewById(R.id.loading_indicator)
-
         setupMenu()
+
+        // Setup photo recycler views
+        setupPhotosRecycler(binding.productPhotos)
+        setupPhotosRecycler(binding.productCardPhotos)
+        setupPhotosRecycler(binding.productDefectPhotos)
+
+        // Setup flag recycler views
+        setupFlagsRecycler(binding.productFlagsList)
+        setupFlagsRecycler(binding.productInfoFlagsList)
 
         observeScreenState()
     }
@@ -167,65 +107,67 @@ class ProductDetailsFragment : Fragment() {
     private fun updateUI(state: ProductDetailsScreenState) {
         when (state) {
             is ProductDetailsScreenState.Content -> {
-                loadingIndicator.isVisible = false
-                content.isVisible = true
+                binding.loadingIndicator.isVisible = false
+                binding.productContent.isVisible = true
 
-                article.text = state.product.vendorCode
-                brand.text = state.product.brand
-                quantity.text = state.product.quantity.toString()
-                description.text = state.product.description
-                barcode.text = state.product.barcode
-                address.text = state.product.location
-                date.text = state.product.acceptedAt.formatSafely(dateFormatter)
+                binding.articleValue.text = state.product.vendorCode
+                binding.brandValue.text = state.product.brand
+                binding.quantityValue.text = state.product.quantity.toString()
+                binding.descriptionValue.text = state.product.description
+                binding.barcodeValue.text = state.product.barcode
+                binding.addressValue.text = state.product.location
+                binding.dateValue.text = state.product.acceptedAt.formatSafely(dateFormatter)
+
                 val hasComment = !state.product.unitComment.isNullOrBlank()
-                commentTitle.isVisible = hasComment
-                comment.isVisible = hasComment
-                comment.text = state.product.unitComment
+                binding.commentName.isVisible = hasComment
+                binding.commentValue.isVisible = hasComment
+                binding.commentValue.text = state.product.unitComment
 
-                updatePhotos(productPhotosRecyclerView, state.product.photos)
-                updateProductFlags(state.product.flags)
+                updatePhotos(binding.productPhotos, state.product.photos)
+                updateProductFlags(binding.productFlagsList, binding.productFlags, state.product.flags)
 
                 updateProductCard(state.product.card)
                 updateProductDefects(state.product.defect)
             }
 
             ProductDetailsScreenState.Loading -> {
-                loadingIndicator.isVisible = true
-                content.isVisible = false
+                binding.loadingIndicator.isVisible = true
+                binding.productContent.isVisible = false
             }
         }
     }
 
     private fun updateProductCard(productCard: ProductCard?) {
         if (productCard == null) {
-            productCardLayout.visibility = View.GONE
+            binding.productCard.visibility = View.GONE
             return
         }
-        productCardLayout.visibility = View.VISIBLE
+        binding.productCard.visibility = View.VISIBLE
 
-        weightValue.text = productCard.weight?.let { "$it кг" } ?: "-"
-        heightValue.text = productCard.sizeHeight?.let { "$it мм" } ?: "-"
-        widthValue.text = productCard.sizeWidth?.let { "$it мм" } ?: "-"
-        lengthValue.text = productCard.sizeLength?.let { "$it мм" } ?: "-"
+        binding.weightValue.text = productCard.weight?.let { "$it кг" } ?: "-"
+        binding.heightValue.text = productCard.sizeHeight?.let { "$it мм" } ?: "-"
+        binding.widthValue.text = productCard.sizeWidth?.let { "$it мм" } ?: "-"
+        binding.lengthValue.text = productCard.sizeLength?.let { "$it мм" } ?: "-"
+
         val hasCardComment = !productCard.comment.isNullOrBlank()
-        commentInfoTitle.isVisible = hasCardComment
-        cardComment.isVisible = hasCardComment
-        cardComment.text = productCard.comment
+        binding.commentInfoName.isVisible = hasCardComment
+        binding.commentInfoValue.isVisible = hasCardComment
+        binding.commentInfoValue.text = productCard.comment
 
-        updateProductFlags(productInfoFlagsRecyclerView, productInfoFlagsTitle, productCard.flags)
-        updatePhotos(productCardPhotosRecyclerView, productCard.photos)
+        updateProductFlags(binding.productInfoFlagsList, binding.productInfoFlags, productCard.flags)
+        updatePhotos(binding.productCardPhotos, productCard.photos)
     }
 
     private fun updateProductDefects(productDefect: ProductDefect?) {
         if (productDefect == null || (productDefect.comment.isNullOrBlank() && productDefect.photos.isEmpty())) {
-            productDefectsLayout.visibility = View.GONE
+            binding.productDefects.visibility = View.GONE
             return
         }
-        productDefectsLayout.visibility = View.VISIBLE
+        binding.productDefects.visibility = View.VISIBLE
 
-        defectInfo.text = productDefect.comment
+        binding.defectInfo.text = productDefect.comment
 
-        updatePhotos(productDefectPhotosRecyclerView, productDefect.photos)
+        updatePhotos(binding.productDefectPhotos, productDefect.photos)
     }
 
     private fun setupPhotosRecycler(recyclerView: RecyclerView) {
@@ -253,10 +195,6 @@ class ProductDetailsFragment : Fragment() {
         recyclerView.addItemDecoration(itemDecoration)
 
         recyclerView.adapter = ProductFlagsAdapter()
-    }
-
-    private fun updateProductFlags(flags: List<ProductFlag>) {
-        updateProductFlags(productFlagsRecyclerView, productFlagsTitle, flags)
     }
     
     private fun updateProductFlags(recyclerView: RecyclerView, titleView: TextView, flags: List<ProductFlag>) {
