@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -23,32 +24,10 @@ class SearchFragment : Fragment() {
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
+                val state = viewModel.state.collectAsState()
                 RupartsTheme {
                     SearchScreen(
-                        searchItems = listOf(
-                            CartListItem(
-                                id = 1,
-                                article = "123457879654531",
-                                brand = "Toyota",
-                                quantity = 125,
-                                description = "Описание",
-                                barcode = "hhjruhturt",
-                                cartOwner = "Petrov",
-                                info = "",
-                                fromExternalInput = false
-                            ),
-                            CartListItem(
-                                id = 2,
-                                article = "987654321",
-                                brand = "Honda",
-                                quantity = 50,
-                                description = "Другое описание",
-                                barcode = "barcode-here",
-                                cartOwner = "Ivanov",
-                                info = "",
-                                fromExternalInput = false
-                            )
-                        )
+                        state = state.value,
                     )
                 }
             }
