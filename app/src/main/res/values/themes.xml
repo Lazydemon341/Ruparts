@@ -19,6 +19,7 @@
         <item name="colorOnSurfaceVariant">@color/onSurfaceVariant</item>
 
         <item name="colorOutline">@color/outline</item>
+        <item name="colorOutlineVariant">@color/outline_variant</item>
 
         <!--  Status bar color -->
         <item name="android:statusBarColor">?colorSurface</item>

@@ -51,4 +51,5 @@
 
     <color name="secondary">#625B71</color>
     <color name="outline">#79747E</color>
+    <color name="outline_variant">#CAC4D0</color>
 </resources>

@@ -17,8 +17,6 @@ class CartItemDto(
     val barcode: String,
     @SerializedName("location")
     val location: String,
-    @SerializedName("flags")
-    val flags: List<Int>,
     @SerializedName("info")
     val info: String?,
     @SerializedName("actions")
