@@ -68,3 +68,8 @@ lint/tmp/
 
 # Android Profiling
 *.hprof
+
+.mcp.json
+*mcp*
+.claude/
+*claude*

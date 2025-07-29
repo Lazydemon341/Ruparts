@@ -1,0 +1,32 @@
+{
+  "mcpServers": {
+    "jetbrains": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@jetbrains/mcp-proxy"
+      ],
+      "env": {}
+    },
+    "mcp-deepwiki": {
+      "command": "npx",
+      "args": ["-y", "mcp-deepwiki@latest"]
+    },
+    "maven-deps-server": {
+      "command": "npx",
+      "args": [
+        "mcp-maven-deps"
+      ]
+    },
+    "android": {
+      "command": "/opt/homebrew/bin/uv",
+      "args": [
+        "--directory",
+        "/Users/alexandervlasyuk/Developer/android-mcp-server",
+        "run",
+        "server.py"
+      ]
+    }
+  }
+}
