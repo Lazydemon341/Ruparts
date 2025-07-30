@@ -39,6 +39,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -77,6 +79,7 @@ fun SearchScreen(
         },
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
     ) { paddingValues ->
+        val showFilterDialogFor = remember { mutableStateOf<SearchScreenFilterType?>(null) }
         Column(
             modifier = Modifier
                 .padding(paddingValues)
@@ -84,11 +87,21 @@ fun SearchScreen(
             SearchScreenFilters(
                 filters = state.filters,
                 scrollState = scrollState,
+                onFilterClick = { filter ->
+                    showFilterDialogFor.value = filter.type
+                }
             )
             SearchScreenSorting()
             SearchScreenItems(
                 items = state.items,
             )
+
+            showFilterDialogFor.value?.let { filterType ->
+                SearchScreenFilterDialog(
+                    filterType = filterType,
+                    onDismiss = { showFilterDialogFor.value = null },
+                )
+            }
         }
     }
 }
@@ -96,6 +109,7 @@ fun SearchScreen(
 @Composable
 private fun SearchScreenFilters(
     filters: List<SearchScreenFilter>,
+    onFilterClick: (SearchScreenFilter) -> Unit,
     scrollState: ScrollState = rememberScrollState()
 ) {
     Row(
@@ -106,37 +120,9 @@ private fun SearchScreenFilters(
     ) {
         Spacer(modifier = Modifier.width(16.dp))
         filters.forEachIndexed { index, filter ->
-            FilterChip(
-                modifier = Modifier
-                    .border(
-                        width = 1.dp,
-                        color = MaterialTheme.colorScheme.outlineVariant,
-                        shape = RoundedCornerShape(8.dp)
-                    )
-                    .wrapContentHeight()
-                    .height(32.dp),
-                colors = FilterChipDefaults.filterChipColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                    labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    selectedLabelColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                ),
-                onClick = { },
-                label = {
-                    Text(text = filter.text)
-                },
-                selected = filter.selected,
-                trailingIcon = {
-                    Icon(
-                        modifier = Modifier.size(18.dp),
-                        imageVector = if (filter.selected) {
-                            Icons.Default.Close
-                        } else {
-                            Icons.Default.ArrowDropDown
-                        },
-                        contentDescription = "",
-                    )
-                },
+            SearchScreenFilter(
+                filter = filter,
+                onClick = { onFilterClick(filter) }
             )
             if (index == filters.lastIndex) {
                 Spacer(modifier = Modifier.width(16.dp))
@@ -145,6 +131,51 @@ private fun SearchScreenFilters(
             }
         }
     }
+}
+
+@Composable
+private fun SearchScreenFilter(
+    filter: SearchScreenFilter,
+    onClick: () -> Unit,
+) {
+    FilterChip(
+        modifier = Modifier
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.outlineVariant,
+                shape = RoundedCornerShape(8.dp)
+            )
+            .wrapContentHeight()
+            .height(32.dp),
+        colors = FilterChipDefaults.filterChipColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+            labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+            selectedLabelColor = MaterialTheme.colorScheme.onSecondaryContainer,
+        ),
+        onClick = onClick,
+        label = {
+            Text(
+                text = when (filter.type) {
+                    SearchScreenFilterType.FLAGS -> "Признаки"
+                    SearchScreenFilterType.LOCATION -> "Расположение"
+                    SearchScreenFilterType.SELECTIONS -> "Выборки"
+                }
+            )
+        },
+        selected = filter.selected,
+        trailingIcon = {
+            Icon(
+                modifier = Modifier.size(18.dp),
+                imageVector = if (filter.selected) {
+                    Icons.Default.Close
+                } else {
+                    Icons.Default.ArrowDropDown
+                },
+                contentDescription = "",
+            )
+        },
+    )
 }
 
 @Composable
@@ -231,6 +262,26 @@ private fun SearchScreenAssemblyButton() {
     }
 }
 
+@Composable
+private fun SearchScreenFilterDialog(
+    filterType: SearchScreenFilterType,
+    onDismiss: () -> Unit,
+) {
+    when (filterType) {
+        SearchScreenFilterType.FLAGS -> {
+            // TODO: ModalBottomSheet(...)
+        }
+
+        SearchScreenFilterType.LOCATION -> {
+
+        }
+
+        SearchScreenFilterType.SELECTIONS -> {
+
+        }
+    }
+}
+
 @Preview
 @Composable
 private fun SearchScreenPreview() {
@@ -238,9 +289,9 @@ private fun SearchScreenPreview() {
         state = SearchScreenState(
             items = emptyList(),
             filters = listOf(
-                SearchScreenFilter("Признаки", true),
-                SearchScreenFilter("Расположение", false),
-                SearchScreenFilter("Выборки", false)
+                SearchScreenFilter(SearchScreenFilterType.FLAGS, false),
+                SearchScreenFilter(SearchScreenFilterType.LOCATION, true),
+                SearchScreenFilter(SearchScreenFilterType.SELECTIONS, false)
             )
         )
     )

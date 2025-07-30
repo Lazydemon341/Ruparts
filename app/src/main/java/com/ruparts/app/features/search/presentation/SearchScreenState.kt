@@ -10,6 +10,12 @@ data class SearchScreenState(
 )
 
 data class SearchScreenFilter(
-    val text: String,
+    val type: SearchScreenFilterType,
     val selected: Boolean,
 )
+
+enum class SearchScreenFilterType {
+    FLAGS,
+    LOCATION,
+    SELECTIONS,
+}

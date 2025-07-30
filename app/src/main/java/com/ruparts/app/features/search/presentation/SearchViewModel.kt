@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 private val INITIAL_STATE = SearchScreenState(
-    items =  listOf(
+    items = listOf(
         CartListItem(
             id = 1,
             article = "123457879654531",
@@ -33,14 +33,14 @@ private val INITIAL_STATE = SearchScreenState(
         )
     ),
     filters = listOf(
-        SearchScreenFilter("Признаки", false),
-        SearchScreenFilter("Расположение", true),
-        SearchScreenFilter("Выборки", false)
+        SearchScreenFilter(SearchScreenFilterType.FLAGS, false),
+        SearchScreenFilter(SearchScreenFilterType.LOCATION, true),
+        SearchScreenFilter(SearchScreenFilterType.SELECTIONS, false)
     )
 )
 
 @HiltViewModel
-class SearchViewModel @Inject constructor() : ViewModel(){
+class SearchViewModel @Inject constructor() : ViewModel() {
 
     private val _state = MutableStateFlow(INITIAL_STATE)
     val state = _state.asStateFlow()
