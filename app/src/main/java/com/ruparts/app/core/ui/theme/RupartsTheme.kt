@@ -38,7 +38,7 @@ fun RupartsTheme(
     val surfaceVariant = colorResource(id = R.color.light_purple)
     val surfaceContainer = colorResource(id = R.color.surfaceContainer)
     val onSurface = colorResource(id = R.color.onSurface)
-    val onSurfaceVariant = primaryDark
+    val onSurfaceVariant = colorResource(id = R.color.onSurfaceVariant)
 
     // Other colors
     val outline = colorResource(id = R.color.purple)

@@ -42,7 +42,7 @@
     <color name="onPrimary">@color/white</color>
 
     <color name="secondaryContainer">#E8DEF8</color>
-    <color name="onSecondaryContainer">#4A4459</color>
+    <color name="onSecondaryContainer">#FF4A4459</color>
 
     <color name="surfaceContainer">#F3EDF7</color>
     <color name="surface">#FEF7FF</color>
@@ -51,4 +51,5 @@
 
     <color name="secondary">#625B71</color>
     <color name="outline">#79747E</color>
+    <color name="outline_variant">#CAC4D0</color>
 </resources>
