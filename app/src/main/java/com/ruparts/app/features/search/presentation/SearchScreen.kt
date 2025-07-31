@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
@@ -42,10 +43,12 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -274,7 +277,7 @@ private fun SearchScreenFilterDialog(
 ) {
     when (filterType) {
         SearchScreenFilterType.FLAGS -> {
-            SearchScreenModalBottomSheet(state)
+            SearchScreenFlagsModalBottomSheet(state)
         }
 
 
@@ -283,7 +286,7 @@ private fun SearchScreenFilterDialog(
         }
 
         SearchScreenFilterType.SELECTIONS -> {
-
+            SearchScreenSelectionsModalBottomSheet(state)
         }
     }
 }
@@ -311,6 +314,12 @@ private fun SearchScreenPreview() {
                 SearchScreenFlag("Хрупкий", false),
                 SearchScreenFlag("Загружен с Фрозы", false),
                 SearchScreenFlag("Без документов", false),
+            ),
+            selection = listOf(
+                SearchScreenSelection("Для бухгалтерии", "ID 3, Петров Н.А., 14.06.2025", false),
+                SearchScreenSelection("Срочно", "ID 69, Иванов В.М., 28.05.2025", false),
+                SearchScreenSelection("Для доставки", "ID 25, Сидоров Г.Д., 21.05.2025", false),
+                SearchScreenSelection("Для менеджера", "ID 73, Судоровозражанов Н.А., 14.06.2025", false),
             )
         )
     )
@@ -318,9 +327,9 @@ private fun SearchScreenPreview() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SearchScreenModalBottomSheet(state: SearchScreenState) {
+private fun SearchScreenFlagsModalBottomSheet(state: SearchScreenState) {
     val bottomSheetState = rememberModalBottomSheetState(true)
-    var checked by remember { mutableStateOf(true) }
+    val checked by remember { derivedStateOf { state.flags.any { it.checked } } }
     var items = state.flags
 
     ModalBottomSheet(
@@ -349,9 +358,131 @@ private fun SearchScreenModalBottomSheet(state: SearchScreenState) {
                         Text(text = item.text)
                         Spacer(modifier = Modifier.weight(1f))
                         Checkbox(
-                            checked = checked,
-                            onCheckedChange = { checked = it }
+                            checked = item.checked,
+                            onCheckedChange = { isChecked ->
+                                state.flags[index].checked = isChecked
+                            }
                         )
+                    }
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    if (checked) {
+                        Button(
+                            onClick = { },
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(start = 20.dp)
+                                .padding(top = 8.dp, bottom = 24.dp)
+                                .height(56.dp),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainer
+                            )
+                        ) {
+                            Text(
+                                text = "Очистить",
+                                fontSize = 16.sp,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+
+                    Button(
+                        onClick = { },
+                        modifier = Modifier
+                            .padding(horizontal = 20.dp)
+                            .padding(top = 8.dp, bottom = 24.dp)
+                            .weight(1f)
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        )
+                    ) {
+                        Text(
+                            text = "Применить",
+                            fontSize = 16.sp,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SearchScreenSelectionsModalBottomSheet(state: SearchScreenState) {
+    val bottomSheetState = rememberModalBottomSheetState(true)
+    val checked by remember { derivedStateOf { state.selection.any { it.checked } } }
+    var items = state.selection
+
+    ModalBottomSheet(
+        dragHandle = { BottomSheetDefaults.DragHandle() },
+        sheetState = bottomSheetState,
+        onDismissRequest = {},
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+    ) {
+        Box(contentAlignment = Alignment.BottomCenter) {
+            Column {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 4.dp, bottom = 12.dp)
+                        .padding(horizontal = 16.dp),
+                    color = MaterialTheme.colorScheme.secondary,
+                    text = "Выборки",
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Left
+                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .align(Alignment.CenterHorizontally)
+                        .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.outline,
+                            shape = RoundedCornerShape(4.dp)
+                        )
+                        .fillMaxWidth()
+                        .height(56.dp),
+                ){
+                    Text(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp),
+                        text = "Поиск по названию, id, автору",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+                items.forEachIndexed { index, item ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    ) {
+                        Checkbox(
+                            checked = checked,
+                            onCheckedChange = { state.selection.get(index).checked = it }
+                        )
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Column {
+                            Text(
+                                text = item.text,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontSize = 16.sp
+                                )
+                            Text(
+                                text = item.supportingText,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontSize = 14.sp
+                            )
+                        }
                     }
                 }
 
