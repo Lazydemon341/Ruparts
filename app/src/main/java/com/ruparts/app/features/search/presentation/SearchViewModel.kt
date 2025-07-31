@@ -36,6 +36,18 @@ private val INITIAL_STATE = SearchScreenState(
         SearchScreenFilter(SearchScreenFilterType.FLAGS, false),
         SearchScreenFilter(SearchScreenFilterType.LOCATION, true),
         SearchScreenFilter(SearchScreenFilterType.SELECTIONS, false)
+    ),
+    flags = listOf(
+        SearchScreenFlag("Требуется измерить", false),
+        SearchScreenFlag("Требуется взвесить", false),
+        SearchScreenFlag("Требуется фото", false),
+        SearchScreenFlag("Риск подделки", false),
+        SearchScreenFlag("Продажа в розницу", false),
+        SearchScreenFlag("Неликвид", false),
+        SearchScreenFlag("Габаритный", false),
+        SearchScreenFlag("Хрупкий", false),
+        SearchScreenFlag("Загружен с Фрозы", false),
+        SearchScreenFlag("Без документов", false),
     )
 )
 

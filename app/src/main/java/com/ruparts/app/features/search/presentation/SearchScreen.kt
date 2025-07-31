@@ -3,7 +3,6 @@ package com.ruparts.app.features.search.presentation
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.focusable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,10 +21,8 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
-import androidx.navigation.fragment.findNavController
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
@@ -42,7 +39,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.ModalBottomSheetDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -50,13 +46,11 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.fragment.findNavController
 import com.ruparts.app.R
 import com.ruparts.app.core.ui.components.RupartsCartItem
 import com.ruparts.app.features.cart.model.CartListItem
@@ -109,6 +103,7 @@ fun SearchScreen(
                 SearchScreenFilterDialog(
                     filterType = filterType,
                     onDismiss = { showFilterDialogFor.value = null },
+                    state = state
                 )
             }
         }
@@ -275,10 +270,11 @@ private fun SearchScreenAssemblyButton() {
 private fun SearchScreenFilterDialog(
     filterType: SearchScreenFilterType,
     onDismiss: () -> Unit,
+    state: SearchScreenState
 ) {
     when (filterType) {
         SearchScreenFilterType.FLAGS -> {
-            SearchScreenModalBottomSheet()
+            SearchScreenModalBottomSheet(state)
         }
 
 
@@ -303,6 +299,18 @@ private fun SearchScreenPreview() {
                 SearchScreenFilter(SearchScreenFilterType.FLAGS, false),
                 SearchScreenFilter(SearchScreenFilterType.LOCATION, true),
                 SearchScreenFilter(SearchScreenFilterType.SELECTIONS, false)
+            ),
+            flags = listOf(
+                SearchScreenFlag("Требуется измерить", false),
+                SearchScreenFlag("Требуется взвесить", false),
+                SearchScreenFlag("Требуется фото", false),
+                SearchScreenFlag("Риск подделки", false),
+                SearchScreenFlag("Продажа в розницу", false),
+                SearchScreenFlag("Неликвид", false),
+                SearchScreenFlag("Габаритный", false),
+                SearchScreenFlag("Хрупкий", false),
+                SearchScreenFlag("Загружен с Фрозы", false),
+                SearchScreenFlag("Без документов", false),
             )
         )
     )
@@ -310,40 +318,35 @@ private fun SearchScreenPreview() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SearchScreenModalBottomSheet() {
+private fun SearchScreenModalBottomSheet(state: SearchScreenState) {
     val bottomSheetState = rememberModalBottomSheetState(true)
     var checked by remember { mutableStateOf(true) }
-    val items = listOf("Требуется измерить", "Требуется взвесить", "Требуется фото")
-//    var checkedItems = mutableStateListOf(items)
+    var items = state.flags
 
     ModalBottomSheet(
-        dragHandle = {BottomSheetDefaults.DragHandle()},
+        dragHandle = { BottomSheetDefaults.DragHandle() },
         sheetState = bottomSheetState,
         onDismissRequest = {},
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
     ) {
         Box(contentAlignment = Alignment.BottomCenter) {
             Column {
-                LazyColumn {
-                    stickyHeader(contentType = "listHeader") {
-                        Text(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 4.dp, bottom = 12.dp)
-                                .padding(horizontal = 16.dp),
-                            color = MaterialTheme.colorScheme.secondary,
-                            text = "Признаки",
-                            style = MaterialTheme.typography.bodyMedium,
-                            textAlign = TextAlign.Left
-                        )
-                    }
-                }
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 4.dp, bottom = 12.dp)
+                        .padding(horizontal = 16.dp),
+                    color = MaterialTheme.colorScheme.secondary,
+                    text = "Признаки",
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Left
+                )
                 items.forEachIndexed { index, item ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                     ) {
-                        Text(text = item)
+                        Text(text = item.text)
                         Spacer(modifier = Modifier.weight(1f))
                         Checkbox(
                             checked = checked,
@@ -351,29 +354,11 @@ private fun SearchScreenModalBottomSheet() {
                         )
                     }
                 }
-                if (!checked) {
-                    Button(
-                        onClick = { },
-                        modifier = Modifier
-                            .padding(horizontal = 20.dp)
-                            .padding(top = 8.dp, bottom = 24.dp)
-                            .fillMaxWidth()
-                            .height(56.dp),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary
-                        )
-                    ) {
-                        Text(
-                            text = "Применить",
-                            fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
-                    }
-                } else {
-                    Row(
-                        Modifier.fillMaxWidth()
-                    ) {
+
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    if (checked) {
                         Button(
                             onClick = { },
                             modifier = Modifier
@@ -392,24 +377,26 @@ private fun SearchScreenModalBottomSheet() {
                                 color = MaterialTheme.colorScheme.primary
                             )
                         }
-                        Button(
-                            onClick = { },
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(start = 16.dp, end = 20.dp)
-                                .padding(top = 8.dp, bottom = 24.dp)
-                                .height(56.dp),
-                            shape = RoundedCornerShape(16.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primary
-                            )
-                        ) {
-                            Text(
-                                text = "Применить",
-                                fontSize = 16.sp,
-                                color = MaterialTheme.colorScheme.onPrimary
-                            )
-                        }
+                    }
+
+                    Button(
+                        onClick = { },
+                        modifier = Modifier
+                            .padding(horizontal = 20.dp)
+                            .padding(top = 8.dp, bottom = 24.dp)
+                            .weight(1f)
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        )
+                    ) {
+                        Text(
+                            text = "Применить",
+                            fontSize = 16.sp,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
                     }
                 }
             }
