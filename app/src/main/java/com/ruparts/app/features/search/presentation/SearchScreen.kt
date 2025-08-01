@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
@@ -48,7 +47,6 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -60,7 +58,8 @@ import com.ruparts.app.features.cart.model.CartListItem
 
 @Composable
 fun SearchScreen(
-    state: SearchScreenState
+    state: SearchScreenState,
+    onSelectionClick: (SearchScreenSelection) -> Unit
 ) {
     val scrollState = rememberScrollState()
     Scaffold(
@@ -106,7 +105,8 @@ fun SearchScreen(
                 SearchScreenFilterDialog(
                     filterType = filterType,
                     onDismiss = { showFilterDialogFor.value = null },
-                    state = state
+                    state = state,
+                    onSelectionClick = onSelectionClick
                 )
             }
         }
@@ -273,7 +273,8 @@ private fun SearchScreenAssemblyButton() {
 private fun SearchScreenFilterDialog(
     filterType: SearchScreenFilterType,
     onDismiss: () -> Unit,
-    state: SearchScreenState
+    state: SearchScreenState,
+    onSelectionClick: (SearchScreenSelection) -> Unit,
 ) {
     when (filterType) {
         SearchScreenFilterType.FLAGS -> {
@@ -286,7 +287,7 @@ private fun SearchScreenFilterDialog(
         }
 
         SearchScreenFilterType.SELECTIONS -> {
-            SearchScreenSelectionsModalBottomSheet(state)
+            SearchScreenSelectionsModalBottomSheet(state, onSelectionClick = onSelectionClick)
         }
     }
 }
@@ -315,13 +316,14 @@ private fun SearchScreenPreview() {
                 SearchScreenFlag("Загружен с Фрозы", false),
                 SearchScreenFlag("Без документов", false),
             ),
-            selection = listOf(
+            selections = listOf(
                 SearchScreenSelection("Для бухгалтерии", "ID 3, Петров Н.А., 14.06.2025", false),
                 SearchScreenSelection("Срочно", "ID 69, Иванов В.М., 28.05.2025", false),
                 SearchScreenSelection("Для доставки", "ID 25, Сидоров Г.Д., 21.05.2025", false),
                 SearchScreenSelection("Для менеджера", "ID 73, Судоровозражанов Н.А., 14.06.2025", false),
             )
-        )
+        ),
+        onSelectionClick = {}
     )
 }
 
@@ -417,10 +419,14 @@ private fun SearchScreenFlagsModalBottomSheet(state: SearchScreenState) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SearchScreenSelectionsModalBottomSheet(state: SearchScreenState) {
+private fun SearchScreenSelectionsModalBottomSheet(
+    state: SearchScreenState,
+    onSelectionClick: (SearchScreenSelection) -> Unit,
+)
+{
     val bottomSheetState = rememberModalBottomSheetState(true)
-    val checked by remember { derivedStateOf { state.selection.any { it.checked } } }
-    var items = state.selection
+    val checked = remember(state.selections) {  state.selections.any { it.checked } }
+    var items = state.selections
 
     ModalBottomSheet(
         dragHandle = { BottomSheetDefaults.DragHandle() },
@@ -468,7 +474,7 @@ private fun SearchScreenSelectionsModalBottomSheet(state: SearchScreenState) {
                     ) {
                         Checkbox(
                             checked = checked,
-                            onCheckedChange = { state.selection.get(index).checked = it }
+                            onCheckedChange = { onSelectionClick(item) }
                         )
                         Spacer(modifier = Modifier.width(16.dp))
                         Column {

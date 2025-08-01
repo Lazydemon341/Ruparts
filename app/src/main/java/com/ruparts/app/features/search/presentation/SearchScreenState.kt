@@ -8,7 +8,7 @@ data class SearchScreenState(
     val items: List<CartListItem>,
     val filters: List<SearchScreenFilter>,
     val flags: List<SearchScreenFlag>,
-    val selection: List<SearchScreenSelection>
+    val selections: List<SearchScreenSelection>
 )
 
 data class SearchScreenFilter(
