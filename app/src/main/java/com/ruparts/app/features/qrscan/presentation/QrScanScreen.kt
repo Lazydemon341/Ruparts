@@ -186,10 +186,12 @@ fun QrScanScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(color = Color.Black.copy(alpha = 0.5f))
+                            .background(color = Color.Black.copy(alpha = 0.5f)),
+                        contentAlignment = Alignment.Center,
                     ) {
                         CircularProgressIndicator(
-                            modifier = Modifier.align(Alignment.Center)
+                            trackColor = MaterialTheme.colorScheme.secondaryContainer,
+                            color = MaterialTheme.colorScheme.primary,
                         )
                     }
                 }

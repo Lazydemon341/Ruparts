@@ -15,6 +15,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -28,6 +29,7 @@ import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material.icons.outlined.Keyboard
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -169,19 +171,32 @@ fun ProductScanScreen(
         containerColor = Color.Black,
     ) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
-            // Camera preview
-            val surfaceRequest = surfaceRequestState.value
-            if (surfaceRequest != null) {
-                CameraPreview(
-                    surfaceRequest = surfaceRequest,
-                    modifier = Modifier
-                        .weight(1f)
-                        .onGloballyPositioned { coordinates ->
-                            imageAnalyzer.setPreviewSize(coordinates.size)
-                        }
-                )
-            } else {
-                Box(modifier = Modifier.weight(1f))
+            Box(modifier = Modifier.weight(1f)) {
+                val surfaceRequest = surfaceRequestState.value
+                if (surfaceRequest != null) {
+                    CameraPreview(
+                        surfaceRequest = surfaceRequest,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .onGloballyPositioned { coordinates ->
+                                imageAnalyzer.setPreviewSize(coordinates.size)
+                            }
+                    )
+                }
+
+                if (state.isScanning) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black.copy(alpha = 0.5f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            trackColor = MaterialTheme.colorScheme.secondaryContainer,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                    }
+                }
             }
 
             // Bottom instruction section
