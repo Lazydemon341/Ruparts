@@ -5,6 +5,7 @@ import com.ruparts.app.features.cart.model.CartListItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 private val INITIAL_STATE = SearchScreenState(
@@ -49,7 +50,7 @@ private val INITIAL_STATE = SearchScreenState(
         SearchScreenFlag("Загружен с Фрозы", false),
         SearchScreenFlag("Без документов", false),
     ),
-    selection = listOf(
+    selections = listOf(
         SearchScreenSelection("Для бухгалтерии", "ID 3, Петров Н.А., 14.06.2025", false),
         SearchScreenSelection("Срочно", "ID 69, Иванов В.М., 28.05.2025", false),
         SearchScreenSelection("Для доставки", "ID 25, Сидоров Г.Д., 21.05.2025", false),
@@ -62,4 +63,33 @@ class SearchViewModel @Inject constructor() : ViewModel() {
 
     private val _state = MutableStateFlow(INITIAL_STATE)
     val state = _state.asStateFlow()
+
+    fun onSelectionClick(selection: SearchScreenSelection) {
+        _state.update {
+            it.copy(
+                selections = it.selections.map { item ->
+                    if (item == selection) {
+                        item.copy(checked = !item.checked)
+                    } else {
+                        item
+                    }
+                }
+            )
+        }
+    }
+
+    fun onFlagClick(flag: SearchScreenFlag) {
+        _state.update {
+            it.copy(
+                flags = it.flags.map { item ->
+                    if (item == flag) {
+                        item.copy(checked = !item.checked)
+                    } else {
+                        item
+                    }
+                }
+            )
+        }
+    }
+
 }
