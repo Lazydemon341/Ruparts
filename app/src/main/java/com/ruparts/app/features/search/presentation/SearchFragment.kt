@@ -27,7 +27,8 @@ class SearchFragment : Fragment() {
                 RupartsTheme {
                     SearchScreen(
                         state = state.value,
-                        onSelectionClick = viewModel::onSelectionClick
+                        onSelectionClick = viewModel::onSelectionClick,
+                        onFlagClick = viewModel::onFlagClick
                     )
                 }
             }

@@ -78,4 +78,18 @@ class SearchViewModel @Inject constructor() : ViewModel() {
         }
     }
 
+    fun onFlagClick(flag: SearchScreenFlag) {
+        _state.update {
+            it.copy(
+                flags = it.flags.map { item ->
+                    if (item == flag){
+                        item.copy(checked = !item.checked)
+                    } else {
+                        item
+                    }
+                }
+            )
+        }
+    }
+
 }
