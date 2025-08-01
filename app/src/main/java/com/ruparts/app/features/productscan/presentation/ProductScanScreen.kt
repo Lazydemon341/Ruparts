@@ -128,43 +128,12 @@ fun ProductScanScreen(
             SnackbarHost(hostState = snackbarHostState)
         },
         topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = "Товар",
-                        color = Color.White,
-                        fontWeight = FontWeight.W400
-                    )
+            TopBar(
+                onAction = onAction,
+                onKeyboardClick = {
+                    showInputDialog = true
                 },
-                navigationIcon = {
-                    IconButton(
-                        onClick = { onAction(ProductScanScreenAction.OnBackPressed) }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Close",
-                            tint = Color.White
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(
-                        onClick = {
-                            showInputDialog = true
-                        },
-                        modifier = Modifier.size(48.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Keyboard,
-                            contentDescription = "Manual input",
-                            tint = Color.White
-                        )
-                    }
-                    FlashButton(camera = cameraState.value)
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Black,
-                ),
+                camera = cameraState.value,
             )
         },
         contentColor = Color.Black,
@@ -185,45 +154,10 @@ fun ProductScanScreen(
                 }
 
                 if (state.isScanning) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.Black.copy(alpha = 0.5f)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(
-                            trackColor = MaterialTheme.colorScheme.secondaryContainer,
-                            color = MaterialTheme.colorScheme.primary,
-                        )
-                    }
+                    LoadingOverlay()
                 }
             }
-
-            // Bottom instruction section
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.Black)
-                    .padding(horizontal = 16.dp)
-                    .padding(top = 40.dp, bottom = 80.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Icon(
-                    imageVector = Icons.Default.QrCodeScanner,
-                    contentDescription = "Barcode scanner",
-                    tint = colorResource(R.color.neutral60),
-                    modifier = Modifier.size(44.dp)
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "Отсканируйте товар,\nчтобы найти его в базе данных",
-                    color = colorResource(R.color.neutral60),
-                    style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Center,
-                    fontSize = 16.sp,
-                    lineHeight = 20.sp
-                )
-            }
+            BottomTexts()
         }
 
         if (showInputDialog) {
@@ -236,6 +170,94 @@ fun ProductScanScreen(
                 },
             )
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TopBar(
+    onAction: (ProductScanScreenAction) -> Unit,
+    onKeyboardClick: () -> Unit,
+    camera: Camera?,
+) {
+    CenterAlignedTopAppBar(
+        title = {
+            Text(
+                text = "Товар",
+                color = Color.White,
+                fontWeight = FontWeight.W400
+            )
+        },
+        navigationIcon = {
+            IconButton(
+                onClick = { onAction(ProductScanScreenAction.OnBackPressed) }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Close",
+                    tint = Color.White
+                )
+            }
+        },
+        actions = {
+            IconButton(
+                onClick = onKeyboardClick,
+                modifier = Modifier.size(48.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Keyboard,
+                    contentDescription = "Manual input",
+                    tint = Color.White
+                )
+            }
+            FlashButton(camera = camera)
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color.Black,
+        ),
+    )
+}
+
+@Composable
+private fun LoadingOverlay() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.5f)),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(
+            trackColor = MaterialTheme.colorScheme.secondaryContainer,
+            color = MaterialTheme.colorScheme.primary,
+        )
+    }
+}
+
+@Composable
+private fun BottomTexts() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.Black)
+            .padding(horizontal = 16.dp)
+            .padding(top = 40.dp, bottom = 80.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+            imageVector = Icons.Default.QrCodeScanner,
+            contentDescription = "Barcode scanner",
+            tint = colorResource(R.color.neutral60),
+            modifier = Modifier.size(44.dp)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = "Отсканируйте товар,\nчтобы найти его в базе данных",
+            color = colorResource(R.color.neutral60),
+            style = MaterialTheme.typography.bodyMedium,
+            textAlign = TextAlign.Center,
+            fontSize = 16.sp,
+            lineHeight = 20.sp
+        )
     }
 }
 
