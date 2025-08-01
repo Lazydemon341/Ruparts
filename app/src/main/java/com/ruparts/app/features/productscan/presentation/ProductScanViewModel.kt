@@ -38,10 +38,6 @@ class ProductScanViewModel @Inject constructor(
                 }
             }
 
-            is ProductScanScreenAction.OnProductScanned -> {
-                // TODO: Process scanned product and navigate to details
-            }
-
             is ProductScanScreenAction.ManualInput -> {
                 viewModelScope.launch {
                     _state.update { it.copy(isScanning = true) }
