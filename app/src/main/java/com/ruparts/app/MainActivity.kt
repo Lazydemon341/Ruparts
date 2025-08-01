@@ -118,6 +118,7 @@ class MainActivity : AppCompatActivity() {
 
                 isVisible = destination.id != R.id.authFragment
                         && destination.id != R.id.qrScanFragment
+                        && destination.id != R.id.productScanFragment
 
                 val textsCentered = destination.id != R.id.productFragment
                 isTitleCentered = textsCentered
@@ -125,7 +126,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             windowInsetsController.apply {
-                val lightSystemBars = destination.id != R.id.qrScanFragment
+                val lightSystemBars = destination.id != R.id.qrScanFragment && destination.id != R.id.productScanFragment
                 isAppearanceLightStatusBars = lightSystemBars
                 isAppearanceLightNavigationBars = lightSystemBars
             }

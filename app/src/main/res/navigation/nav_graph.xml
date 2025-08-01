@@ -138,6 +138,21 @@
         android:name="com.ruparts.app.features.search.presentation.SearchFragment"
         android:label="Поиск">
 
+        <action
+            android:id="@+id/action_searchFragment_to_productScanFragment"
+            app:destination="@id/productScanFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/productScanFragment"
+        android:name="com.ruparts.app.features.productscan.presentation.ProductScanFragment"
+        android:label="Сканирование товара">
+
     </fragment>
     
 </navigation>

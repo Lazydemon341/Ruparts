@@ -59,7 +59,7 @@ detekt {
     buildUponDefaultConfig = true
 
     debug = true
-    ignoredBuildTypes = listOf("release")
+    ignoredBuildTypes = listOf("release", "debug")
 
     basePath = projectDir.path
 }
