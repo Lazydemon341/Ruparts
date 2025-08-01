@@ -1,0 +1,73 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+# All files
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = false
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+# Kotlin files
+[*.kt]
+indent_size = 4
+# Prohibit wildcard imports by setting threshold very high
+ij_kotlin_name_count_to_use_star_import = 999
+ij_kotlin_name_count_to_use_star_import_for_members = 999
+# Import layout configuration
+ij_kotlin_imports_layout = *, java.**, javax.**, kotlin.**, ^
+# Code style preferences
+ij_kotlin_code_style_defaults = KOTLIN_OFFICIAL
+ij_kotlin_line_comment_at_first_column = false
+ij_kotlin_line_comment_add_space = true
+ij_kotlin_block_comment_at_first_column = false
+ij_kotlin_block_comment_add_space = true
+# Formatting preferences
+ij_kotlin_keep_blank_lines_in_declarations = 1
+ij_kotlin_keep_blank_lines_in_code = 1
+ij_kotlin_keep_blank_lines_before_right_brace = 0
+ij_kotlin_align_multiline_parameters = false
+ij_kotlin_spaces_around_assignment_operators = true
+ij_kotlin_spaces_around_logical_operators = true
+ij_kotlin_spaces_around_equality_operators = true
+ij_kotlin_spaces_around_relational_operators = true
+ij_kotlin_spaces_around_additive_operators = true
+ij_kotlin_spaces_around_multiplicative_operators = true
+
+# Kotlin script files
+[*.kts]
+indent_size = 4
+ij_kotlin_name_count_to_use_star_import = 999
+ij_kotlin_name_count_to_use_star_import_for_members = 999
+
+# XML files (layouts, manifests, etc.)
+[*.xml]
+indent_size = 4
+ij_xml_keep_blank_lines = 1
+ij_xml_align_attributes = false
+ij_xml_space_inside_empty_tag = true
+
+# Properties files
+[*.properties]
+indent_size = 4
+
+# Gradle files
+[*.gradle]
+indent_size = 4
+
+# JSON files
+[*.json]
+indent_size = 2
+
+# YAML files
+[*.{yml,yaml}]
+indent_size = 2
+
+# Markdown files
+[*.md]
+trim_trailing_whitespace = false
+insert_final_newline = false

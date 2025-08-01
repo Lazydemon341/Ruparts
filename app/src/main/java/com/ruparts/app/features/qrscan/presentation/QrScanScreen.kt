@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.camera.compose.CameraXViewfinder
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector.DEFAULT_BACK_CAMERA
 import androidx.camera.core.ImageAnalysis
@@ -38,10 +37,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Keyboard
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.outlined.Bolt
+import androidx.compose.material.icons.outlined.Keyboard
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -67,17 +66,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.graphics.ClipOp
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -92,10 +84,11 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.ruparts.app.R
+import com.ruparts.app.core.barcode.camera.BarcodeImageAnalyzer
+import com.ruparts.app.core.ui.components.CameraPreview
 import com.ruparts.app.core.ui.components.RupartsCartItem
 import com.ruparts.app.features.cart.model.CartListItem
 import com.ruparts.app.features.cart.model.CartScanPurpose
-import com.ruparts.app.features.qrscan.presentation.camera.QrCodeImageAnalyzer
 import com.ruparts.app.features.qrscan.presentation.model.QrScanScreenAction
 import com.ruparts.app.features.qrscan.presentation.model.QrScanScreenState
 import java.util.concurrent.Executors
@@ -127,7 +120,7 @@ fun QrScanScreen(
     var surfaceRequestState = remember { mutableStateOf<SurfaceRequest?>(null) }
     var cameraState = remember { mutableStateOf<Camera?>(null) }
     val imageAnalyzer = remember {
-        QrCodeImageAnalyzer(
+        BarcodeImageAnalyzer(
             onBarcodesScanned = { onAction(QrScanScreenAction.BarcodesScanned(it)) },
         )
     }
@@ -193,10 +186,12 @@ fun QrScanScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(color = Color.Black.copy(alpha = 0.5f))
+                            .background(color = Color.Black.copy(alpha = 0.5f)),
+                        contentAlignment = Alignment.Center,
                     ) {
                         CircularProgressIndicator(
-                            modifier = Modifier.align(Alignment.Center)
+                            trackColor = MaterialTheme.colorScheme.secondaryContainer,
+                            color = MaterialTheme.colorScheme.primary,
                         )
                     }
                 }
@@ -222,7 +217,9 @@ fun QrScanScreen(
                         headerText = when (state.purpose) {
                             CartScanPurpose.TRANSFER_TO_CART -> "Отсканируйте товары в ячейке, они попадут в корзину"
                             CartScanPurpose.TRANSFER_TO_LOCATION -> "Отсканируйте один или несколько товаров,\n" +
-                                    "а затем ячейку или отгрузочное место"
+                                "а затем ячейку или отгрузочное место"
+
+                            CartScanPurpose.INFO -> ""
                         },
                     )
                 }
@@ -240,39 +237,6 @@ fun QrScanScreen(
             }
         }
     }
-}
-
-@Composable
-private fun CameraPreview(
-    surfaceRequest: SurfaceRequest,
-    modifier: Modifier = Modifier,
-) {
-    CameraXViewfinder(
-        surfaceRequest = surfaceRequest,
-        modifier = modifier
-            .fillMaxSize()
-            .drawWithCache {
-                val rect = Rect(
-                    left = size.width * 0.25f,
-                    right = size.width * 0.75f,
-                    top = size.height * 0.25f,
-                    bottom = size.height * 0.75f,
-                )
-                val rectPath = Path().apply {
-                    addRect(rect)
-                }
-                val rectColor = SolidColor(Color.Black.copy(alpha = 0.5f))
-                val strokeStyle = Stroke(width = 4f)
-
-                onDrawWithContent {
-                    drawContent()
-                    clipPath(rectPath, clipOp = ClipOp.Difference) {
-                        drawRect(rectColor)
-                        drawPath(rectPath, style = strokeStyle, color = Color.White)
-                    }
-                }
-            },
-    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -307,7 +271,7 @@ private fun QrScanScreenTopBar(
                 modifier = Modifier.size(48.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.Keyboard,
+                    imageVector = Icons.Outlined.Keyboard,
                     contentDescription = null,
                     tint = Color.White
                 )
@@ -526,7 +490,7 @@ private fun QrScanEmptyContent() {
             )
             Text(
                 text = "Отсканируйте товары в корзине,\n" +
-                        "а затем ячейку",
+                    "а затем ячейку",
                 color = colorResource(id = R.color.secondary60),
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
@@ -639,10 +603,7 @@ private suspend fun startCamera(
         .apply {
             setSurfaceProvider(onSurfaceRequest)
         }
-    val imageAnalysisUseCase = ImageAnalysis.Builder()
-        .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-        .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_NV21)
-        .build()
+    val imageAnalysisUseCase = BarcodeImageAnalyzer.getImageAnalysis()
         .apply {
             setAnalyzer(
                 Executors.newSingleThreadExecutor(),
@@ -689,8 +650,8 @@ private fun QrScanScreenPreview() {
                     brand = "Porsche",
                     quantity = 5843,
                     description = "Очень длинное описание, которое не влезает в одну строчку, " +
-                            "которое не влезает в одну строчку, которое не влезает в одну строчку, " +
-                            "которое не влезает в одну строчку,",
+                        "которое не влезает в одну строчку, которое не влезает в одну строчку, " +
+                        "которое не влезает в одну строчку,",
                     barcode = "",
                     cartOwner = "",
                     info = "",

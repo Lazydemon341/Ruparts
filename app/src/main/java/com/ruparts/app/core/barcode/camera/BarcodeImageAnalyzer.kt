@@ -1,4 +1,4 @@
-package com.ruparts.app.features.qrscan.presentation.camera
+package com.ruparts.app.core.barcode.camera
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -19,9 +19,8 @@ import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 import java.io.ByteArrayOutputStream
 
-
-internal class QrCodeImageAnalyzer(
-    private val onBarcodesScanned: (List<Barcode>) -> Unit
+class BarcodeImageAnalyzer(
+    private val onBarcodesScanned: (List<String>) -> Unit
 ) : ImageAnalysis.Analyzer {
 
     private val options = BarcodeScannerOptions.Builder()
@@ -33,7 +32,7 @@ internal class QrCodeImageAnalyzer(
         .build()
     private val scanner = BarcodeScanning.getClient(options)
 
-    private var previewSize: IntSize = IntSize.Zero
+    private var previewSize: IntSize = IntSize.Companion.Zero
 
     fun setPreviewSize(size: IntSize) {
         previewSize = size
@@ -50,7 +49,7 @@ internal class QrCodeImageAnalyzer(
                 .addOnSuccessListener { barcodes ->
                     if (barcodes.isNotEmpty()) {
                         Log.d(TAG, "Barcodes detected: $barcodes")
-                        onBarcodesScanned(barcodes)
+                        onBarcodesScanned(barcodes.mapNotNull { it.rawValue })
                     }
                 }
                 .addOnFailureListener {
@@ -139,5 +138,12 @@ internal class QrCodeImageAnalyzer(
 
     companion object {
         private const val TAG = "QrCodeImageAnalyzer"
+
+        fun getImageAnalysis(): ImageAnalysis {
+            return ImageAnalysis.Builder()
+                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_NV21)
+                .build()
+        }
     }
 }

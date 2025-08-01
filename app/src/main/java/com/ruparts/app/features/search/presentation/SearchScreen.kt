@@ -43,7 +43,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -57,7 +61,8 @@ import com.ruparts.app.features.cart.model.CartListItem
 
 @Composable
 fun SearchScreen(
-    state: SearchScreenState
+    state: SearchScreenState,
+    onScanButtonClick: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
     Scaffold(
@@ -66,7 +71,7 @@ fun SearchScreen(
         ),
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { },
+                onClick = onScanButtonClick,
                 modifier = Modifier.padding(bottom = 8.dp, end = 4.dp),
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
@@ -312,7 +317,8 @@ private fun SearchScreenPreview() {
                 SearchScreenFlag("Загружен с Фрозы", false),
                 SearchScreenFlag("Без документов", false),
             )
-        )
+        ),
+        onScanButtonClick = {}
     )
 }
 

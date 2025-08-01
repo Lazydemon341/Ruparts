@@ -132,6 +132,10 @@ class CartFragment : Fragment() {
                     )
                 )
             }
+            is CartScreenEffect.ShowProductScanErrorToast ->  {
+                val message = effect.message ?: "Не удалось отсканировать товар"
+                Snackbar.make(requireView(), message, Snackbar.LENGTH_SHORT).show()
+            }
         }
     }
 
