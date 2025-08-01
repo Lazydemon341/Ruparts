@@ -45,15 +45,16 @@ class ProductScanFragment : Fragment() {
                             }
 
                             is ProductScanScreenEvent.ShowErrorToast -> {
-                                val message = event.message ?: "Не удалось отсканировать товар"
                                 snackBarJob?.cancel()
                                 snackBarJob = coroutineScope.launch {
-                                    snackbarHostState.showSnackbar(message)
+                                    snackbarHostState.showSnackbar(event.message)
                                 }
                             }
 
                             is ProductScanScreenEvent.NavigateToProductDetails -> {
-                                // TODO: Navigate to product details
+                                val action = ProductScanFragmentDirections
+                                    .actionProductScanFragmentToProductFragment(event.barcode)
+                                findNavController().navigate(action)
                             }
                         }
                     }

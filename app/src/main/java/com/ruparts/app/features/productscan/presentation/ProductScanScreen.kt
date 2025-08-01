@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.camera.compose.CameraXViewfinder
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector.DEFAULT_BACK_CAMERA
 import androidx.camera.core.SurfaceRequest
@@ -52,6 +51,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -65,6 +65,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.ruparts.app.R
+import com.ruparts.app.core.barcode.camera.BarcodeImageAnalyzer
+import com.ruparts.app.core.ui.components.CameraPreview
 import com.ruparts.app.core.ui.theme.RupartsTheme
 import com.ruparts.app.features.productscan.presentation.model.ProductScanScreenAction
 import com.ruparts.app.features.productscan.presentation.model.ProductScanScreenState
@@ -76,7 +78,6 @@ fun ProductScanScreen(
     state: ProductScanScreenState,
     onAction: (ProductScanScreenAction) -> Unit,
     snackbarHostState: SnackbarHostState,
-    modifier: Modifier = Modifier
 ) {
     var permissionGranted by remember { mutableStateOf<Boolean>(false) }
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -97,6 +98,13 @@ fun ProductScanScreen(
 
     var surfaceRequestState = remember { mutableStateOf<SurfaceRequest?>(null) }
     var cameraState = remember { mutableStateOf<Camera?>(null) }
+    val imageAnalyzer = remember {
+        BarcodeImageAnalyzer(
+            onBarcodesScanned = {
+                onAction(ProductScanScreenAction.BarcodesScanned(it))
+            }
+        )
+    }
 
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(permissionGranted, context, lifecycleOwner) {
@@ -105,6 +113,7 @@ fun ProductScanScreen(
                 cameraState.value = startCamera(
                     context = context,
                     lifecycleOwner = lifecycleOwner,
+                    imageAnalyzer = imageAnalyzer,
                     onSurfaceRequest = { surfaceRequestState.value = it },
                 )
             }
@@ -163,9 +172,13 @@ fun ProductScanScreen(
             // Camera preview
             val surfaceRequest = surfaceRequestState.value
             if (surfaceRequest != null) {
-                CameraXViewfinder(
+                CameraPreview(
                     surfaceRequest = surfaceRequest,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier
+                        .weight(1f)
+                        .onGloballyPositioned { coordinates ->
+                            imageAnalyzer.setPreviewSize(coordinates.size)
+                        }
                 )
             } else {
                 Box(modifier = Modifier.weight(1f))
@@ -240,6 +253,7 @@ private fun FlashButton(camera: Camera?) {
 private suspend fun startCamera(
     context: Context,
     lifecycleOwner: LifecycleOwner,
+    imageAnalyzer: androidx.camera.core.ImageAnalysis.Analyzer,
     onSurfaceRequest: (SurfaceRequest) -> Unit,
 ): Camera {
     val processCameraProvider = ProcessCameraProvider.awaitInstance(context.applicationContext)
@@ -251,11 +265,19 @@ private suspend fun startCamera(
         .apply {
             setSurfaceProvider(onSurfaceRequest)
         }
+    val imageAnalysisUseCase = BarcodeImageAnalyzer.getImageAnalysis()
+        .apply {
+            setAnalyzer(
+                java.util.concurrent.Executors.newSingleThreadExecutor(),
+                imageAnalyzer
+            )
+        }
 
     return processCameraProvider.bindToLifecycle(
         lifecycleOwner,
         DEFAULT_BACK_CAMERA,
         cameraPreviewUseCase,
+        imageAnalysisUseCase,
     )
 }
 

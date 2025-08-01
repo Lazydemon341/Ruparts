@@ -54,6 +54,7 @@ class CartRepository @Inject constructor(
                         purpose = when (purpose) {
                             CartScanPurpose.TRANSFER_TO_LOCATION -> CartScanRequestPurposeDto.TRANSFER_TO_LOCATION
                             CartScanPurpose.TRANSFER_TO_CART -> CartScanRequestPurposeDto.TRANSFER_TO_BASKET
+                            CartScanPurpose.INFO -> CartScanRequestPurposeDto.INFO
                         },
                     )
                 ),
