@@ -48,6 +48,12 @@ private val INITIAL_STATE = SearchScreenState(
         SearchScreenFlag("Хрупкий", false),
         SearchScreenFlag("Загружен с Фрозы", false),
         SearchScreenFlag("Без документов", false),
+    ),
+    selection = listOf(
+        SearchScreenSelection("Для бухгалтерии", "ID 3, Петров Н.А., 14.06.2025", false),
+        SearchScreenSelection("Срочно", "ID 69, Иванов В.М., 28.05.2025", false),
+        SearchScreenSelection("Для доставки", "ID 25, Сидоров Г.Д., 21.05.2025", false),
+        SearchScreenSelection("Для менеджера", "ID 73, Судоровозражанов Н.А., 14.06.2025", false),
     )
 )
 
