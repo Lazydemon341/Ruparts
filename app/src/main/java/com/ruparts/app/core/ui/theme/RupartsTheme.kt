@@ -72,6 +72,12 @@ fun RupartsTheme(
             lineHeight = 20.sp,
             fontWeight = FontWeight(400),
             letterSpacing = 0.25.sp,
+        ),
+        bodyLarge = TextStyle(
+            fontSize = 16.sp,
+            lineHeight = 24.sp,
+            fontWeight = FontWeight(400),
+            letterSpacing = 0.5.sp,
         )
     )
 

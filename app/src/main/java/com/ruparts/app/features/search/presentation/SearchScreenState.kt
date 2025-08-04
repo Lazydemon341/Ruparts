@@ -12,6 +12,7 @@ data class SearchScreenState(
     val flags: List<SearchScreenFlag>,
     val selections: List<SearchScreenSelection>,
     val checkedFlags: Set<Long> = emptySet(),
+    val selectedSorting: SearchScreenSorting = SearchScreenSorting(),
 )
 
 data class SearchScreenFilter(
@@ -49,4 +50,22 @@ data class SearchScreenSelection(
         supportingText,
         checked,
     )
+}
+
+data class SearchScreenSorting(
+    val type: SearchScreenSortingType = SearchScreenSortingType.QUANTITY,
+    val direction: SortingDirection = SortingDirection.DESCENDING,
+)
+
+enum class SearchScreenSortingType {
+    CELL_NUMBER,
+    QUANTITY,
+    PURCHASE_PRICE,
+    SELLING_PRICE,
+    ARRIVAL_DATE,
+}
+
+enum class SortingDirection {
+    ASCENDING,
+    DESCENDING,
 }

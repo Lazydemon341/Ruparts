@@ -31,10 +31,10 @@ private val INITIAL_STATE = SearchScreenState(
             article = "123457879654531",
             brand = "Toyota",
             quantity = 125,
-            description = "Описание",
+            description = "Замок зажигания",
             barcode = "TE250630T235959II2",
             cartOwner = "Petrov",
-            info = "",
+            info = "L2-A02-1-6-1",
             flags = listOf(productFlags[1].flag, productFlags[3].flag),
             fromExternalInput = false
         ),
@@ -43,11 +43,23 @@ private val INITIAL_STATE = SearchScreenState(
             article = "987654321",
             brand = "Honda",
             quantity = 50,
-            description = "Другое описание",
-            barcode = "TE250630T235959II2",
+            description = "Фильтр воздушный",
+            barcode = "TE250630T235959II3",
             cartOwner = "Ivanov",
-            info = "",
+            info = "L1-B03-2-4-2",
             flags = listOf(productFlags[0].flag, productFlags[2].flag),
+            fromExternalInput = false
+        ),
+        CartListItem(
+            id = 3,
+            article = "456789012",
+            brand = "Nissan",
+            quantity = 200,
+            description = "Тормозные колодки",
+            barcode = "TE250630T235959II4",
+            cartOwner = "Sidorov",
+            info = "L3-C01-1-2-3",
+            flags = listOf(productFlags[2].flag),
             fromExternalInput = false
         )
     ),
@@ -69,23 +81,22 @@ private val INITIAL_STATE = SearchScreenState(
 class SearchViewModel @Inject constructor() : ViewModel() {
 
     private val checkedFlags = MutableStateFlow<Set<Long>>(emptySet())
+    private val selectedSorting = MutableStateFlow(SearchScreenSorting())
 
     val state = combine(
         flow<SearchScreenState> { emit(INITIAL_STATE) },
         checkedFlags,
-    ) { state, flags ->
+        selectedSorting,
+    ) { state, flags, sorting ->
         state.copy(
-            items = state.items.filter { item ->
-                flags.all { flagId ->
-                    item.flags.any { it.id == flagId }
-                }
-            },
+            items = state.items.filterByFlags(flags).sortBy(sorting),
             filters = listOf(
                 SearchScreenFilter(SearchScreenFilterType.FLAGS, flags.isNotEmpty()),
                 SearchScreenFilter(SearchScreenFilterType.LOCATION, false), // TODO
                 SearchScreenFilter(SearchScreenFilterType.SELECTIONS, false) // TODO
             ),
             checkedFlags = flags,
+            selectedSorting = sorting,
             // TODO: filter also by text and selection
         )
     }.stateIn(
@@ -103,6 +114,66 @@ class SearchViewModel @Inject constructor() : ViewModel() {
             SearchScreenFilterType.FLAGS -> checkedFlags.value = emptySet()
             SearchScreenFilterType.LOCATION -> {} // TODO()
             SearchScreenFilterType.SELECTIONS -> {} //TODO()
+        }
+    }
+
+    fun setSorting(type: SearchScreenSortingType, direction: SortingDirection) {
+        selectedSorting.value = SearchScreenSorting(type, direction)
+    }
+}
+
+private fun List<CartListItem>.filterByFlags(flags: Set<Long>): List<CartListItem> {
+    return filter { item ->
+        flags.all { flagId ->
+            item.flags.any { it.id == flagId }
+        }
+    }
+}
+
+private fun List<CartListItem>.sortBy(sorting: SearchScreenSorting): List<CartListItem> {
+    return when (sorting.type) {
+        SearchScreenSortingType.CELL_NUMBER -> {
+            // Using info field which contains location data like "L2-A02-1-6-1"
+            if (sorting.direction == SortingDirection.ASCENDING) {
+                sortedBy { it.info }
+            } else {
+                sortedByDescending { it.info }
+            }
+        }
+
+        SearchScreenSortingType.QUANTITY -> {
+            if (sorting.direction == SortingDirection.ASCENDING) {
+                sortedBy { it.quantity }
+            } else {
+                sortedByDescending { it.quantity }
+            }
+        }
+
+        SearchScreenSortingType.PURCHASE_PRICE -> {
+            // Using article as placeholder for purchase price until actual field is available
+            if (sorting.direction == SortingDirection.ASCENDING) {
+                sortedBy { it.article }
+            } else {
+                sortedByDescending { it.article }
+            }
+        }
+
+        SearchScreenSortingType.SELLING_PRICE -> {
+            // Using brand as placeholder for selling price until actual field is available
+            if (sorting.direction == SortingDirection.ASCENDING) {
+                sortedBy { it.brand }
+            } else {
+                sortedByDescending { it.brand }
+            }
+        }
+
+        SearchScreenSortingType.ARRIVAL_DATE -> {
+            // Using id as placeholder for arrival date until actual field is available
+            if (sorting.direction == SortingDirection.ASCENDING) {
+                sortedBy { it.id }
+            } else {
+                sortedByDescending { it.id }
+            }
         }
     }
 }

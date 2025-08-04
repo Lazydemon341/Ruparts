@@ -31,6 +31,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -73,6 +74,7 @@ fun SearchScreen(
     onScanButtonClick: () -> Unit,
     onClearFilter: (SearchScreenFilter) -> Unit,
     onItemClick: (CartListItem) -> Unit,
+    onSortingSelect: (SearchScreenSortingType, SortingDirection) -> Unit,
 ) {
     val scrollState = rememberScrollState()
     Scaffold(
@@ -98,6 +100,7 @@ fun SearchScreen(
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
     ) { paddingValues ->
         val showFilterDialogFor = remember { mutableStateOf<SearchScreenFilterType?>(null) }
+        val showSortingDialog = remember { mutableStateOf(false) }
         Column(
             modifier = Modifier
                 .padding(paddingValues)
@@ -110,7 +113,10 @@ fun SearchScreen(
                 },
                 onClearFilter = onClearFilter,
             )
-            SearchScreenSorting()
+            SearchScreenSorting(
+                selectedSorting = state.selectedSorting,
+                onClick = { showSortingDialog.value = true }
+            )
             SearchScreenItems(
                 items = state.items,
                 onItemClick = onItemClick,
@@ -123,6 +129,16 @@ fun SearchScreen(
                     // TODO
                     onSelectionClick = onSelectionClick,
                     onSubmitFlags = onSubmitFlags,
+                )
+            }
+            if (showSortingDialog.value) {
+                SearchScreenSortingModalBottomSheet(
+                    selectedSorting = state.selectedSorting,
+                    onDismiss = { showSortingDialog.value = false },
+                    onSortingSelect = { type, direction ->
+                        onSortingSelect(type, direction)
+                        showSortingDialog.value = false
+                    }
                 )
             }
         }
@@ -211,22 +227,36 @@ private fun SearchScreenFilter(
 }
 
 @Composable
-private fun SearchScreenSorting() {
+private fun SearchScreenSorting(
+    selectedSorting: SearchScreenSorting,
+    onClick: () -> Unit,
+) {
     Row(
         modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 12.dp)
-            .background(color = MaterialTheme.colorScheme.surfaceContainer),
+            .background(color = MaterialTheme.colorScheme.surfaceContainer)
+            .clickable { onClick() },
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
             modifier = Modifier.size(20.dp),
-            imageVector = Icons.Default.ArrowDownward,
+            imageVector = if (selectedSorting.direction == SortingDirection.DESCENDING) {
+                Icons.Default.ArrowDownward
+            } else {
+                Icons.Default.ArrowUpward
+            },
             contentDescription = null,
         )
         Spacer(modifier = Modifier.width(4.dp))
         Text(
             textAlign = TextAlign.Center,
-            text = "По количеству",
+            text = when (selectedSorting.type) {
+                SearchScreenSortingType.CELL_NUMBER -> "По номеру ячейки"
+                SearchScreenSortingType.QUANTITY -> "По количеству"
+                SearchScreenSortingType.PURCHASE_PRICE -> "По цене покупки"
+                SearchScreenSortingType.SELLING_PRICE -> "По цене продажи"
+                SearchScreenSortingType.ARRIVAL_DATE -> "По дате поступления"
+            },
             fontSize = 14.sp,
             color = MaterialTheme.colorScheme.onSecondaryContainer
         )
@@ -558,6 +588,110 @@ private fun BottomButtons(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SearchScreenSortingModalBottomSheet(
+    selectedSorting: SearchScreenSorting,
+    onDismiss: () -> Unit,
+    onSortingSelect: (SearchScreenSortingType, SortingDirection) -> Unit,
+) {
+    val bottomSheetState = rememberModalBottomSheetState(true)
+
+    ModalBottomSheet(
+        sheetState = bottomSheetState,
+        onDismissRequest = onDismiss,
+        containerColor = MaterialTheme.colorScheme.surface,
+        dragHandle = {
+            Box(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .width(32.dp)
+                    .height(4.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.outline,
+                        shape = RoundedCornerShape(100.dp)
+                    )
+            )
+        }
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp)
+        ) {
+            Text(
+                text = "Сортировка",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(vertical = 12.dp)
+            )
+
+            SearchScreenSortingType.entries.forEach { sortingType ->
+                val isSelected = selectedSorting.type == sortingType
+                val currentDirection = if (isSelected) selectedSorting.direction else SortingDirection.DESCENDING
+
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                        .clickable {
+                            val newDirection = if (isSelected) {
+                                if (selectedSorting.direction == SortingDirection.DESCENDING) {
+                                    SortingDirection.ASCENDING
+                                } else {
+                                    SortingDirection.DESCENDING
+                                }
+                            } else {
+                                SortingDirection.DESCENDING
+                            }
+                            onSortingSelect(sortingType, newDirection)
+                        },
+                    color = if (isSelected) {
+                        MaterialTheme.colorScheme.surfaceContainer
+                    } else {
+                        MaterialTheme.colorScheme.surface
+                    },
+                    shape = if (isSelected) RoundedCornerShape(100.dp) else RoundedCornerShape(0.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                            .fillMaxSize(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        if (isSelected) {
+                            Icon(
+                                modifier = Modifier.size(24.dp),
+                                imageVector = if (currentDirection == SortingDirection.ASCENDING) {
+                                    Icons.Default.ArrowUpward
+                                } else {
+                                    Icons.Default.ArrowDownward
+                                },
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
+                        } else {
+                            Spacer(modifier = Modifier.size(24.dp))
+                        }
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Text(
+                            text = when (sortingType) {
+                                SearchScreenSortingType.CELL_NUMBER -> "По номеру ячейки"
+                                SearchScreenSortingType.QUANTITY -> "По количеству"
+                                SearchScreenSortingType.PURCHASE_PRICE -> "По цене покупки"
+                                SearchScreenSortingType.SELLING_PRICE -> "По цене продажи"
+                                SearchScreenSortingType.ARRIVAL_DATE -> "По дате поступления"
+                            },
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+    }
+}
+
 @Preview
 @Composable
 private fun SearchScreenPreview() {
@@ -593,5 +727,6 @@ private fun SearchScreenPreview() {
         onClearFilter = {},
         onItemClick = {},
         onSubmitFlags = {},
+        onSortingSelect = { _, _ -> },
     )
 }

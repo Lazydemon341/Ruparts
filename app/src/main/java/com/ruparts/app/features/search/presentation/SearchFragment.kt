@@ -39,7 +39,8 @@ class SearchFragment : Fragment() {
                             findNavController().navigate(
                                 SearchFragmentDirections.actionSearchFragmentToProductFragment(item.barcode)
                             )
-                        }
+                        },
+                        onSortingSelect = viewModel::setSorting
                     )
                 }
             }
