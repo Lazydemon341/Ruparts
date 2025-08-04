@@ -24,10 +24,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -39,14 +41,18 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -55,6 +61,7 @@ import androidx.compose.ui.unit.sp
 import com.ruparts.app.R
 import com.ruparts.app.core.ui.components.RupartsCartItem
 import com.ruparts.app.features.cart.model.CartListItem
+import com.ruparts.app.features.qrscan.presentation.model.QrScanScreenAction
 
 @Composable
 fun SearchScreen(
@@ -284,9 +291,11 @@ private fun SearchScreenFilterDialog(
             SearchScreenFlagsModalBottomSheet(state, onFlagClick = onFlagClick)
         }
 
-
         SearchScreenFilterType.LOCATION -> {
-
+            LocationDialog(
+                onDismiss = {},
+                onConfirmInput = {},
+            )
         }
 
         SearchScreenFilterType.SELECTIONS -> {
@@ -508,6 +517,76 @@ private fun BottomButtons(showClearButton: Boolean) {
             )
         }
     }
+}
+
+@Composable
+private fun LocationDialog(
+    onDismiss: () -> Unit,
+    onConfirmInput: (text: String) -> Unit,
+) {
+    var inputText by remember { mutableStateOf("") }
+    AlertDialog(
+        onDismissRequest = {
+            inputText = ""
+            onDismiss()
+        },
+        title = {
+            Text(
+                text = "Расположение",
+                style = MaterialTheme.typography.headlineSmall
+            )
+        },
+        text = {
+            val focusRequester = remember { FocusRequester() }
+
+            LaunchedEffect(Unit) {
+                focusRequester.requestFocus()
+            }
+
+            OutlinedTextField(
+                value = inputText,
+                onValueChange = { inputText = it.uppercase() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester),
+                label = { Text("") },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    autoCorrectEnabled = false
+                ),
+                trailingIcon = {
+                    Icon(
+                painter = painterResource(id = R.drawable.scanner),
+                        contentDescription = "",
+                        Modifier.size(24.dp)
+                    )
+                }
+            )
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    if (inputText.isNotBlank()) {
+                        onConfirmInput(inputText)
+                        inputText = ""
+                    }
+                    onDismiss()
+                }
+            ) {
+                Text("Применить")
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    inputText = ""
+                    onDismiss()
+                }
+            ) {
+                Text("Отмена")
+            }
+        }
+    )
 }
 
 
