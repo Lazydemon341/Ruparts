@@ -20,7 +20,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -36,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.ruparts.app.R
@@ -49,7 +49,6 @@ import com.ruparts.app.features.cart.presentation.CartFragment.Companion.CART_TO
 import com.ruparts.app.features.cart.presentation.transfertolocation.model.CartTransferToLocationScreenEffect
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
-
 
 @AndroidEntryPoint
 class CartTransferToLocationFragment : DialogFragment() {
@@ -69,7 +68,7 @@ class CartTransferToLocationFragment : DialogFragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 RupartsTheme {
-                    val state by viewModel.state.collectAsState()
+                    val state by viewModel.state.collectAsStateWithLifecycle()
                     CartTransferModalBottomSheetScreen(
                         items = state.items
                     )

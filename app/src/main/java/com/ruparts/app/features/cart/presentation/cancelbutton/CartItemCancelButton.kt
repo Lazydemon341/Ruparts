@@ -6,7 +6,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -58,22 +57,21 @@ class CartItemCancelButton @JvmOverloads constructor(
             val loaderState = loaderState?.collectAsState()
 
             Button(
-                modifier = Modifier.Companion
+                modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondaryContainer),
                 shape = RoundedCornerShape(16.dp),
                 onClick = { onClickListener?.invoke() },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Companion.Transparent,
+                    containerColor = Color.Transparent,
                     contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
                 ),
-                contentPadding = PaddingValues(),
             ) {
-                Box(modifier = Modifier.Companion.fillMaxSize()) {
+                Box(modifier = Modifier.fillMaxSize()) {
                     val backgroundColor = MaterialTheme.colorScheme.secondaryContainer
                     Canvas(
-                        modifier = Modifier.Companion.fillMaxSize(),
+                        modifier = Modifier.fillMaxSize(),
                     ) {
                         drawRect(
                             color = backgroundColor,
@@ -84,18 +82,18 @@ class CartItemCancelButton @JvmOverloads constructor(
                         )
                     }
                     Row(
-                        modifier = Modifier.Companion
+                        modifier = Modifier
                             .fillMaxSize()
                             .padding(ButtonDefaults.ContentPadding),
                         horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.Companion.CenterVertically,
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Icon(
-                            modifier = Modifier.Companion.size(24.dp),
+                            modifier = Modifier.size(24.dp),
                             imageVector = Icons.Default.Close,
                             contentDescription = null,
                         )
-                        Spacer(modifier = Modifier.Companion.width(8.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
                         Text("Отменить добавление")
                     }
                 }

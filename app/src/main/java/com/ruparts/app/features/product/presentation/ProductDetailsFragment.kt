@@ -135,6 +135,11 @@ class ProductDetailsFragment : Fragment() {
                 binding.loadingIndicator.isVisible = true
                 binding.productContent.isVisible = false
             }
+
+            ProductDetailsScreenState.Error -> {
+                binding.loadingIndicator.isVisible = false
+                binding.productContent.isVisible = false
+            }
         }
     }
 

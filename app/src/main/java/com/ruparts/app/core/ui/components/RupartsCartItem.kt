@@ -2,6 +2,7 @@ package com.ruparts.app.core.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -44,10 +45,11 @@ import com.ruparts.app.features.cart.model.CartListItem
 @Composable
 fun RupartsCartItem(
     item: CartListItem,
-    onRemove: (CartListItem) -> Unit,
-    enableSwipeToDismiss: Boolean,
-    isRowVisible: Boolean,
     modifier: Modifier = Modifier,
+    onClick: (CartListItem) -> Unit = {},
+    onRemove: (CartListItem) -> Unit = {},
+    enableSwipeToDismiss: Boolean = false,
+    isRowVisible: Boolean = false,
 ) {
     val screenWidth = LocalWindowInfo.current.containerSize.width
     val density = LocalDensity.current
@@ -92,6 +94,7 @@ fun RupartsCartItem(
         Column(
             modifier = Modifier
                 .background(color = MaterialTheme.colorScheme.surface)
+                .clickable { onClick(item) }
                 .padding(vertical = 12.dp, horizontal = 16.dp),
         ) {
             Row(
@@ -123,10 +126,10 @@ fun RupartsCartItem(
             Text(
                 text = item.description,
                 color = MaterialTheme.colorScheme.onSurface,
-                fontSize = 12.sp,
+                style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(top = 4.dp),
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
             if (isRowVisible) {
                 Row {

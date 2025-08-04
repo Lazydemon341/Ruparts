@@ -63,7 +63,7 @@ class QrScanViewModel @Inject constructor(
         }
     }
 
-    private fun onBarcodesScanned(barcodes: List<String>) {
+    private suspend fun onBarcodesScanned(barcodes: List<String>) {
         if (state.value.isLoading) {
             return
         }
@@ -76,22 +76,13 @@ class QrScanViewModel @Inject constructor(
         }
     }
 
-    private fun processBarcodeAfterFocus(barcode: String) {
-        // Skip if already processed or loading
-        if (state.value.isLoading) {
-            return
+    private suspend fun processBarcodeAfterFocus(barcode: String) {
+        _state.update {
+            it.copy(isLoading = true)
         }
-
-        viewModelScope.launch {
-            _state.update {
-                it.copy(isLoading = true)
-            }
-
-            doScan(barcode)
-
-            _state.update {
-                it.copy(isLoading = false)
-            }
+        doScan(barcode)
+        _state.update {
+            it.copy(isLoading = false)
         }
     }
 

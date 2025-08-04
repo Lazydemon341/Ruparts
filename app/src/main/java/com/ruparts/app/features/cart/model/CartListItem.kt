@@ -1,6 +1,7 @@
 package com.ruparts.app.features.cart.model
 
 import android.os.Parcelable
+import com.ruparts.app.features.commonlibrary.ProductFlag
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -13,5 +14,6 @@ data class CartListItem(
     val barcode: String,
     val cartOwner: String,
     val info: String,
+    val flags: List<ProductFlag> = emptyList(),
     val fromExternalInput: Boolean = false,
 ) : Parcelable
