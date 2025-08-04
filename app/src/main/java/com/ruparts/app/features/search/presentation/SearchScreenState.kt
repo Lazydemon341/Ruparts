@@ -8,6 +8,7 @@ data class SearchScreenState(
     val items: List<CartListItem>,
     val filters: List<SearchScreenFilter>,
     val flags: List<SearchScreenFlag>,
+    val selections: List<SearchScreenSelection>
 )
 
 data class SearchScreenFilter(
@@ -23,5 +24,11 @@ enum class SearchScreenFilterType {
 
 data class SearchScreenFlag(
     val text: String,
-    val checked: Boolean,
+    var checked: Boolean,
+)
+
+data class SearchScreenSelection(
+    val text: String,
+    val supportingText: String,
+    var checked: Boolean,
 )

@@ -27,11 +27,13 @@ class SearchFragment : Fragment() {
                 RupartsTheme {
                     SearchScreen(
                         state = state.value,
+                        onSelectionClick = viewModel::onSelectionClick,
+                        onFlagClick = viewModel::onFlagClick,
                         onScanButtonClick = {
                             findNavController().navigate(
                                 SearchFragmentDirections.actionSearchFragmentToProductScanFragment()
                             )
-                        }
+                        },
                     )
                 }
             }

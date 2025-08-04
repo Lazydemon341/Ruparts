@@ -42,6 +42,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -62,7 +63,9 @@ import com.ruparts.app.features.cart.model.CartListItem
 @Composable
 fun SearchScreen(
     state: SearchScreenState,
-    onScanButtonClick: () -> Unit = {}
+    onSelectionClick: (SearchScreenSelection) -> Unit,
+    onFlagClick: (SearchScreenFlag) -> Unit,
+    onScanButtonClick: () -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
     Scaffold(
@@ -108,7 +111,9 @@ fun SearchScreen(
                 SearchScreenFilterDialog(
                     filterType = filterType,
                     onDismiss = { showFilterDialogFor.value = null },
-                    state = state
+                    state = state,
+                    onSelectionClick = onSelectionClick,
+                    onFlagClick = onFlagClick
                 )
             }
         }
@@ -275,11 +280,13 @@ private fun SearchScreenAssemblyButton() {
 private fun SearchScreenFilterDialog(
     filterType: SearchScreenFilterType,
     onDismiss: () -> Unit,
-    state: SearchScreenState
+    state: SearchScreenState,
+    onSelectionClick: (SearchScreenSelection) -> Unit,
+    onFlagClick: (SearchScreenFlag) -> Unit
 ) {
     when (filterType) {
         SearchScreenFilterType.FLAGS -> {
-            SearchScreenModalBottomSheet(state)
+            SearchScreenFlagsModalBottomSheet(state, onFlagClick = onFlagClick)
         }
 
 
@@ -288,7 +295,7 @@ private fun SearchScreenFilterDialog(
         }
 
         SearchScreenFilterType.SELECTIONS -> {
-
+            SearchScreenSelectionsModalBottomSheet(state, onSelectionClick = onSelectionClick)
         }
     }
 }
@@ -316,23 +323,36 @@ private fun SearchScreenPreview() {
                 SearchScreenFlag("Хрупкий", false),
                 SearchScreenFlag("Загружен с Фрозы", false),
                 SearchScreenFlag("Без документов", false),
+            ),
+            selections = listOf(
+                SearchScreenSelection("Для бухгалтерии", "ID 3, Петров Н.А., 14.06.2025", false),
+                SearchScreenSelection("Срочно", "ID 69, Иванов В.М., 28.05.2025", false),
+                SearchScreenSelection("Для доставки", "ID 25, Сидоров Г.Д., 21.05.2025", false),
+                SearchScreenSelection("Для менеджера", "ID 73, Судоровозражанов Н.А., 14.06.2025", false),
             )
         ),
+        onSelectionClick = {},
+        onFlagClick = {},
         onScanButtonClick = {}
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SearchScreenModalBottomSheet(state: SearchScreenState) {
+private fun SearchScreenFlagsModalBottomSheet(
+    state: SearchScreenState,
+    onFlagClick: (SearchScreenFlag) -> Unit
+) {
     val bottomSheetState = rememberModalBottomSheetState(true)
-    var checked by remember { mutableStateOf(true) }
+    val showClearButton = remember(state.flags) {  state.flags.any { it.checked } }
     var items = state.flags
 
     ModalBottomSheet(
         dragHandle = { BottomSheetDefaults.DragHandle() },
         sheetState = bottomSheetState,
-        onDismissRequest = {},
+        onDismissRequest = {
+//            findNavController().popBackStack()
+                           },
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
     ) {
         Box(contentAlignment = Alignment.BottomCenter) {
@@ -355,57 +375,143 @@ private fun SearchScreenModalBottomSheet(state: SearchScreenState) {
                         Text(text = item.text)
                         Spacer(modifier = Modifier.weight(1f))
                         Checkbox(
-                            checked = checked,
-                            onCheckedChange = { checked = it }
+                            checked = item.checked,
+                            onCheckedChange = { onFlagClick(item) }
                         )
                     }
                 }
 
+                BottomButtons(showClearButton)
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SearchScreenSelectionsModalBottomSheet(
+    state: SearchScreenState,
+    onSelectionClick: (SearchScreenSelection) -> Unit,
+)
+{
+    val bottomSheetState = rememberModalBottomSheetState(true)
+    val showClearButton = remember(state.selections) {  state.selections.any { it.checked } }
+    var items = state.selections
+
+    ModalBottomSheet(
+        dragHandle = { BottomSheetDefaults.DragHandle() },
+        sheetState = bottomSheetState,
+        onDismissRequest = {},
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+    ) {
+        Box(contentAlignment = Alignment.BottomCenter) {
+            Column {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 4.dp, bottom = 12.dp)
+                        .padding(horizontal = 16.dp),
+                    color = MaterialTheme.colorScheme.secondary,
+                    text = "Выборки",
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Left
+                )
                 Row(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    if (checked) {
-                        Button(
-                            onClick = { },
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(start = 20.dp)
-                                .padding(top = 8.dp, bottom = 24.dp)
-                                .height(56.dp),
-                            shape = RoundedCornerShape(16.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainer
-                            )
-                        ) {
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .align(Alignment.CenterHorizontally)
+                        .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.outline,
+                            shape = RoundedCornerShape(4.dp)
+                        )
+                        .fillMaxWidth()
+                        .height(56.dp),
+                ){
+                    Text(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp),
+                        text = "Поиск по названию, id, автору",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+                items.forEachIndexed { index, item ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    ) {
+                        Checkbox(
+                            checked = item.checked,
+                            onCheckedChange = { onSelectionClick(item) }
+                        )
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Column {
                             Text(
-                                text = "Очистить",
-                                fontSize = 16.sp,
-                                color = MaterialTheme.colorScheme.primary
+                                text = item.text,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontSize = 16.sp
+                                )
+                            Text(
+                                text = item.supportingText,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontSize = 14.sp
                             )
                         }
                     }
-
-                    Button(
-                        onClick = { },
-                        modifier = Modifier
-                            .padding(horizontal = 20.dp)
-                            .padding(top = 8.dp, bottom = 24.dp)
-                            .weight(1f)
-                            .fillMaxWidth()
-                            .height(56.dp),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary
-                        )
-                    ) {
-                        Text(
-                            text = "Применить",
-                            fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
-                    }
                 }
+
+                BottomButtons(showClearButton)
             }
+        }
+    }
+}
+
+@Composable
+private fun BottomButtons(showClearButton: Boolean) {
+    Row(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        if (showClearButton) {
+            Button(
+                onClick = { },
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 20.dp)
+                    .padding(top = 8.dp, bottom = 24.dp)
+                    .height(56.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer
+                )
+            ) {
+                Text(
+                    text = "Очистить",
+                    fontSize = 16.sp,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+
+        Button(
+            onClick = { },
+            modifier = Modifier
+                .padding(horizontal = 20.dp)
+                .padding(top = 8.dp, bottom = 24.dp)
+                .weight(1f)
+                .fillMaxWidth()
+                .height(56.dp),
+            shape = RoundedCornerShape(16.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary
+            )
+        ) {
+            Text(
+                text = "Применить",
+                fontSize = 16.sp,
+                color = MaterialTheme.colorScheme.onPrimary
+            )
         }
     }
 }
