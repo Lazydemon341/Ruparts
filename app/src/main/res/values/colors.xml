@@ -8,7 +8,7 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white_40">#66FFFFFF</color> <!-- 40% opacity white -->
-    
+
     <!-- Ruparts App Color Palette -->
     <!-- Primary Purple Colors -->
     <color name="purple">#7F67BE</color>      <!-- Primary purple color -->
@@ -16,14 +16,14 @@
     <color name="purple_middle">#EADDFF</color> <!-- Medium purple for containers -->
     <color name="light_purple">#F6EDFF</color> <!-- Light purple for backgrounds -->
     <color name="based_background">#E6E0E9</color> <!-- Base background color -->
-    
+
     <!-- Supporting Colors -->
     <color name="gray">#AEA9B1</color>
     <color name="light_gray">#E0E0E0</color>
     <color name="red">#EA3323</color>
     <color name="green">#4CAF50</color>
     <color name="yellow">#FFC107</color>
-    
+
     <!-- Legacy colors (kept for compatibility) -->
     <color name="blue_500">#2196F3</color>
     <color name="blue_700">#1976D2</color>

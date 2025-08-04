@@ -8,7 +8,6 @@ import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.os.bundleOf
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.isVisible
@@ -20,6 +19,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
 import com.ruparts.app.core.barcode.ExternalCodeInputHandler
 import com.ruparts.app.core.navigation.NavigationManager
@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navigationView: NavigationView
     private lateinit var headerView: View
     private lateinit var logoutButton: Button
-    private lateinit var toolbar: Toolbar
+    private lateinit var toolbar: MaterialToolbar
     private lateinit var userName: TextView
 
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -110,15 +110,23 @@ class MainActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { controller, destination, _ ->
             toolbar.apply {
-                if (destination.id != R.id.cartFragment && destination.id != R.id.cartTransferToLocationFragment) {
+                val hasSubtitle = destination.id == R.id.cartFragment
+                        || destination.id == R.id.cartTransferToLocationFragment
+                if (!hasSubtitle) {
                     subtitle = null
                 }
+
                 isVisible = destination.id != R.id.authFragment
                         && destination.id != R.id.qrScanFragment
+                        && destination.id != R.id.productScanFragment
+
+                val textsCentered = destination.id != R.id.productFragment
+                isTitleCentered = textsCentered
+                isSubtitleCentered = textsCentered
             }
 
             windowInsetsController.apply {
-                val lightSystemBars = destination.id != R.id.qrScanFragment
+                val lightSystemBars = destination.id != R.id.qrScanFragment && destination.id != R.id.productScanFragment
                 isAppearanceLightStatusBars = lightSystemBars
                 isAppearanceLightNavigationBars = lightSystemBars
             }

@@ -87,7 +87,7 @@ class AuthFragment : Fragment() {
                         snackbarHostState = snackbarHostState,
                         state = state,
                         onDigitClick = { digit ->
-                            viewModel.handleAction(AuthUiAction.DigitPressed(digit))
+                            viewModel.handleAction(AuthUiAction.DigitClick(digit))
                         },
                         onClearClick = { viewModel.handleAction(AuthUiAction.ClearPin) },
                         onDeleteClick = { viewModel.handleAction(AuthUiAction.DeleteLastDigit) }

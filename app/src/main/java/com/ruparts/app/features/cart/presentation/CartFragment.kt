@@ -80,7 +80,7 @@ class CartFragment : Fragment() {
         adapter = CartListAdapter(
             onItemClick = { listItem ->
                 findNavController().navigate(
-                    CartFragmentDirections.actionCartFragmentToCartItemFragment(listItem)
+                    CartFragmentDirections.actionCartFragmentToProductFragment(listItem.barcode)
                 )
             },
             onCancelClick = { item ->
@@ -131,6 +131,10 @@ class CartFragment : Fragment() {
                         cartItems = viewModel.state.value.items.toTypedArray(),
                     )
                 )
+            }
+            is CartScreenEffect.ShowProductScanErrorToast ->  {
+                val message = effect.message ?: "Не удалось отсканировать товар"
+                Snackbar.make(requireView(), message, Snackbar.LENGTH_SHORT).show()
             }
         }
     }

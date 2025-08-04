@@ -22,6 +22,8 @@ gson = "2.11.0"
 ksp = "2.1.10-1.0.31"
 camerax = "1.5.0-beta02"
 datastore = "1.1.7"
+coil = "3.3.0"
+flexboxLayout = "3.0.0"
 
 detekt = "1.23.8"
 detektCompose = "0.4.26"
@@ -82,8 +84,15 @@ camerax-compose = { group = "androidx.camera", name = "camera-compose", version.
 androidx-datastore-core = { group = "androidx.datastore", name = "datastore", version.ref = "datastore" }
 androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
 
+# Coil Image Loading
+coil = { group = "io.coil-kt.coil3", name = "coil", version.ref = "coil" }
+coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
+
 #Detekt
 detekt-compose-rules = { group = "io.nlopez.compose.rules", name = "detekt", version.ref = "detektCompose" }
+
+#Google
+google-android-flexbox = { group = "com.google.android.flexbox", name = "flexbox", version.ref = "flexboxLayout" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

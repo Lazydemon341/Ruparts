@@ -8,9 +8,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.findNavController
 import com.ruparts.app.core.ui.theme.RupartsTheme
 import dagger.hilt.android.AndroidEntryPoint
-import kotlin.getValue
 
 @AndroidEntryPoint
 class SearchFragment : Fragment() {
@@ -28,7 +28,12 @@ class SearchFragment : Fragment() {
                     SearchScreen(
                         state = state.value,
                         onSelectionClick = viewModel::onSelectionClick,
-                        onFlagClick = viewModel::onFlagClick
+                        onFlagClick = viewModel::onFlagClick,
+                        onScanButtonClick = {
+                            findNavController().navigate(
+                                SearchFragmentDirections.actionSearchFragmentToProductScanFragment()
+                            )
+                        },
                     )
                 }
             }

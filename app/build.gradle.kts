@@ -45,6 +45,7 @@ android {
     }
     buildFeatures {
         compose = true
+        viewBinding = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
@@ -58,7 +59,7 @@ detekt {
     buildUponDefaultConfig = true
 
     debug = true
-    ignoredBuildTypes = listOf("release")
+    ignoredBuildTypes = listOf("release", "debug")
 
     basePath = projectDir.path
 }
@@ -111,6 +112,12 @@ dependencies {
     // DataStore
     implementation(libs.androidx.datastore.core)
     implementation(libs.androidx.datastore.preferences)
+    
+    // Coil Image Loading
+    implementation(libs.coil)
+    implementation(libs.coil.network.okhttp)
+
+    implementation(libs.google.android.flexbox)
 
     // Detekt
     detektPlugins(libs.detekt.compose.rules)

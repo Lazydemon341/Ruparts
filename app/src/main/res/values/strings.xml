@@ -33,4 +33,7 @@
         <item quantity="many">%d товаров</item>
         <item quantity="other">%d товаров</item>
     </plurals>
+    
+    <!-- Product Details -->
+    <string name="product_photo">Фото товара</string>
 </resources>
