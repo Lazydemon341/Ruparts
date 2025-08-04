@@ -13,6 +13,7 @@ import androidx.appcompat.view.menu.MenuPopupHelper
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.ruparts.app.R
@@ -57,8 +58,10 @@ class CartListAdapter(
         private val cartOwner = itemView.findViewById<TextView>(R.id.cart_owner)
         private val cancelButton = itemView.findViewById<CartItemCancelButton>(R.id.cart_cancel_button)
         private val info = itemView.findViewById<TextView>(R.id.info)
+        private val productFlagsRecyclerView = itemView.findViewById<RecyclerView>(R.id.product_flags_recycler_view)
 
         private val menu = itemView.findViewById<ImageButton>(R.id.menu_button)
+        private val flagsAdapter = ProductFlagsIconsAdapter()
 
         fun bind(listItem: CartListItem) {
             itemView.setOnClickListener { onItemClick(listItem) }
@@ -70,6 +73,19 @@ class CartListAdapter(
             description.text = listItem.description
             barcode.text = listItem.barcode.makeBold(listItem.barcode.length - 3)
             cartOwner.text = listItem.cartOwner
+
+            // Set up product flags RecyclerView
+            if (productFlagsRecyclerView.layoutManager == null) {
+                productFlagsRecyclerView.layoutManager = LinearLayoutManager(
+                    itemView.context,
+                    LinearLayoutManager.HORIZONTAL,
+                    false
+                )
+                productFlagsRecyclerView.adapter = flagsAdapter
+            }
+
+            // Bind flags data
+            flagsAdapter.submitList(listItem.flags)
 
             if (listItem.info.isEmpty()) {
                 info.isVisible = false

@@ -131,68 +131,13 @@
             tools:text="PETROV N.A." />
     </LinearLayout>
 
-    <ImageButton
-        android:id="@+id/ruler"
-        android:layout_width="26dp"
-        android:layout_height="26dp"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/product_flags_recycler_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:background="@drawable/mark"
-        android:clickable="true"
-        android:padding="4dp"
-        android:src="@drawable/ruler"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/barcode_and_owner" />
-
-    <ImageButton
-        android:id="@+id/weight"
-        android:layout_width="26dp"
-        android:layout_height="26dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="4dp"
-        android:background="@drawable/mark"
-        android:clickable="true"
-        android:padding="4dp"
-        android:src="@drawable/weight"
-        app:layout_constraintLeft_toRightOf="@id/ruler"
-        app:layout_constraintTop_toBottomOf="@id/barcode_and_owner" />
-
-    <ImageButton
-        android:id="@+id/photo"
-        android:layout_width="26dp"
-        android:layout_height="26dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="4dp"
-        android:background="@drawable/mark"
-        android:clickable="true"
-        android:padding="4dp"
-        android:src="@drawable/photo"
-        app:layout_constraintLeft_toRightOf="@id/weight"
-        app:layout_constraintTop_toBottomOf="@id/barcode_and_owner" />
-
-    <ImageButton
-        android:id="@+id/build"
-        android:layout_width="26dp"
-        android:layout_height="26dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="4dp"
-        android:background="@drawable/mark"
-        android:clickable="true"
-        android:padding="4dp"
-        android:src="@drawable/build"
-        app:layout_constraintLeft_toRightOf="@id/photo"
-        app:layout_constraintTop_toBottomOf="@id/barcode_and_owner" />
-
-    <ImageButton
-        android:id="@+id/recycling"
-        android:layout_width="26dp"
-        android:layout_height="26dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="4dp"
-        android:background="@drawable/mark"
-        android:clickable="true"
-        android:padding="4dp"
-        android:src="@drawable/recycling"
-        app:layout_constraintLeft_toRightOf="@id/build"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/barcode_and_owner" />
 
     <TextView
@@ -202,7 +147,6 @@
         android:layout_marginStart="4dp"
         android:layout_marginTop="4dp"
         android:background="@drawable/mark_red"
-        android:drawableStart="@drawable/warning"
         android:drawablePadding="5dp"
         android:gravity="center_vertical"
         android:letterSpacing="0.03"
@@ -212,7 +156,8 @@
         android:textColor="@color/white"
         android:textSize="12sp"
         android:visibility="gone"
-        app:layout_constraintLeft_toRightOf="@id/recycling"
+        app:drawableStartCompat="@drawable/warning"
+        app:layout_constraintStart_toEndOf="@id/product_flags_recycler_view"
         app:layout_constraintTop_toBottomOf="@id/barcode_and_owner"
         tools:layout_editor_absoluteX="158dp"
         tools:layout_editor_absoluteY="115dp"
@@ -233,7 +178,7 @@
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/recycling"
+        app:layout_constraintTop_toBottomOf="@id/product_flags_recycler_view"
         tools:text="Номер последней ячейки: L2-А13-2-5-8" />
 
     <com.ruparts.app.features.cart.presentation.cancelbutton.CartItemCancelButton

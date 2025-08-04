@@ -21,6 +21,8 @@ class CartItemDto(
     val info: String?,
     @SerializedName("actions")
     val actions: Actions?,
+    @SerializedName("flags")
+    val flags: List<Long>?,
 ) {
     class Actions(
         @SerializedName("split")
@@ -35,6 +37,5 @@ class CartItemDto(
         val suspectDefect: Boolean,
         @SerializedName("write_off")
         val writeOff: Boolean,
-
-        )
+    )
 }

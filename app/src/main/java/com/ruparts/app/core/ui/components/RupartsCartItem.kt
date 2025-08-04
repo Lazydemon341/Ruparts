@@ -1,5 +1,6 @@
 package com.ruparts.app.core.ui.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -9,8 +10,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -41,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ruparts.app.R
 import com.ruparts.app.features.cart.model.CartListItem
+import com.ruparts.app.features.commonlibrary.presentation.getIconRes
 
 @Composable
 fun RupartsCartItem(
@@ -50,6 +55,7 @@ fun RupartsCartItem(
     onRemove: (CartListItem) -> Unit = {},
     enableSwipeToDismiss: Boolean = false,
     isRowVisible: Boolean = false,
+    showFlags: Boolean = false,
 ) {
     val screenWidth = LocalWindowInfo.current.containerSize.width
     val density = LocalDensity.current
@@ -182,6 +188,24 @@ fun RupartsCartItem(
                             fontSize = 14.sp,
                             maxLines = 1,
                         )
+                    }
+                }
+            }
+            if (showFlags) {
+                LazyRow(
+                    modifier = Modifier.padding(top = 4.dp)
+                ) {
+                    items(
+                        items = item.flags,
+                        key = { it.id },
+                    ) { flag ->
+                        flag.getIconRes()?.let { iconRes ->
+                            Image(
+                                painter = painterResource(iconRes),
+                                contentDescription = "",
+                                modifier = Modifier.size(26.dp)
+                            )
+                        }
                     }
                 }
             }

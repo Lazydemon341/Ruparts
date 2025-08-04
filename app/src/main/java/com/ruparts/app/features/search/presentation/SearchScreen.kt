@@ -257,6 +257,7 @@ private fun SearchScreenItems(
                     item = item,
                     isRowVisible = true,
                     onClick = onItemClick,
+                    showFlags = true,
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
