@@ -82,22 +82,27 @@ class SearchViewModel @Inject constructor() : ViewModel() {
 
     private val checkedFlags = MutableStateFlow<Set<Long>>(emptySet())
     private val selectedSorting = MutableStateFlow(SearchScreenSorting())
+    private val locationFilterState = MutableStateFlow("")
 
     val state = combine(
-        flow<SearchScreenState> { emit(INITIAL_STATE) },
+        flow { emit(INITIAL_STATE) },
         checkedFlags,
         selectedSorting,
-    ) { state, flags, sorting ->
+        locationFilterState,
+    ) { state, flags, sorting, locationFilter ->
         state.copy(
-            items = state.items.filterByFlags(flags).sortBy(sorting),
+            items = state.items
+                .filterByFlags(flags)
+                .filterByLocation(locationFilter)
+                .sortBy(sorting),
             filters = listOf(
                 SearchScreenFilter(SearchScreenFilterType.FLAGS, flags.isNotEmpty()),
-                SearchScreenFilter(SearchScreenFilterType.LOCATION, false), // TODO
+                SearchScreenFilter(SearchScreenFilterType.LOCATION, locationFilter.isNotEmpty()),
                 SearchScreenFilter(SearchScreenFilterType.SELECTIONS, false) // TODO
             ),
             checkedFlags = flags,
             selectedSorting = sorting,
-            // TODO: filter also by text and selection
+            // TODO: filter also by selection
         )
     }.stateIn(
         scope = viewModelScope,
@@ -109,10 +114,14 @@ class SearchViewModel @Inject constructor() : ViewModel() {
         checkedFlags.value = flags
     }
 
+    fun filterByLocation(location: String) {
+        locationFilterState.value = location
+    }
+
     fun clearFilter(filter: SearchScreenFilter) {
         when (filter.type) {
             SearchScreenFilterType.FLAGS -> checkedFlags.value = emptySet()
-            SearchScreenFilterType.LOCATION -> {} // TODO()
+            SearchScreenFilterType.LOCATION -> locationFilterState.value = ""
             SearchScreenFilterType.SELECTIONS -> {} //TODO()
         }
     }
@@ -127,6 +136,13 @@ private fun List<CartListItem>.filterByFlags(flags: Set<Long>): List<CartListIte
         flags.all { flagId ->
             item.flags.any { it.id == flagId }
         }
+    }
+}
+
+private fun List<CartListItem>.filterByLocation(locationFilter: String): List<CartListItem> {
+    if (locationFilter.isEmpty()) return this
+    return filter { item ->
+        item.cartOwner.contains(locationFilter, ignoreCase = true)
     }
 }
 

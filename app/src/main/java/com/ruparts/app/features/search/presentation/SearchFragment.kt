@@ -40,7 +40,8 @@ class SearchFragment : Fragment() {
                                 SearchFragmentDirections.actionSearchFragmentToProductFragment(item.barcode)
                             )
                         },
-                        onSortingSelect = viewModel::setSorting
+                        onSortingSelect = viewModel::setSorting,
+                        onLocationFilter = viewModel::filterByLocation
                     )
                 }
             }

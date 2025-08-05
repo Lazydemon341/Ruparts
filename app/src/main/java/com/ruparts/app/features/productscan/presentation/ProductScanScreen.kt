@@ -57,6 +57,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -98,8 +99,8 @@ fun ProductScanScreen(
         }
     }
 
-    var surfaceRequestState = remember { mutableStateOf<SurfaceRequest?>(null) }
-    var cameraState = remember { mutableStateOf<Camera?>(null) }
+    val surfaceRequestState = remember { mutableStateOf<SurfaceRequest?>(null) }
+    val cameraState = remember { mutableStateOf<Camera?>(null) }
     val imageAnalyzer = remember {
         BarcodeImageAnalyzer(
             onBarcodesScanned = {
@@ -344,14 +345,15 @@ private fun ManualInputDialog(
 
             OutlinedTextField(
                 value = inputText,
-                onValueChange = { inputText = it.uppercase() },
+                onValueChange = { inputText = it },
                 modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(focusRequester),
                 label = { Text("Штрихкод") },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
-                    autoCorrectEnabled = false
+                    autoCorrectEnabled = false,
+                    capitalization = KeyboardCapitalization.Characters,
                 )
             )
         },

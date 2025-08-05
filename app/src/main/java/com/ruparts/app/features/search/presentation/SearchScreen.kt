@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
@@ -48,8 +49,10 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -57,7 +60,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -75,6 +81,7 @@ fun SearchScreen(
     onClearFilter: (SearchScreenFilter) -> Unit,
     onItemClick: (CartListItem) -> Unit,
     onSortingSelect: (SearchScreenSortingType, SortingDirection) -> Unit,
+    onLocationFilter: (String) -> Unit,
 ) {
     val scrollState = rememberScrollState()
     Scaffold(
@@ -126,9 +133,9 @@ fun SearchScreen(
                     filterType = filterType,
                     onDismiss = { showFilterDialogFor.value = null },
                     state = state,
-                    // TODO
                     onSelectionClick = onSelectionClick,
                     onSubmitFlags = onSubmitFlags,
+                    onLocationFilter = onLocationFilter,
                 )
             }
             if (showSortingDialog.value) {
@@ -332,6 +339,7 @@ private fun SearchScreenFilterDialog(
     state: SearchScreenState,
     onSelectionClick: (SearchScreenSelection) -> Unit,
     onSubmitFlags: (Set<Long>) -> Unit,
+    onLocationFilter: (String) -> Unit,
 ) {
     when (filterType) {
         SearchScreenFilterType.FLAGS -> {
@@ -343,6 +351,13 @@ private fun SearchScreenFilterDialog(
         }
 
         SearchScreenFilterType.LOCATION -> {
+            LocationFilterDialog(
+                onDismiss = onDismiss,
+                onConfirmInput = { locationText ->
+                    onLocationFilter(locationText)
+                    onDismiss()
+                },
+            )
         }
 
         SearchScreenFilterType.SELECTIONS -> {
@@ -692,6 +707,77 @@ private fun SearchScreenSortingModalBottomSheet(
     }
 }
 
+@Composable
+private fun LocationFilterDialog(
+    onDismiss: () -> Unit,
+    onConfirmInput: (text: String) -> Unit,
+) {
+    var inputText by remember { mutableStateOf("") }
+
+    fun dismiss() {
+        inputText = ""
+        onDismiss()
+    }
+
+    AlertDialog(
+        onDismissRequest = { dismiss() },
+        title = {
+            Text(
+                text = "Расположение",
+                style = MaterialTheme.typography.headlineSmall
+            )
+        },
+        text = {
+            val focusRequester = remember { FocusRequester() }
+
+            LaunchedEffect(Unit) {
+                focusRequester.requestFocus()
+            }
+
+            OutlinedTextField(
+                value = inputText,
+                onValueChange = { inputText = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester),
+                label = { Text("") },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    autoCorrectEnabled = false,
+                    capitalization = KeyboardCapitalization.Characters,
+                ),
+                trailingIcon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.scanner),
+                        contentDescription = "",
+                        Modifier.size(24.dp)
+                    )
+                }
+            )
+        },
+        confirmButton = {
+            TextButton(
+                enabled = inputText.isNotBlank(),
+                onClick = {
+                    onConfirmInput(inputText)
+                    dismiss()
+                }
+            ) {
+                Text("Применить")
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    dismiss()
+                }
+            ) {
+                Text("Отмена")
+            }
+        }
+    )
+}
+
 @Preview
 @Composable
 private fun SearchScreenPreview() {
@@ -728,5 +814,6 @@ private fun SearchScreenPreview() {
         onItemClick = {},
         onSubmitFlags = {},
         onSortingSelect = { _, _ -> },
+        onLocationFilter = {},
     )
 }
