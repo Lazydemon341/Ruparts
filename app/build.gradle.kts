@@ -88,6 +88,7 @@ dependencies {
     implementation(libs.compose.ui.graphics)
     implementation(libs.compose.ui.tooling.preview)
     implementation(libs.compose.material3)
+    //implementation(libs.compose.material)
     implementation(libs.compose.material.icons.extended)
     implementation(libs.compose.runtime)
     implementation(libs.compose.runtime.livedata)
@@ -112,7 +113,7 @@ dependencies {
     // DataStore
     implementation(libs.androidx.datastore.core)
     implementation(libs.androidx.datastore.preferences)
-    
+
     // Coil Image Loading
     implementation(libs.coil)
     implementation(libs.coil.network.okhttp)

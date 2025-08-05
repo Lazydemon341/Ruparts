@@ -23,7 +23,7 @@ fun RupartsTheme(
     val onPrimaryContainer = primaryDark
 
     // Secondary colors
-    val secondary = colorResource(id = R.color.purple)
+    val secondary = colorResource(id = R.color.secondary)
     val secondaryContainer = colorResource(id = R.color.secondaryContainer)
     val onSecondaryContainer = colorResource(id = R.color.onSecondaryContainer)
 
@@ -72,6 +72,12 @@ fun RupartsTheme(
             lineHeight = 20.sp,
             fontWeight = FontWeight(400),
             letterSpacing = 0.25.sp,
+        ),
+        bodyLarge = TextStyle(
+            fontSize = 16.sp,
+            lineHeight = 24.sp,
+            fontWeight = FontWeight(400),
+            letterSpacing = 0.5.sp,
         )
     )
 

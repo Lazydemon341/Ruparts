@@ -1,15 +1,20 @@
 package com.ruparts.app.core.ui.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -40,14 +45,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ruparts.app.R
 import com.ruparts.app.features.cart.model.CartListItem
+import com.ruparts.app.features.commonlibrary.presentation.getIconRes
 
 @Composable
 fun RupartsCartItem(
     item: CartListItem,
-    onRemove: (CartListItem) -> Unit,
-    enableSwipeToDismiss: Boolean,
-    isRowVisible: Boolean,
     modifier: Modifier = Modifier,
+    onClick: (CartListItem) -> Unit = {},
+    onRemove: (CartListItem) -> Unit = {},
+    enableSwipeToDismiss: Boolean = false,
+    isRowVisible: Boolean = false,
+    showFlags: Boolean = false,
 ) {
     val screenWidth = LocalWindowInfo.current.containerSize.width
     val density = LocalDensity.current
@@ -92,6 +100,7 @@ fun RupartsCartItem(
         Column(
             modifier = Modifier
                 .background(color = MaterialTheme.colorScheme.surface)
+                .clickable { onClick(item) }
                 .padding(vertical = 12.dp, horizontal = 16.dp),
         ) {
             Row(
@@ -123,10 +132,10 @@ fun RupartsCartItem(
             Text(
                 text = item.description,
                 color = MaterialTheme.colorScheme.onSurface,
-                fontSize = 12.sp,
+                style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(top = 4.dp),
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
             if (isRowVisible) {
                 Row {
@@ -179,6 +188,24 @@ fun RupartsCartItem(
                             fontSize = 14.sp,
                             maxLines = 1,
                         )
+                    }
+                }
+            }
+            if (showFlags) {
+                LazyRow(
+                    modifier = Modifier.padding(top = 4.dp)
+                ) {
+                    items(
+                        items = item.flags,
+                        key = { it.id },
+                    ) { flag ->
+                        flag.getIconRes()?.let { iconRes ->
+                            Image(
+                                painter = painterResource(iconRes),
+                                contentDescription = "",
+                                modifier = Modifier.size(26.dp)
+                            )
+                        }
                     }
                 }
             }

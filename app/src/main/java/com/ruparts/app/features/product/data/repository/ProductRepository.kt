@@ -12,6 +12,7 @@ import com.ruparts.app.features.product.data.network.model.ReadProductResponseDt
 import com.ruparts.app.features.product.domain.Product
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -23,16 +24,21 @@ class ProductRepository @Inject constructor(
 ) {
     suspend fun readProduct(barcode: String): Result<Product> = withContext(Dispatchers.Default) {
         runCoroutineCatching {
-            val productDto = async {
-                val response = endpointService.request<ReadProductRequestDto, ReadProductResponseDto>(
-                    body = ReadProductRequestDto(ReadProductRequestDataDto(barcode)),
-                    gson = gson,
-                )
-                requireNotNull(response.data) { "No product data in response" }
-            }
-            val productFlags = async { commonLibraryRepository.getProductFlags() }
+            supervisorScope {
+                val productDtoDeferred = async {
+                    val response = endpointService.request<ReadProductRequestDto, ReadProductResponseDto>(
+                        body = ReadProductRequestDto(ReadProductRequestDataDto(barcode)),
+                        gson = gson,
+                    )
+                    requireNotNull(response.data) { "No product data in response" }
+                }
+                val productFlagsDeferred = async { commonLibraryRepository.getProductFlags() }
 
-            mapper.mapProduct(productDto.await(), productFlags.await())
+                val productDto = productDtoDeferred.await()
+                val productFlags = productFlagsDeferred.await()
+
+                mapper.mapProduct(productDto, productFlags)
+            }
         }
     }
-} 
+}

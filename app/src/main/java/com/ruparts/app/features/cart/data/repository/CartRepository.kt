@@ -18,7 +18,10 @@ import com.ruparts.app.features.cart.data.network.model.CartTransferToLocationRe
 import com.ruparts.app.features.cart.data.network.model.CartTransferToLocationRequestDto
 import com.ruparts.app.features.cart.model.CartListItem
 import com.ruparts.app.features.cart.model.CartScanPurpose
+import com.ruparts.app.features.commonlibrary.data.repository.CommonLibraryRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -28,16 +31,29 @@ private const val ERROR_RESPONSE_TYPE = 1
 class CartRepository @Inject constructor(
     private val endpointService: EndpointRetrofitService,
     private val gson: Gson,
-    private val mapper: CartMapper
+    private val mapper: CartMapper,
+    private val commonLibraryRepository: CommonLibraryRepository,
 ) {
 
     suspend fun getCart(): Result<List<CartListItem>> = withContext(Dispatchers.Default) {
         runCoroutineCatching {
-            val response = endpointService.request<CartRequestDto, CartResponseDto>(
-                body = CartRequestDto(),
-                gson = gson,
-            )
-            mapper.mapCartItems(response.data?.items.orEmpty())
+            supervisorScope {
+                val cartDeferred = async {
+                    endpointService.request<CartRequestDto, CartResponseDto>(
+                        body = CartRequestDto(),
+                        gson = gson,
+                    )
+                }
+                val productFlagsDeferred = async { commonLibraryRepository.getProductFlags() }
+
+                val cart = cartDeferred.await()
+                val productFlags = productFlagsDeferred.await()
+
+                mapper.mapCartItems(
+                    list = cart.data?.items.orEmpty(),
+                    flags = productFlags,
+                )
+            }
         }
     }
 
@@ -124,7 +140,6 @@ class CartRepository @Inject constructor(
             Unit
         }
     }
-
 }
 
 class CartScanException(message: String?) : Exception(message)

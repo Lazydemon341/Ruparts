@@ -13,7 +13,7 @@ data class CartResponseDataDto(
     @SerializedName("items")
     val items: List<CartItemDto>,
     @SerializedName("actions")
-    val actions: Actions
+    val actions: Actions,
 ) {
     class Actions(
         @SerializedName("add_item")
