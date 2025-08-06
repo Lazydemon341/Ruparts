@@ -6,14 +6,19 @@ import com.ruparts.app.features.commonlibrary.ProductFlag
 import java.util.UUID
 
 @Immutable
-data class SearchScreenState(
-    val items: List<CartListItem>,
-    val filters: List<SearchScreenFilter>,
-    val flags: List<SearchScreenFlag>,
-    val selections: List<SearchScreenSelection>,
-    val checkedFlags: Set<Long> = emptySet(),
-    val selectedSorting: SearchScreenSorting = SearchScreenSorting(),
-)
+sealed interface SearchScreenState {
+    data object Loading : SearchScreenState
+
+    @Immutable
+    data class Content(
+        val items: List<CartListItem>,
+        val filters: List<SearchScreenFilter>,
+        val flags: List<SearchScreenFlag>,
+        val searchSets: List<SearchScreenSearchSet>,
+        val selectedSorting: SearchScreenSorting,
+        val locationFilter: String,
+    ) : SearchScreenState
+}
 
 data class SearchScreenFilter(
     val type: SearchScreenFilterType,
@@ -28,19 +33,19 @@ enum class SearchScreenFilterType {
 
 data class SearchScreenFlag(
     val flag: ProductFlag,
+    val checked: Boolean,
 ) {
-
     // for preview purposes
     internal constructor(text: String, checked: Boolean) : this(
-        ProductFlag(UUID.randomUUID().mostSignificantBits, text, ""),
+        ProductFlag(UUID.randomUUID().mostSignificantBits, text, ""), checked,
     )
 }
 
-data class SearchScreenSelection(
+data class SearchScreenSearchSet(
     val id: Long,
     val text: String,
     val supportingText: String,
-    val checked: Boolean = false,
+    val checked: Boolean,
 ) {
 
     // for preview purposes

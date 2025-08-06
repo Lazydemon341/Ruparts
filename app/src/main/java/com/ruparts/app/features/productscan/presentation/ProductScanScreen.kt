@@ -71,6 +71,7 @@ import com.ruparts.app.R
 import com.ruparts.app.core.barcode.camera.BarcodeImageAnalyzer
 import com.ruparts.app.core.ui.components.CameraPreview
 import com.ruparts.app.core.ui.theme.RupartsTheme
+import com.ruparts.app.features.productscan.model.ProductScanType
 import com.ruparts.app.features.productscan.presentation.model.ProductScanScreenAction
 import com.ruparts.app.features.productscan.presentation.model.ProductScanScreenState
 import androidx.camera.core.Preview as CameraPreview
@@ -158,7 +159,7 @@ fun ProductScanScreen(
                     LoadingOverlay()
                 }
             }
-            BottomTexts()
+            BottomTexts(state.scanType)
         }
 
         if (showInputDialog) {
@@ -235,7 +236,7 @@ private fun LoadingOverlay() {
 }
 
 @Composable
-private fun BottomTexts() {
+private fun BottomTexts(scanType: ProductScanType) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -252,7 +253,10 @@ private fun BottomTexts() {
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "Отсканируйте товар,\nчтобы найти его в базе данных",
+            text = when (scanType) {
+                ProductScanType.PRODUCT -> "Отсканируйте товар,\nчтобы найти его в базе данных"
+                ProductScanType.LOCATION -> "Отсканируйте ячейку или отгрузочное место"
+            },
             color = colorResource(R.color.neutral60),
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,

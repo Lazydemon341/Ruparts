@@ -4,4 +4,5 @@ sealed class ProductScanScreenEvent {
     data object NavigateBack : ProductScanScreenEvent()
     data class ShowErrorToast(val message: String) : ProductScanScreenEvent()
     data class NavigateToProductDetails(val barcode: String) : ProductScanScreenEvent()
+    data class LocationScanSuccess(val barcode: String) : ProductScanScreenEvent()
 }

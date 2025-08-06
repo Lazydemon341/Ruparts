@@ -67,11 +67,7 @@ class CartRepository @Inject constructor(
                     data = CartScanRequestDataDto(
                         barcode = barcode,
                         bcTypes = listOf(CartScanBCTypeDto.PRODUCT),
-                        purpose = when (purpose) {
-                            CartScanPurpose.TRANSFER_TO_LOCATION -> CartScanRequestPurposeDto.TRANSFER_TO_LOCATION
-                            CartScanPurpose.TRANSFER_TO_CART -> CartScanRequestPurposeDto.TRANSFER_TO_BASKET
-                            CartScanPurpose.INFO -> CartScanRequestPurposeDto.INFO
-                        },
+                        purpose = mapPurpose(purpose),
                     )
                 ),
                 gson = gson,
@@ -97,6 +93,7 @@ class CartRepository @Inject constructor(
 
     suspend fun scanLocation(
         barcode: String,
+        purpose: CartScanPurpose,
     ): Result<Unit> = withContext(Dispatchers.Default) {
         runCoroutineCatching {
             val response = endpointService.request<CartScanRequestDto, CartScanResponseDto>(
@@ -104,11 +101,19 @@ class CartRepository @Inject constructor(
                     data = CartScanRequestDataDto(
                         barcode = barcode,
                         bcTypes = listOf(CartScanBCTypeDto.LOCATION_PLACE, CartScanBCTypeDto.LOCATION_CELL),
-                        purpose = CartScanRequestPurposeDto.TRANSFER_TO_LOCATION,
+                        purpose = mapPurpose(purpose),
                     )
                 ),
                 gson = gson,
             )
+        }
+    }
+
+    private fun mapPurpose(purpose: CartScanPurpose): CartScanRequestPurposeDto {
+        return when (purpose) {
+            CartScanPurpose.TRANSFER_TO_LOCATION -> CartScanRequestPurposeDto.TRANSFER_TO_LOCATION
+            CartScanPurpose.TRANSFER_TO_CART -> CartScanRequestPurposeDto.TRANSFER_TO_BASKET
+            CartScanPurpose.INFO -> CartScanRequestPurposeDto.INFO
         }
     }
 

@@ -6,9 +6,13 @@ import com.ruparts.app.core.barcode.TrackBarcodeFocusUseCase
 import com.ruparts.app.features.cart.data.repository.CartRepository
 import com.ruparts.app.features.cart.data.repository.CartScanException
 import com.ruparts.app.features.cart.model.CartScanPurpose
+import com.ruparts.app.features.productscan.model.ProductScanType
 import com.ruparts.app.features.productscan.presentation.model.ProductScanScreenAction
 import com.ruparts.app.features.productscan.presentation.model.ProductScanScreenEvent
 import com.ruparts.app.features.productscan.presentation.model.ProductScanScreenState
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,15 +20,15 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class ProductScanViewModel @Inject constructor(
+@HiltViewModel(assistedFactory = ProductScanViewModel.Factory::class)
+class ProductScanViewModel @AssistedInject constructor(
+    @Assisted private val scanType: ProductScanType,
     private val cartRepository: CartRepository,
     private val trackBarcodeFocusUseCase: TrackBarcodeFocusUseCase,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(ProductScanScreenState())
+    private val _state = MutableStateFlow(ProductScanScreenState(scanType = this.scanType))
     val state = _state.asStateFlow()
 
     private val _events = MutableSharedFlow<ProductScanScreenEvent>()
@@ -41,7 +45,7 @@ class ProductScanViewModel @Inject constructor(
             is ProductScanScreenAction.ManualInput -> {
                 viewModelScope.launch {
                     _state.update { it.copy(isScanning = true) }
-                    scanProduct(action.input)
+                    performScan(action.input)
                     _state.update { it.copy(isScanning = false) }
                 }
             }
@@ -69,32 +73,56 @@ class ProductScanViewModel @Inject constructor(
         _state.update {
             it.copy(isScanning = true)
         }
-        scanProduct(barcode)
+        performScan(barcode)
         _state.update {
             it.copy(isScanning = false)
         }
     }
 
-    private suspend fun scanProduct(code: String) {
-        cartRepository.scanProduct(
-            barcode = code,
-            purpose = CartScanPurpose.INFO,
-        ).fold(
-            onSuccess = { scannedItem ->
-                onItemScanSuccess(scannedItem.barcode)
-            },
-            onFailure = { error ->
-                onItemScanFailure(code, error)
+    private suspend fun performScan(code: String) {
+        when (scanType) {
+            ProductScanType.PRODUCT -> {
+                cartRepository.scanProduct(
+                    barcode = code,
+                    purpose = CartScanPurpose.INFO,
+                ).fold(
+                    onSuccess = { scannedItem ->
+                        onProductScanSuccess(scannedItem.barcode)
+                    },
+                    onFailure = { error ->
+                        onScanFailure(code, error)
+                    }
+                )
             }
-        )
+
+            ProductScanType.LOCATION -> {
+                cartRepository.scanLocation(barcode = code, purpose = CartScanPurpose.INFO).fold(
+                    onSuccess = {
+                        onLocationScanSuccess(code)
+                    },
+                    onFailure = { error ->
+                        onScanFailure(code, error)
+                    }
+                )
+            }
+        }
     }
 
-    private suspend fun onItemScanSuccess(barcode: String) {
+    private suspend fun onProductScanSuccess(barcode: String) {
         _events.emit(ProductScanScreenEvent.NavigateToProductDetails(barcode))
     }
 
-    private suspend fun onItemScanFailure(code: String, error: Throwable) {
+    private suspend fun onLocationScanSuccess(barcode: String) {
+        _events.emit(ProductScanScreenEvent.LocationScanSuccess(barcode))
+    }
+
+    private suspend fun onScanFailure(code: String, error: Throwable) {
         val errorMessage = (error as? CartScanException)?.message ?: "Не удалось отсканировать штрихкод $code"
         _events.emit(ProductScanScreenEvent.ShowErrorToast(errorMessage))
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(scanType: ProductScanType): ProductScanViewModel
     }
 }

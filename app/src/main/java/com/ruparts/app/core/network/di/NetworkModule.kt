@@ -3,6 +3,7 @@ package com.ruparts.app.core.network.di
 // Remove BuildConfig import as it's causing issues
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.Strictness
 import com.ruparts.app.core.data.network.EndpointRetrofitService
 import com.ruparts.app.core.network.interceptor.AuthInterceptor
 import com.ruparts.app.features.authorization.data.network.AuthRetrofitService
@@ -42,7 +43,7 @@ object NetworkModule {
     @Singleton
     fun provideGson(): Gson {
         return GsonBuilder()
-            .setLenient()
+            .setStrictness(Strictness.LENIENT)
             .serializeNulls()
             .create()
     }
