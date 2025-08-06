@@ -64,7 +64,7 @@ class SearchRepository @Inject constructor(
                     gson = gson,
                 )
 
-            searchSetMapper.mapSearchSets(searchSetResponse.data?.data.orEmpty())
+            searchSetMapper.mapSearchSets(searchSetResponse.data)
         }
     }
 }

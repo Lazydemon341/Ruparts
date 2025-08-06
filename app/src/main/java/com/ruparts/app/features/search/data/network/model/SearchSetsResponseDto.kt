@@ -4,10 +4,5 @@ import com.google.gson.annotations.SerializedName
 
 class SearchSetsResponseDto(
     @SerializedName("data")
-    val data: SearchSetsResponseDataDto
-)
-
-class SearchSetsResponseDataDto(
-    @SerializedName("data")
     val data: List<SearchSetItemDto>
 )
