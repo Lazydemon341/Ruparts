@@ -10,17 +10,13 @@ import javax.inject.Inject
 
 class SearchSetMapper @Inject constructor() {
 
-    private val dateFormatterLazy = lazy {
-        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss xxx")
-    }
+    private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss xxx")
 
     fun mapSearchSets(list: List<SearchSetItemDto>): List<SearchSetItem> {
-        val dateFormatter = dateFormatterLazy.value
         return list.map { item ->
             mapTask(item, dateFormatter)
         }
     }
-
 
     private fun mapTask(item: SearchSetItemDto, dateFormatter: DateTimeFormatter): SearchSetItem {
         return SearchSetItem(

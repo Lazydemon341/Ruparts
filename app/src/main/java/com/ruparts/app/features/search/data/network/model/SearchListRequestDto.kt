@@ -13,7 +13,7 @@ class SearchListRequestDto(
 
 class SearchListRequestDataDto(
     @SerializedName("_filter")
-    val filter: TaskFilter = TaskFilter(),
+    val filter: SearchFilter = SearchFilter(),
     @SerializedName("_pagination")
     val pagination: Pagination = Pagination(),
     @SerializedName("_sorting")
@@ -34,7 +34,7 @@ class SearchListRequestDataDto(
         val page: Int? = 1
     )
 
-    class TaskFilter(
+    class SearchFilter(
         @SerializedName("search")
         val search: String? = null,
 

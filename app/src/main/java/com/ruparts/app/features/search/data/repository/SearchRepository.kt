@@ -57,20 +57,14 @@ class SearchRepository @Inject constructor(
 
     suspend fun getSearchSets(): Result<List<SearchSetItem>> = withContext(Dispatchers.Default) {
         runCoroutineCatching {
-            supervisorScope {
-                val searchSetDeferred = async {
-                    endpointService.request<SearchSetsRequestDto, SearchSetsResponseDto>(
-                        body = SearchSetsRequestDto(
-                            data = SearchSetsRequestDataDto()
-                        ),
-                        gson = gson,
-                    )
-                }
+                val searchSetResponse = endpointService.request<SearchSetsRequestDto, SearchSetsResponseDto>(
+                    body = SearchSetsRequestDto(
+                        data = SearchSetsRequestDataDto()
+                    ),
+                    gson = gson,
+                )
 
-                val list = searchSetDeferred.await()
-
-                searchSetMapper.mapSearchSets(list.data?.data.orEmpty())
-            }
+            searchSetMapper.mapSearchSets(searchSetResponse.data?.data.orEmpty())
         }
     }
 }
