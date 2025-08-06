@@ -37,6 +37,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -75,13 +76,57 @@ import com.ruparts.app.features.cart.model.CartListItem
 @Composable
 fun SearchScreen(
     state: SearchScreenState,
-    onSelectionClick: (SearchScreenSelection) -> Unit,
     onSubmitFlags: (Set<Long>) -> Unit,
+    onSubmitSearchSets: (Set<Long>) -> Unit,
     onScanButtonClick: () -> Unit,
     onClearFilter: (SearchScreenFilter) -> Unit,
     onItemClick: (CartListItem) -> Unit,
     onSortingSelect: (SearchScreenSortingType, SortingDirection) -> Unit,
     onLocationFilter: (String) -> Unit,
+    onLocationScanClick: () -> Unit,
+) {
+    when (state) {
+        is SearchScreenState.Loading -> {
+            SearchScreenLoading()
+        }
+
+        is SearchScreenState.Content -> {
+            SearchScreenContent(
+                state = state,
+                onSubmitFlags = onSubmitFlags,
+                onSubmitSearchSets = onSubmitSearchSets,
+                onScanButtonClick = onScanButtonClick,
+                onClearFilter = onClearFilter,
+                onItemClick = onItemClick,
+                onSortingSelect = onSortingSelect,
+                onLocationFilter = onLocationFilter,
+                onLocationScanClick = onLocationScanClick,
+            )
+        }
+    }
+}
+
+@Composable
+private fun SearchScreenLoading() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator()
+    }
+}
+
+@Composable
+private fun SearchScreenContent(
+    state: SearchScreenState.Content,
+    onSubmitFlags: (Set<Long>) -> Unit,
+    onSubmitSearchSets: (Set<Long>) -> Unit,
+    onScanButtonClick: () -> Unit,
+    onClearFilter: (SearchScreenFilter) -> Unit,
+    onItemClick: (CartListItem) -> Unit,
+    onSortingSelect: (SearchScreenSortingType, SortingDirection) -> Unit,
+    onLocationFilter: (String) -> Unit,
+    onLocationScanClick: () -> Unit,
 ) {
     val scrollState = rememberScrollState()
     Scaffold(
@@ -130,12 +175,13 @@ fun SearchScreen(
             )
             showFilterDialogFor.value?.let { filterType ->
                 SearchScreenFilterDialog(
+                    state = state,
                     filterType = filterType,
                     onDismiss = { showFilterDialogFor.value = null },
-                    state = state,
-                    onSelectionClick = onSelectionClick,
                     onSubmitFlags = onSubmitFlags,
+                    onSubmitSearchSets = onSubmitSearchSets,
                     onLocationFilter = onLocationFilter,
+                    onScanClick = onLocationScanClick,
                 )
             }
             if (showSortingDialog.value) {
@@ -295,6 +341,7 @@ private fun SearchScreenItems(
                     isRowVisible = true,
                     onClick = onItemClick,
                     showFlags = true,
+                    modifier = Modifier.animateItem(),
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
@@ -334,12 +381,13 @@ private fun SearchScreenAssemblyButton() {
 
 @Composable
 private fun SearchScreenFilterDialog(
+    state: SearchScreenState.Content,
     filterType: SearchScreenFilterType,
     onDismiss: () -> Unit,
-    state: SearchScreenState,
-    onSelectionClick: (SearchScreenSelection) -> Unit,
     onSubmitFlags: (Set<Long>) -> Unit,
+    onSubmitSearchSets: (Set<Long>) -> Unit,
     onLocationFilter: (String) -> Unit,
+    onScanClick: () -> Unit,
 ) {
     when (filterType) {
         SearchScreenFilterType.FLAGS -> {
@@ -357,6 +405,8 @@ private fun SearchScreenFilterDialog(
                     onLocationFilter(locationText)
                     onDismiss()
                 },
+                onScanClick = onScanClick,
+                initialText = state.locationFilter,
             )
         }
 
@@ -364,7 +414,7 @@ private fun SearchScreenFilterDialog(
             SearchScreenSelectionsModalBottomSheet(
                 state = state,
                 onDismiss = onDismiss,
-                onSelectionClick = onSelectionClick,
+                onSubmitSearchSets = onSubmitSearchSets,
             )
         }
     }
@@ -373,13 +423,13 @@ private fun SearchScreenFilterDialog(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SearchScreenFlagsModalBottomSheet(
-    state: SearchScreenState,
+    state: SearchScreenState.Content,
     onDismiss: () -> Unit,
     onSubmitFlags: (Set<Long>) -> Unit,
 ) {
     val bottomSheetState = rememberModalBottomSheetState(true)
-    var checkedFlags by remember(state.checkedFlags) {
-        mutableStateOf(state.checkedFlags)
+    var checkedFlags by remember(state.flags) {
+        mutableStateOf(state.flags.filter { it.checked }.map { it.flag.id }.toSet())
     }
     val showClearButton by remember {
         derivedStateOf {
@@ -455,12 +505,19 @@ private fun SearchScreenFlagsModalBottomSheet(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SearchScreenSelectionsModalBottomSheet(
-    state: SearchScreenState,
+    state: SearchScreenState.Content,
     onDismiss: () -> Unit,
-    onSelectionClick: (SearchScreenSelection) -> Unit,
+    onSubmitSearchSets: (Set<Long>) -> Unit,
 ) {
     val bottomSheetState = rememberModalBottomSheetState(true)
-    val showClearButton = remember(state.selections) { state.selections.any { it.checked } }
+    var checkedSearchSets by remember(state.searchSets) {
+        mutableStateOf(state.searchSets.filter { it.checked }.map { it.id }.toSet())
+    }
+    val showClearButton by remember {
+        derivedStateOf {
+            checkedSearchSets.isNotEmpty()
+        }
+    }
 
     ModalBottomSheet(
         sheetState = bottomSheetState,
@@ -471,7 +528,7 @@ private fun SearchScreenSelectionsModalBottomSheet(
             Column(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
-                    .padding(bottom = 80.dp),
+                    .padding(bottom = 100.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
@@ -502,20 +559,31 @@ private fun SearchScreenSelectionsModalBottomSheet(
                 )
                 LazyColumn {
                     items(
-                        items = state.selections,
-                        key = { it.text }
+                        items = state.searchSets,
+                        key = { it.id }
                     ) { item ->
+                        val id = item.id
+                        val onSearchSetClick: () -> Unit = {
+                            checkedSearchSets = checkedSearchSets.toMutableSet().apply {
+                                if (id in this) {
+                                    remove(id)
+                                } else {
+                                    add(id)
+                                }
+                            }
+                        }
+                        val itemChecked by remember { derivedStateOf { id in checkedSearchSets } }
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Start,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { onSelectionClick(item) }
+                                .clickable { onSearchSetClick() }
                                 .padding(vertical = 8.dp, horizontal = 4.dp),
                         ) {
                             Checkbox(
-                                checked = item.checked,
-                                onCheckedChange = { onSelectionClick(item) }
+                                checked = itemChecked,
+                                onCheckedChange = { onSearchSetClick() }
                             )
                             Spacer(modifier = Modifier.width(16.dp))
                             Column {
@@ -536,8 +604,11 @@ private fun SearchScreenSelectionsModalBottomSheet(
             }
             BottomButtons(
                 showClearButton = showClearButton,
-                onClear = { TODO() },
-                onSubmit = {},
+                onClear = { checkedSearchSets = emptySet() },
+                onSubmit = {
+                    onSubmitSearchSets(checkedSearchSets)
+                    onDismiss()
+                },
                 modifier = Modifier.align(Alignment.BottomCenter),
             )
         }
@@ -711,16 +782,13 @@ private fun SearchScreenSortingModalBottomSheet(
 private fun LocationFilterDialog(
     onDismiss: () -> Unit,
     onConfirmInput: (text: String) -> Unit,
+    onScanClick: () -> Unit,
+    initialText: String = "",
 ) {
-    var inputText by remember { mutableStateOf("") }
-
-    fun dismiss() {
-        inputText = ""
-        onDismiss()
-    }
+    var inputText by remember(initialText) { mutableStateOf(initialText) }
 
     AlertDialog(
-        onDismissRequest = { dismiss() },
+        onDismissRequest = onDismiss,
         title = {
             Text(
                 text = "Расположение",
@@ -749,8 +817,10 @@ private fun LocationFilterDialog(
                 trailingIcon = {
                     Icon(
                         painter = painterResource(id = R.drawable.scanner),
-                        contentDescription = "",
-                        Modifier.size(24.dp)
+                        contentDescription = "Сканировать",
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickable { onScanClick() }
                     )
                 }
             )
@@ -760,7 +830,7 @@ private fun LocationFilterDialog(
                 enabled = inputText.isNotBlank(),
                 onClick = {
                     onConfirmInput(inputText)
-                    dismiss()
+                    onDismiss()
                 }
             ) {
                 Text("Применить")
@@ -769,7 +839,7 @@ private fun LocationFilterDialog(
         dismissButton = {
             TextButton(
                 onClick = {
-                    dismiss()
+                    onDismiss()
                 }
             ) {
                 Text("Отмена")
@@ -782,8 +852,45 @@ private fun LocationFilterDialog(
 @Composable
 private fun SearchScreenPreview() {
     SearchScreen(
-        state = SearchScreenState(
-            items = emptyList(),
+        state = SearchScreenState.Content(
+            items = listOf(
+                CartListItem(
+                    id = 1,
+                    article = "123457879654531",
+                    brand = "Toyota",
+                    quantity = 125,
+                    description = "Замок зажигания",
+                    barcode = "TE250630T235959II2",
+                    cartOwner = "Petrov",
+                    info = "L2-A02-1-6-1",
+                    flags = listOf(),
+                    fromExternalInput = false
+                ),
+                CartListItem(
+                    id = 2,
+                    article = "987654321",
+                    brand = "Honda",
+                    quantity = 50,
+                    description = "Фильтр воздушный",
+                    barcode = "TE250630T235959II3",
+                    cartOwner = "Ivanov",
+                    info = "L1-B03-2-4-2",
+                    flags = listOf(),
+                    fromExternalInput = false
+                ),
+                CartListItem(
+                    id = 3,
+                    article = "456789012",
+                    brand = "Nissan",
+                    quantity = 200,
+                    description = "Тормозные колодки",
+                    barcode = "TE250630T235959II4",
+                    cartOwner = "Sidorov",
+                    info = "L3-C01-1-2-3",
+                    flags = listOf(),
+                    fromExternalInput = false
+                )
+            ),
             filters = listOf(
                 SearchScreenFilter(SearchScreenFilterType.FLAGS, false),
                 SearchScreenFilter(SearchScreenFilterType.LOCATION, true),
@@ -801,19 +908,22 @@ private fun SearchScreenPreview() {
                 SearchScreenFlag("Загружен с Фрозы", false),
                 SearchScreenFlag("Без документов", false),
             ),
-            selections = listOf(
-                SearchScreenSelection("Для бухгалтерии", "ID 3, Петров Н.А., 14.06.2025", false),
-                SearchScreenSelection("Срочно", "ID 69, Иванов В.М., 28.05.2025", false),
-                SearchScreenSelection("Для доставки", "ID 25, Сидоров Г.Д., 21.05.2025", false),
-                SearchScreenSelection("Для менеджера", "ID 73, Судоровозражанов Н.А., 14.06.2025", false),
+            searchSets = listOf(
+                SearchScreenSearchSet("Для бухгалтерии", "ID 3, Петров Н.А., 14.06.2025", false),
+                SearchScreenSearchSet("Срочно", "ID 69, Иванов В.М., 28.05.2025", false),
+                SearchScreenSearchSet("Для доставки", "ID 25, Сидоров Г.Д., 21.05.2025", false),
+                SearchScreenSearchSet("Для менеджера", "ID 73, Судоровозражанов Н.А., 14.06.2025", false),
             ),
+            locationFilter = "",
+            selectedSorting = SearchScreenSorting(),
         ),
-        onSelectionClick = {},
         onScanButtonClick = {},
         onClearFilter = {},
         onItemClick = {},
         onSubmitFlags = {},
+        onSubmitSearchSets = {},
         onSortingSelect = { _, _ -> },
         onLocationFilter = {},
+        onLocationScanClick = {},
     )
 }

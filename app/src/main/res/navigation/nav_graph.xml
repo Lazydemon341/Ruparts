@@ -161,6 +161,11 @@
         android:name="com.ruparts.app.features.productscan.presentation.ProductScanFragment"
         android:label="Сканирование товара">
 
+        <argument
+            android:name="scanType"
+            app:argType="com.ruparts.app.features.productscan.model.ProductScanType"
+            android:defaultValue="PRODUCT" />
+
         <action
             android:id="@+id/action_productScanFragment_to_productFragment"
             app:destination="@id/productFragment"
