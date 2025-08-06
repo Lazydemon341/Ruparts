@@ -106,6 +106,18 @@ class CartRepository @Inject constructor(
                 ),
                 gson = gson,
             )
+
+            when (response.type) {
+                SUCCESS_RESPONSE_TYPE -> {
+                    // TODO: data
+                }
+
+                ERROR_RESPONSE_TYPE -> {
+                    throw CartScanException(response.error?.message)
+                }
+
+                else -> throw IllegalStateException("Unknown response type: ${response.type}")
+            }
         }
     }
 
