@@ -6,6 +6,7 @@ import com.ruparts.app.core.utils.combine
 import com.ruparts.app.features.cart.model.CartListItem
 import com.ruparts.app.features.commonlibrary.ProductFlag
 import com.ruparts.app.features.commonlibrary.data.repository.CommonLibraryRepository
+import com.ruparts.app.features.search.data.repository.SearchRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -16,6 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val commonLibraryRepository: CommonLibraryRepository,
+    private val searchRepository: SearchRepository
 ) : ViewModel() {
 
     private val checkedFlags = MutableStateFlow<Set<Long>>(emptySet())
@@ -78,9 +80,9 @@ class SearchViewModel @Inject constructor(
     }
 
     private fun searchSetsFlow() = flow<List<SearchScreenSearchSet>> {
-        // TODO: emit(repository.getSearchSets())
-        emit(emptyList())
+        emit(searchRepository.getSearchSets().getOrDefault(emptyList()))
     }
+
 
     private fun mapFlags(productFlags: Map<Long, ProductFlag>, checkedFlags: Set<Long>): List<SearchScreenFlag> {
         return productFlags.map { (_, flag) ->
@@ -94,44 +96,10 @@ class SearchViewModel @Inject constructor(
         sorting: SearchScreenSorting,
         locationFilter: String,
     ): List<CartListItem> {
-        // todo: searchRepository.getItems(...)
-        return listOf(
-            CartListItem(
-                id = 1,
-                article = "123457879654531",
-                brand = "Toyota",
-                quantity = 125,
-                description = "Замок зажигания",
-                barcode = "TE250630T235959II2",
-                cartOwner = "Petrov",
-                info = "L2-A02-1-6-1",
-                flags = listOf(),
-                fromExternalInput = false
-            ),
-            CartListItem(
-                id = 2,
-                article = "987654321",
-                brand = "Honda",
-                quantity = 50,
-                description = "Фильтр воздушный",
-                barcode = "TE250630T235959II3",
-                cartOwner = "Ivanov",
-                info = "L1-B03-2-4-2",
-                flags = listOf(),
-                fromExternalInput = false
-            ),
-            CartListItem(
-                id = 3,
-                article = "456789012",
-                brand = "Nissan",
-                quantity = 200,
-                description = "Тормозные колодки",
-                barcode = "TE250630T235959II4",
-                cartOwner = "Sidorov",
-                info = "L3-C01-1-2-3",
-                flags = listOf(),
-                fromExternalInput = false
-            )
-        )
+        return searchRepository.getList(
+            checkedFlags.toList(),
+            checkedSearchSets.toList(),
+            locationFilter, sorting
+        ).getOrDefault(emptyList())
     }
 }

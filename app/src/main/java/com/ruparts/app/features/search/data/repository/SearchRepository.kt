@@ -14,7 +14,10 @@ import com.ruparts.app.features.search.data.network.model.SearchListResponseDto
 import com.ruparts.app.features.search.data.network.model.SearchSetsRequestDataDto
 import com.ruparts.app.features.search.data.network.model.SearchSetsRequestDto
 import com.ruparts.app.features.search.data.network.model.SearchSetsResponseDto
-import com.ruparts.app.features.search.model.SearchSetItem
+import com.ruparts.app.features.search.presentation.SearchScreenSearchSet
+import com.ruparts.app.features.search.presentation.SearchScreenSorting
+import com.ruparts.app.features.search.presentation.SearchScreenSortingType
+import com.ruparts.app.features.search.presentation.SortingDirection
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.supervisorScope
@@ -31,13 +34,37 @@ class SearchRepository @Inject constructor(
     private val commonLibraryRepository: CommonLibraryRepository,
 ) {
 
-    suspend fun getList(): Result<List<CartListItem>> = withContext(Dispatchers.Default) {
+    suspend fun getList(
+        flags: List<Long>,
+        sets: List<Long>,
+        location: String,
+        sorting: SearchScreenSorting
+    ): Result<List<CartListItem>> = withContext(Dispatchers.Default) {
         runCoroutineCatching {
             supervisorScope {
                 val searchListDeferred = async {
                     endpointService.request<SearchListRequestDto, SearchListResponseDto>(
                         body = SearchListRequestDto(
-                            data = SearchListRequestDataDto()
+                            data = SearchListRequestDataDto(
+                                filter = SearchListRequestDataDto.SearchFilter(
+                                    flags = flags.takeIf { it.isNotEmpty() },
+                                    sets = sets.takeIf { it.isNotEmpty() },
+                                    location = location.takeIf { it.isNotEmpty() },
+                                ),
+                                sorting = SearchListRequestDataDto.Sorting(
+                                    field = when (sorting.type) {
+                                        SearchScreenSortingType.QUANTITY -> "quantity"
+                                        SearchScreenSortingType.CELL_NUMBER -> TODO() //?
+                                        SearchScreenSortingType.PURCHASE_PRICE -> TODO()
+                                        SearchScreenSortingType.SELLING_PRICE -> TODO()
+                                        SearchScreenSortingType.ARRIVAL_DATE -> TODO()
+                                    },
+                                    direction = when (sorting.direction) {
+                                        SortingDirection.ASCENDING -> "ASC"
+                                        SortingDirection.DESCENDING -> "DESC"
+                                    }
+                                )
+                            )
                         ),
                         gson = gson,
                     )
@@ -55,16 +82,17 @@ class SearchRepository @Inject constructor(
         }
     }
 
-    suspend fun getSearchSets(): Result<List<SearchSetItem>> = withContext(Dispatchers.Default) {
+    suspend fun getSearchSets(): Result<List<SearchScreenSearchSet>> = withContext(Dispatchers.Default) {
         runCoroutineCatching {
-                val searchSetResponse = endpointService.request<SearchSetsRequestDto, SearchSetsResponseDto>(
-                    body = SearchSetsRequestDto(
-                        data = SearchSetsRequestDataDto()
-                    ),
-                    gson = gson,
-                )
+            val searchSetResponse = endpointService.request<SearchSetsRequestDto, SearchSetsResponseDto>(
+                body = SearchSetsRequestDto(
+                    data = SearchSetsRequestDataDto()
+                ),
+                gson = gson,
+            )
 
             searchSetMapper.mapSearchSets(searchSetResponse.data)
         }
     }
 }
+
