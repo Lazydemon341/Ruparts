@@ -893,7 +893,7 @@ private fun SearchScreenPreview() {
             ),
             filters = listOf(
                 SearchScreenFilter(SearchScreenFilterType.FLAGS, false),
-                SearchScreenFilter(SearchScreenFilterType.LOCATION, true),
+                SearchScreenFilter(SearchScreenFilterType.LOCATION, false),
                 SearchScreenFilter(SearchScreenFilterType.SELECTIONS, false)
             ),
             flags = listOf(
