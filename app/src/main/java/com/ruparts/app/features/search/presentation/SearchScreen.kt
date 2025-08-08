@@ -1,5 +1,6 @@
 package com.ruparts.app.features.search.presentation
 
+import android.view.KeyEvent
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -46,7 +47,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -63,6 +63,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
@@ -84,10 +85,16 @@ fun SearchScreen(
     onSortingSelect: (SearchScreenSortingType, SortingDirection) -> Unit,
     onLocationFilter: (String) -> Unit,
     onLocationScanClick: () -> Unit,
+    onKeyEvent: (KeyEvent) -> Boolean,
 ) {
     when (state) {
         is SearchScreenState.Loading -> {
             SearchScreenLoading()
+        }
+
+        is SearchScreenState.Error -> {
+            // TODO
+            Box {}
         }
 
         is SearchScreenState.Content -> {
@@ -101,6 +108,7 @@ fun SearchScreen(
                 onSortingSelect = onSortingSelect,
                 onLocationFilter = onLocationFilter,
                 onLocationScanClick = onLocationScanClick,
+                onKeyEvent = onKeyEvent,
             )
         }
     }
@@ -127,9 +135,13 @@ private fun SearchScreenContent(
     onSortingSelect: (SearchScreenSortingType, SortingDirection) -> Unit,
     onLocationFilter: (String) -> Unit,
     onLocationScanClick: () -> Unit,
+    onKeyEvent: (KeyEvent) -> Boolean,
 ) {
     val scrollState = rememberScrollState()
     Scaffold(
+        modifier = Modifier.onKeyEvent {
+            onKeyEvent(it.nativeKeyEvent)
+        },
         contentWindowInsets = WindowInsets.systemBars.only(
             WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
         ),
@@ -304,11 +316,10 @@ private fun SearchScreenSorting(
         Text(
             textAlign = TextAlign.Center,
             text = when (selectedSorting.type) {
-                SearchScreenSortingType.CELL_NUMBER -> "По номеру ячейки"
+                SearchScreenSortingType.VENDOR_CODE -> "По артикулу"
                 SearchScreenSortingType.QUANTITY -> "По количеству"
-                SearchScreenSortingType.PURCHASE_PRICE -> "По цене покупки"
-                SearchScreenSortingType.SELLING_PRICE -> "По цене продажи"
-                SearchScreenSortingType.ARRIVAL_DATE -> "По дате поступления"
+                SearchScreenSortingType.LOCATION -> "По расположению"
+                SearchScreenSortingType.BRAND -> "По бренду"
             },
             fontSize = 14.sp,
             color = MaterialTheme.colorScheme.onSecondaryContainer
@@ -429,13 +440,18 @@ private fun SearchScreenFlagsModalBottomSheet(
 ) {
     val bottomSheetState = rememberModalBottomSheetState(true)
     var checkedFlags by remember(state.flags) {
-        mutableStateOf(state.flags.filter { it.checked }.map { it.flag.id }.toSet())
+        mutableStateOf<Set<Long>>(
+            state.flags
+                .filter { it.checked }
+                .mapTo(mutableSetOf()) { it.flag.id }
+        )
     }
     val showClearButton by remember {
         derivedStateOf {
             checkedFlags.isNotEmpty()
         }
     }
+
     ModalBottomSheet(
         sheetState = bottomSheetState,
         onDismissRequest = onDismiss,
@@ -541,22 +557,22 @@ private fun SearchScreenSelectionsModalBottomSheet(
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Left
                 )
-                OutlinedTextField(
-                    value = "",
-                    onValueChange = { },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    label = { Text("Поиск по названию, id, автору") },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(
-                        autoCorrectEnabled = false
-                    ),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    ),
-                )
+                // OutlinedTextField(
+                //     value = "",
+                //     onValueChange = { },
+                //     modifier = Modifier
+                //         .fillMaxWidth()
+                //         .padding(horizontal = 16.dp),
+                //     label = { Text("Поиск по названию, id, автору") },
+                //     singleLine = true,
+                //     keyboardOptions = KeyboardOptions(
+                //         autoCorrectEnabled = false
+                //     ),
+                //     colors = OutlinedTextFieldDefaults.colors(
+                //         unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                //         unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                //     ),
+                // )
                 LazyColumn {
                     items(
                         items = state.searchSets,
@@ -760,11 +776,10 @@ private fun SearchScreenSortingModalBottomSheet(
                         Spacer(modifier = Modifier.width(16.dp))
                         Text(
                             text = when (sortingType) {
-                                SearchScreenSortingType.CELL_NUMBER -> "По номеру ячейки"
+                                SearchScreenSortingType.VENDOR_CODE -> "По артикулу"
                                 SearchScreenSortingType.QUANTITY -> "По количеству"
-                                SearchScreenSortingType.PURCHASE_PRICE -> "По цене покупки"
-                                SearchScreenSortingType.SELLING_PRICE -> "По цене продажи"
-                                SearchScreenSortingType.ARRIVAL_DATE -> "По дате поступления"
+                                SearchScreenSortingType.LOCATION -> "По расположению"
+                                SearchScreenSortingType.BRAND -> "По бренду"
                             },
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurface
@@ -925,5 +940,6 @@ private fun SearchScreenPreview() {
         onSortingSelect = { _, _ -> },
         onLocationFilter = {},
         onLocationScanClick = {},
+        onKeyEvent = { false },
     )
 }

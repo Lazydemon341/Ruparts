@@ -6,9 +6,14 @@ import com.ruparts.app.core.utils.combine
 import com.ruparts.app.features.cart.model.CartListItem
 import com.ruparts.app.features.commonlibrary.ProductFlag
 import com.ruparts.app.features.commonlibrary.data.repository.CommonLibraryRepository
+import com.ruparts.app.features.search.data.repository.SearchRepository
+import com.ruparts.app.features.search.model.SearchSetItem
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
@@ -16,33 +21,38 @@ import javax.inject.Inject
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val commonLibraryRepository: CommonLibraryRepository,
+    private val searchRepository: SearchRepository,
 ) : ViewModel() {
 
     private val checkedFlags = MutableStateFlow<Set<Long>>(emptySet())
     private val checkedSearchSets = MutableStateFlow<Set<Long>>(emptySet())
     private val selectedSorting = MutableStateFlow(SearchScreenSorting())
     private val locationFilterState = MutableStateFlow("")
+    private val _searchState = MutableStateFlow("")
 
     val state = combine(
+        itemsFlow(),
         productFlagsFlow(),
         checkedFlags,
         searchSetsFlow(),
         checkedSearchSets,
         selectedSorting,
         locationFilterState,
-    ) { productFlags, checkedFlags, searchSets, checkedSearchSets, sorting, locationFilter ->
+    ) { items, productFlags, checkedFlags, searchSets, checkedSearchSets, sorting, locationFilter ->
         SearchScreenState.Content(
-            items = getItems(checkedFlags, checkedSearchSets, sorting, locationFilter),
+            items = items,
             filters = listOf(
                 SearchScreenFilter(SearchScreenFilterType.FLAGS, checkedFlags.isNotEmpty()),
                 SearchScreenFilter(SearchScreenFilterType.LOCATION, locationFilter.isNotEmpty()),
-                SearchScreenFilter(SearchScreenFilterType.SELECTIONS, searchSets.isNotEmpty())
+                SearchScreenFilter(SearchScreenFilterType.SELECTIONS, checkedSearchSets.isNotEmpty())
             ),
             flags = mapFlags(productFlags, checkedFlags),
-            searchSets = searchSets,
+            searchSets = mapSearchSets(searchSets, checkedSearchSets),
             selectedSorting = sorting,
             locationFilter = locationFilter,
         )
+    }.catch<SearchScreenState> {
+        emit(SearchScreenState.Error)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -73,13 +83,16 @@ class SearchViewModel @Inject constructor(
         selectedSorting.value = SearchScreenSorting(type, direction)
     }
 
+    fun updateSearchText(text: String) {
+        _searchState.value = text
+    }
+
     private fun productFlagsFlow() = flow {
         emit(commonLibraryRepository.getProductFlags())
     }
 
-    private fun searchSetsFlow() = flow<List<SearchScreenSearchSet>> {
-        // TODO: emit(repository.getSearchSets())
-        emit(emptyList())
+    private fun searchSetsFlow() = flow {
+        emit(searchRepository.getSearchSets().getOrDefault(emptyList()))
     }
 
     private fun mapFlags(productFlags: Map<Long, ProductFlag>, checkedFlags: Set<Long>): List<SearchScreenFlag> {
@@ -88,50 +101,38 @@ class SearchViewModel @Inject constructor(
         }
     }
 
+    private fun mapSearchSets(sets: List<SearchSetItem>, checked: Set<Long>): List<SearchScreenSearchSet> {
+        return sets.map { set ->
+            SearchScreenSearchSet(
+                id = set.id,
+                supportingText = set.author,
+                text = set.title,
+                checked = set.id in checked,
+            )
+        }
+    }
+
+    private fun itemsFlow(): Flow<List<CartListItem>> {
+        return combine(
+            checkedFlags,
+            checkedSearchSets,
+            selectedSorting,
+            locationFilterState,
+            _searchState,
+        ) { checkedFlags, checkedSearchSets, sorting, locationFilter, search ->
+            getItems(checkedFlags, checkedSearchSets, sorting, locationFilter, search)
+        }
+    }
+
     private suspend fun getItems(
         checkedFlags: Set<Long>,
         checkedSearchSets: Set<Long>,
         sorting: SearchScreenSorting,
         locationFilter: String,
+        search: String,
     ): List<CartListItem> {
-        // todo: searchRepository.getItems(...)
-        return listOf(
-            CartListItem(
-                id = 1,
-                article = "123457879654531",
-                brand = "Toyota",
-                quantity = 125,
-                description = "Замок зажигания",
-                barcode = "TE250630T235959II2",
-                cartOwner = "Petrov",
-                info = "L2-A02-1-6-1",
-                flags = listOf(),
-                fromExternalInput = false
-            ),
-            CartListItem(
-                id = 2,
-                article = "987654321",
-                brand = "Honda",
-                quantity = 50,
-                description = "Фильтр воздушный",
-                barcode = "TE250630T235959II3",
-                cartOwner = "Ivanov",
-                info = "L1-B03-2-4-2",
-                flags = listOf(),
-                fromExternalInput = false
-            ),
-            CartListItem(
-                id = 3,
-                article = "456789012",
-                brand = "Nissan",
-                quantity = 200,
-                description = "Тормозные колодки",
-                barcode = "TE250630T235959II4",
-                cartOwner = "Sidorov",
-                info = "L3-C01-1-2-3",
-                flags = listOf(),
-                fromExternalInput = false
-            )
-        )
+        return searchRepository
+            .getList(locationFilter, checkedFlags.toList(), checkedSearchSets.toList(), search, sorting)
+            .getOrDefault(emptyList())
     }
 }

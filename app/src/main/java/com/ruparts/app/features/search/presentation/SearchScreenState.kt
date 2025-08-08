@@ -9,6 +9,8 @@ import java.util.UUID
 sealed interface SearchScreenState {
     data object Loading : SearchScreenState
 
+    data object Error : SearchScreenState
+
     @Immutable
     data class Content(
         val items: List<CartListItem>,
@@ -63,11 +65,10 @@ data class SearchScreenSorting(
 )
 
 enum class SearchScreenSortingType {
-    CELL_NUMBER,
+    VENDOR_CODE,
+    BRAND,
+    LOCATION,
     QUANTITY,
-    PURCHASE_PRICE,
-    SELLING_PRICE,
-    ARRIVAL_DATE,
 }
 
 enum class SortingDirection {

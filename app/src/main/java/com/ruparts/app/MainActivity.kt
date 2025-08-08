@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.core.SpringSpec
 import androidx.core.os.bundleOf
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.isVisible
@@ -59,6 +60,8 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        modifyBottomSheetAnimationSpec()
 
         drawerLayout = findViewById(R.id.drawer_layout)
         navigationView = findViewById(R.id.nav_view)
@@ -153,6 +156,16 @@ class MainActivity : AppCompatActivity() {
                     drawerLayout.closeDrawers()
                 }
             }
+        }
+    }
+
+    private fun modifyBottomSheetAnimationSpec() {
+        runCatching {
+            Class
+                .forName("androidx.compose.material3.SheetDefaultsKt")
+                .getDeclaredField("BottomSheetAnimationSpec").apply {
+                    isAccessible = true
+                }.set(null, SpringSpec<Float>())
         }
     }
 }

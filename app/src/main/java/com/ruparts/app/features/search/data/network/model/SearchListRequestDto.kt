@@ -2,7 +2,6 @@ package com.ruparts.app.features.search.data.network.model
 
 import com.google.gson.annotations.SerializedName
 import com.ruparts.app.core.data.network.EndpointRequestDto
-import com.ruparts.app.features.search.presentation.SearchScreenFlag
 
 class SearchListRequestDto(
     data: SearchListRequestDataDto
@@ -39,12 +38,12 @@ class SearchListRequestDataDto(
         val search: String? = null,
 
         @SerializedName("flags")
-        val flags: List<SearchScreenFlag?>? = null,
+        val flags: List<Long>? = null,
 
         @SerializedName("location")
         val location: String? = null,
 
         @SerializedName("sets")
-        val sets: List<SearchSetItemDto?> = emptyList(), //
+        val sets: List<Long>? = null,
     )
 }

@@ -1,6 +1,5 @@
 package com.ruparts.app.core.ui.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -200,10 +199,11 @@ fun RupartsCartItem(
                         key = { it.id },
                     ) { flag ->
                         flag.getIconRes()?.let { iconRes ->
-                            Image(
+                            Icon(
                                 painter = painterResource(iconRes),
                                 contentDescription = "",
-                                modifier = Modifier.size(26.dp)
+                                modifier = Modifier.size(26.dp),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
