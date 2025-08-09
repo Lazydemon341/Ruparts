@@ -17,6 +17,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.ruparts.app.R
 import com.ruparts.app.core.barcode.BarcodeType
 import com.ruparts.app.core.barcode.ExternalCodeInputHandler
@@ -76,9 +77,11 @@ class SearchFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 val state = viewModel.state.collectAsStateWithLifecycle()
+                val pagedItems = viewModel.pagedItems.collectAsLazyPagingItems()
                 RupartsTheme {
                     SearchScreen(
                         state = state.value,
+                        pagedItems = pagedItems,
                         onSubmitFlags = viewModel::filterByFlags,
                         onSubmitSearchSets = viewModel::filterBySearchSets,
                         onScanButtonClick = {
@@ -101,7 +104,8 @@ class SearchFragment : Fragment() {
                         },
                         onKeyEvent = { event ->
                             externalCodeInputHandler.onKeyEvent(event)
-                        }
+                        },
+                        onSearchSetsTextChange = viewModel::updateSearchSetsText
                     )
                 }
             }

@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -47,6 +46,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -70,13 +70,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemContentType
+import androidx.paging.compose.itemKey
 import com.ruparts.app.R
 import com.ruparts.app.core.ui.components.RupartsCartItem
 import com.ruparts.app.features.cart.model.CartListItem
+import kotlinx.coroutines.flow.flowOf
 
 @Composable
 fun SearchScreen(
     state: SearchScreenState,
+    pagedItems: LazyPagingItems<CartListItem>,
     onSubmitFlags: (Set<Long>) -> Unit,
     onSubmitSearchSets: (Set<Long>) -> Unit,
     onScanButtonClick: () -> Unit,
@@ -86,6 +93,7 @@ fun SearchScreen(
     onLocationFilter: (String) -> Unit,
     onLocationScanClick: () -> Unit,
     onKeyEvent: (KeyEvent) -> Boolean,
+    onSearchSetsTextChange: (String) -> Unit,
 ) {
     when (state) {
         is SearchScreenState.Loading -> {
@@ -100,6 +108,7 @@ fun SearchScreen(
         is SearchScreenState.Content -> {
             SearchScreenContent(
                 state = state,
+                pagedItems = pagedItems,
                 onSubmitFlags = onSubmitFlags,
                 onSubmitSearchSets = onSubmitSearchSets,
                 onScanButtonClick = onScanButtonClick,
@@ -109,6 +118,7 @@ fun SearchScreen(
                 onLocationFilter = onLocationFilter,
                 onLocationScanClick = onLocationScanClick,
                 onKeyEvent = onKeyEvent,
+                onSearchSetsTextChange = onSearchSetsTextChange,
             )
         }
     }
@@ -127,6 +137,7 @@ private fun SearchScreenLoading() {
 @Composable
 private fun SearchScreenContent(
     state: SearchScreenState.Content,
+    pagedItems: LazyPagingItems<CartListItem>,
     onSubmitFlags: (Set<Long>) -> Unit,
     onSubmitSearchSets: (Set<Long>) -> Unit,
     onScanButtonClick: () -> Unit,
@@ -136,6 +147,7 @@ private fun SearchScreenContent(
     onLocationFilter: (String) -> Unit,
     onLocationScanClick: () -> Unit,
     onKeyEvent: (KeyEvent) -> Boolean,
+    onSearchSetsTextChange: (String) -> Unit,
 ) {
     val scrollState = rememberScrollState()
     Scaffold(
@@ -182,7 +194,7 @@ private fun SearchScreenContent(
                 onClick = { showSortingDialog.value = true }
             )
             SearchScreenItems(
-                items = state.items,
+                pagedItems = pagedItems,
                 onItemClick = onItemClick,
             )
             showFilterDialogFor.value?.let { filterType ->
@@ -194,6 +206,7 @@ private fun SearchScreenContent(
                     onSubmitSearchSets = onSubmitSearchSets,
                     onLocationFilter = onLocationFilter,
                     onScanClick = onLocationScanClick,
+                    onSearchSetsTextChange = onSearchSetsTextChange,
                 )
             }
             if (showSortingDialog.value) {
@@ -331,7 +344,7 @@ private const val listItemContentType = "listItem"
 
 @Composable
 private fun SearchScreenItems(
-    items: List<CartListItem>,
+    pagedItems: LazyPagingItems<CartListItem>,
     onItemClick: (CartListItem) -> Unit,
 ) {
     Box(
@@ -342,19 +355,22 @@ private fun SearchScreenItems(
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
         ) {
-            itemsIndexed(
-                items = items,
-                key = { _, item -> item.id },
-                contentType = { _, _ -> listItemContentType },
-            ) { index, item ->
-                RupartsCartItem(
-                    item = item,
-                    isRowVisible = true,
-                    onClick = onItemClick,
-                    showFlags = true,
-                    modifier = Modifier.animateItem(),
-                )
-                Spacer(modifier = Modifier.height(8.dp))
+            items(
+                count = pagedItems.itemCount,
+                key = pagedItems.itemKey { it.id },
+                contentType = pagedItems.itemContentType { listItemContentType }
+            ) { index ->
+                val item = pagedItems[index]
+                if (item != null) {
+                    RupartsCartItem(
+                        item = item,
+                        isRowVisible = true,
+                        onClick = onItemClick,
+                        showFlags = true,
+                        modifier = Modifier.animateItem(),
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
             }
         }
     }
@@ -399,6 +415,7 @@ private fun SearchScreenFilterDialog(
     onSubmitSearchSets: (Set<Long>) -> Unit,
     onLocationFilter: (String) -> Unit,
     onScanClick: () -> Unit,
+    onSearchSetsTextChange: (String) -> Unit,
 ) {
     when (filterType) {
         SearchScreenFilterType.FLAGS -> {
@@ -426,6 +443,7 @@ private fun SearchScreenFilterDialog(
                 state = state,
                 onDismiss = onDismiss,
                 onSubmitSearchSets = onSubmitSearchSets,
+                onSearchSetsTextChange = onSearchSetsTextChange,
             )
         }
     }
@@ -524,6 +542,7 @@ private fun SearchScreenSelectionsModalBottomSheet(
     state: SearchScreenState.Content,
     onDismiss: () -> Unit,
     onSubmitSearchSets: (Set<Long>) -> Unit,
+    onSearchSetsTextChange: (String) -> Unit,
 ) {
     val bottomSheetState = rememberModalBottomSheetState(true)
     var checkedSearchSets by remember(state.searchSets) {
@@ -557,22 +576,22 @@ private fun SearchScreenSelectionsModalBottomSheet(
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Left
                 )
-                // OutlinedTextField(
-                //     value = "",
-                //     onValueChange = { },
-                //     modifier = Modifier
-                //         .fillMaxWidth()
-                //         .padding(horizontal = 16.dp),
-                //     label = { Text("Поиск по названию, id, автору") },
-                //     singleLine = true,
-                //     keyboardOptions = KeyboardOptions(
-                //         autoCorrectEnabled = false
-                //     ),
-                //     colors = OutlinedTextFieldDefaults.colors(
-                //         unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                //         unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                //     ),
-                // )
+                OutlinedTextField(
+                    value = state.searchSetsText,
+                    onValueChange = onSearchSetsTextChange,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    label = { Text("Поиск по названию, id, автору") },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        autoCorrectEnabled = false
+                    ),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    ),
+                )
                 LazyColumn {
                     items(
                         items = state.searchSets,
@@ -866,46 +885,48 @@ private fun LocationFilterDialog(
 @Preview
 @Composable
 private fun SearchScreenPreview() {
+    val mockItems = listOf(
+        CartListItem(
+            id = 1,
+            article = "123457879654531",
+            brand = "Toyota",
+            quantity = 125,
+            description = "Замок зажигания",
+            barcode = "TE250630T235959II2",
+            cartOwner = "Petrov",
+            info = "L2-A02-1-6-1",
+            flags = listOf(),
+            fromExternalInput = false
+        ),
+        CartListItem(
+            id = 2,
+            article = "987654321",
+            brand = "Honda",
+            quantity = 50,
+            description = "Фильтр воздушный",
+            barcode = "TE250630T235959II3",
+            cartOwner = "Ivanov",
+            info = "L1-B03-2-4-2",
+            flags = listOf(),
+            fromExternalInput = false
+        ),
+        CartListItem(
+            id = 3,
+            article = "456789012",
+            brand = "Nissan",
+            quantity = 200,
+            description = "Тормозные колодки",
+            barcode = "TE250630T235959II4",
+            cartOwner = "Sidorov",
+            info = "L3-C01-1-2-3",
+            flags = listOf(),
+            fromExternalInput = false
+        )
+    )
+    val mockPagingData = flowOf(PagingData.from(mockItems)).collectAsLazyPagingItems()
+
     SearchScreen(
         state = SearchScreenState.Content(
-            items = listOf(
-                CartListItem(
-                    id = 1,
-                    article = "123457879654531",
-                    brand = "Toyota",
-                    quantity = 125,
-                    description = "Замок зажигания",
-                    barcode = "TE250630T235959II2",
-                    cartOwner = "Petrov",
-                    info = "L2-A02-1-6-1",
-                    flags = listOf(),
-                    fromExternalInput = false
-                ),
-                CartListItem(
-                    id = 2,
-                    article = "987654321",
-                    brand = "Honda",
-                    quantity = 50,
-                    description = "Фильтр воздушный",
-                    barcode = "TE250630T235959II3",
-                    cartOwner = "Ivanov",
-                    info = "L1-B03-2-4-2",
-                    flags = listOf(),
-                    fromExternalInput = false
-                ),
-                CartListItem(
-                    id = 3,
-                    article = "456789012",
-                    brand = "Nissan",
-                    quantity = 200,
-                    description = "Тормозные колодки",
-                    barcode = "TE250630T235959II4",
-                    cartOwner = "Sidorov",
-                    info = "L3-C01-1-2-3",
-                    flags = listOf(),
-                    fromExternalInput = false
-                )
-            ),
             filters = listOf(
                 SearchScreenFilter(SearchScreenFilterType.FLAGS, false),
                 SearchScreenFilter(SearchScreenFilterType.LOCATION, true),
@@ -929,9 +950,11 @@ private fun SearchScreenPreview() {
                 SearchScreenSearchSet("Для доставки", "ID 25, Сидоров Г.Д., 21.05.2025", false),
                 SearchScreenSearchSet("Для менеджера", "ID 73, Судоровозражанов Н.А., 14.06.2025", false),
             ),
-            locationFilter = "",
             selectedSorting = SearchScreenSorting(),
+            locationFilter = "",
+            searchSetsText = "",
         ),
+        pagedItems = mockPagingData,
         onScanButtonClick = {},
         onClearFilter = {},
         onItemClick = {},
@@ -941,5 +964,6 @@ private fun SearchScreenPreview() {
         onLocationFilter = {},
         onLocationScanClick = {},
         onKeyEvent = { false },
+        onSearchSetsTextChange = {},
     )
 }
