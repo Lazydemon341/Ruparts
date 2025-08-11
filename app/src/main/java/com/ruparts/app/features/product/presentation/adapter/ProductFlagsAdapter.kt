@@ -3,6 +3,8 @@ package com.ruparts.app.features.product.presentation.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -35,7 +37,16 @@ class ProductFlagsAdapter : ListAdapter<ProductFlag, ProductFlagsAdapter.FlagVie
     class FlagViewHolder(private val textView: TextView) : RecyclerView.ViewHolder(textView) {
         fun bind(flag: ProductFlag) {
             textView.text = flag.title.capitalize()
-            textView.setCompoundDrawablesRelativeWithIntrinsicBounds(flag.getIconRes() ?: 0, 0, 0, 0)
+            val iconRes = flag.getIconRes() ?: 0
+            if (iconRes != 0) {
+                val drawable = ContextCompat.getDrawable(textView.context, iconRes)?.mutate()
+                drawable?.let {
+                    DrawableCompat.setTint(it, textView.context.getColor(R.color.onSurfaceVariant))
+                    textView.setCompoundDrawablesRelativeWithIntrinsicBounds(it, null, null, null)
+                }
+            } else {
+                textView.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0)
+            }
         }
     }
 

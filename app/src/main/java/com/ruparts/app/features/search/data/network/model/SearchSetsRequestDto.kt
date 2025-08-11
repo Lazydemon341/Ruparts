@@ -12,5 +12,5 @@ class SearchSetsRequestDto(
 
 class SearchSetsRequestDataDto(
     @SerializedName("search")
-    val search: String = "импорт"
+    val search: String? = null
 )

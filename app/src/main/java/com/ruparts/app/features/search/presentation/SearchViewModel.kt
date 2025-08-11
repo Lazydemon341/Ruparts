@@ -2,26 +2,51 @@ package com.ruparts.app.features.search.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.ruparts.app.core.utils.combine
 import com.ruparts.app.features.cart.model.CartListItem
 import com.ruparts.app.features.commonlibrary.ProductFlag
 import com.ruparts.app.features.commonlibrary.data.repository.CommonLibraryRepository
+import com.ruparts.app.features.search.data.repository.SearchRepository
+import com.ruparts.app.features.search.model.SearchSetItem
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val commonLibraryRepository: CommonLibraryRepository,
+    private val searchRepository: SearchRepository,
 ) : ViewModel() {
 
     private val checkedFlags = MutableStateFlow<Set<Long>>(emptySet())
     private val checkedSearchSets = MutableStateFlow<Set<Long>>(emptySet())
     private val selectedSorting = MutableStateFlow(SearchScreenSorting())
     private val locationFilterState = MutableStateFlow("")
+    private val _searchState = MutableStateFlow("")
+    private val searchSetsState = MutableStateFlow("")
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val pagedItems: Flow<PagingData<CartListItem>> = combine(
+        checkedFlags,
+        checkedSearchSets,
+        selectedSorting,
+        locationFilterState,
+        _searchState,
+    ) { checkedFlags, checkedSearchSets, sorting, locationFilter, search ->
+        searchRepository.getListPaged(locationFilter, checkedFlags.toList(), checkedSearchSets.toList(), search, sorting)
+    }.flatMapLatest { it }
+        .cachedIn(viewModelScope)
 
     val state = combine(
         productFlagsFlow(),
@@ -30,19 +55,22 @@ class SearchViewModel @Inject constructor(
         checkedSearchSets,
         selectedSorting,
         locationFilterState,
-    ) { productFlags, checkedFlags, searchSets, checkedSearchSets, sorting, locationFilter ->
+        searchSetsState,
+    ) { productFlags, checkedFlags, searchSets, checkedSearchSets, sorting, locationFilter, searchSetsText ->
         SearchScreenState.Content(
-            items = getItems(checkedFlags, checkedSearchSets, sorting, locationFilter),
             filters = listOf(
                 SearchScreenFilter(SearchScreenFilterType.FLAGS, checkedFlags.isNotEmpty()),
                 SearchScreenFilter(SearchScreenFilterType.LOCATION, locationFilter.isNotEmpty()),
-                SearchScreenFilter(SearchScreenFilterType.SELECTIONS, searchSets.isNotEmpty())
+                SearchScreenFilter(SearchScreenFilterType.SELECTIONS, checkedSearchSets.isNotEmpty())
             ),
             flags = mapFlags(productFlags, checkedFlags),
-            searchSets = searchSets,
+            searchSets = mapSearchSets(searchSets, checkedSearchSets),
             selectedSorting = sorting,
             locationFilter = locationFilter,
+            searchSetsText = searchSetsText,
         )
+    }.catch<SearchScreenState> {
+        emit(SearchScreenState.Error)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -73,13 +101,21 @@ class SearchViewModel @Inject constructor(
         selectedSorting.value = SearchScreenSorting(type, direction)
     }
 
+    fun updateSearchText(text: String) {
+        _searchState.value = text
+    }
+
+    fun updateSearchSetsText(text: String) {
+        searchSetsState.value = text
+    }
+
     private fun productFlagsFlow() = flow {
         emit(commonLibraryRepository.getProductFlags())
     }
 
-    private fun searchSetsFlow() = flow<List<SearchScreenSearchSet>> {
-        // TODO: emit(repository.getSearchSets())
-        emit(emptyList())
+    private fun searchSetsFlow() = searchSetsState.map { searchText ->
+        searchRepository.getSearchSets(searchText)
+            .getOrDefault(emptyList())
     }
 
     private fun mapFlags(productFlags: Map<Long, ProductFlag>, checkedFlags: Set<Long>): List<SearchScreenFlag> {
@@ -88,50 +124,14 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    private suspend fun getItems(
-        checkedFlags: Set<Long>,
-        checkedSearchSets: Set<Long>,
-        sorting: SearchScreenSorting,
-        locationFilter: String,
-    ): List<CartListItem> {
-        // todo: searchRepository.getItems(...)
-        return listOf(
-            CartListItem(
-                id = 1,
-                article = "123457879654531",
-                brand = "Toyota",
-                quantity = 125,
-                description = "Замок зажигания",
-                barcode = "TE250630T235959II2",
-                cartOwner = "Petrov",
-                info = "L2-A02-1-6-1",
-                flags = listOf(),
-                fromExternalInput = false
-            ),
-            CartListItem(
-                id = 2,
-                article = "987654321",
-                brand = "Honda",
-                quantity = 50,
-                description = "Фильтр воздушный",
-                barcode = "TE250630T235959II3",
-                cartOwner = "Ivanov",
-                info = "L1-B03-2-4-2",
-                flags = listOf(),
-                fromExternalInput = false
-            ),
-            CartListItem(
-                id = 3,
-                article = "456789012",
-                brand = "Nissan",
-                quantity = 200,
-                description = "Тормозные колодки",
-                barcode = "TE250630T235959II4",
-                cartOwner = "Sidorov",
-                info = "L3-C01-1-2-3",
-                flags = listOf(),
-                fromExternalInput = false
+    private fun mapSearchSets(sets: List<SearchSetItem>, checked: Set<Long>): List<SearchScreenSearchSet> {
+        return sets.map { set ->
+            SearchScreenSearchSet(
+                id = set.id,
+                supportingText = set.author,
+                text = set.title,
+                checked = set.id in checked,
             )
-        )
+        }
     }
 }

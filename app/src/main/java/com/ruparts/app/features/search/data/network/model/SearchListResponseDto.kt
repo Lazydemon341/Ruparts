@@ -12,16 +12,16 @@ class SearchListResponseDataDto(
     @SerializedName("list")
     val list: List<CartItemDto>,
     @SerializedName("_pagination")
-    val pagination: Pagination = Pagination(),
+    val pagination: Pagination,
 )
 
 class Pagination(
     @SerializedName("page")
-    val page: Int? = 1,
+    val page: Int?,
     @SerializedName("per_page")
-    val perPage: Int? = 100,
+    val perPage: Int?,
     @SerializedName("max_page")
-    val maxPage: Int? = 100,
+    val maxPage: Int?,
     @SerializedName("rows_count")
-    val rowsCount: Int? = 100,
+    val rowsCount: Int?,
 )

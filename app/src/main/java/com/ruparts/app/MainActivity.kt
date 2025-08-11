@@ -22,13 +22,11 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
 import com.ruparts.app.core.barcode.ExternalCodeInputHandler
-import com.ruparts.app.core.navigation.NavigationManager
 import com.ruparts.app.core.ui.utils.paddingAllSystemBars
 import com.ruparts.app.core.ui.utils.paddingBelowSystemBars
 import com.ruparts.app.core.utils.collectWhileStarted
 import com.ruparts.app.model.MainUiEffect
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -36,9 +34,6 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels()
 
     private lateinit var navController: NavController
-
-    @Inject
-    lateinit var navigationManager: NavigationManager
 
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
@@ -81,7 +76,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp(appBarConfiguration)
-                || super.onSupportNavigateUp()
+            || super.onSupportNavigateUp()
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
@@ -111,14 +106,14 @@ class MainActivity : AppCompatActivity() {
         navController.addOnDestinationChangedListener { controller, destination, _ ->
             toolbar.apply {
                 val hasSubtitle = destination.id == R.id.cartFragment
-                        || destination.id == R.id.cartTransferToLocationFragment
+                    || destination.id == R.id.cartTransferToLocationFragment
                 if (!hasSubtitle) {
                     subtitle = null
                 }
 
                 isVisible = destination.id != R.id.authFragment
-                        && destination.id != R.id.qrScanFragment
-                        && destination.id != R.id.productScanFragment
+                    && destination.id != R.id.qrScanFragment
+                    && destination.id != R.id.productScanFragment
 
                 val textsCentered = destination.id != R.id.productFragment
                 isTitleCentered = textsCentered

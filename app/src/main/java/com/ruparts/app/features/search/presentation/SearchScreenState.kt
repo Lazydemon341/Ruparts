@@ -1,7 +1,6 @@
 package com.ruparts.app.features.search.presentation
 
 import androidx.compose.runtime.Immutable
-import com.ruparts.app.features.cart.model.CartListItem
 import com.ruparts.app.features.commonlibrary.ProductFlag
 import java.util.UUID
 
@@ -9,14 +8,16 @@ import java.util.UUID
 sealed interface SearchScreenState {
     data object Loading : SearchScreenState
 
+    data object Error : SearchScreenState
+
     @Immutable
     data class Content(
-        val items: List<CartListItem>,
         val filters: List<SearchScreenFilter>,
         val flags: List<SearchScreenFlag>,
         val searchSets: List<SearchScreenSearchSet>,
         val selectedSorting: SearchScreenSorting,
         val locationFilter: String,
+        val searchSetsText: String,
     ) : SearchScreenState
 }
 
@@ -63,11 +64,10 @@ data class SearchScreenSorting(
 )
 
 enum class SearchScreenSortingType {
-    CELL_NUMBER,
+    VENDOR_CODE,
+    BRAND,
+    LOCATION,
     QUANTITY,
-    PURCHASE_PRICE,
-    SELLING_PRICE,
-    ARRIVAL_DATE,
 }
 
 enum class SortingDirection {

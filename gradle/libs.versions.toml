@@ -24,6 +24,8 @@ camerax = "1.5.0-beta02"
 datastore = "1.1.7"
 coil = "3.3.0"
 flexboxLayout = "3.0.0"
+paging = "3.3.6"
+pagingCompose = "3.4.0-alpha02"
 
 detekt = "1.23.8"
 detektCompose = "0.4.26"
@@ -84,6 +86,10 @@ camerax-compose = { group = "androidx.camera", name = "camera-compose", version.
 # DataStore
 androidx-datastore-core = { group = "androidx.datastore", name = "datastore", version.ref = "datastore" }
 androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
+
+# Paging3
+androidx-paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "paging" }
+androidx-paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "pagingCompose" }
 
 # Coil Image Loading
 coil = { group = "io.coil-kt.coil3", name = "coil", version.ref = "coil" }

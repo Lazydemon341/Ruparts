@@ -1,5 +1,6 @@
 package com.ruparts.app.features.search.presentation
 
+import android.view.KeyEvent
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,7 +25,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -63,19 +63,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemContentType
+import androidx.paging.compose.itemKey
 import com.ruparts.app.R
 import com.ruparts.app.core.ui.components.RupartsCartItem
 import com.ruparts.app.features.cart.model.CartListItem
+import kotlinx.coroutines.flow.flowOf
 
 @Composable
 fun SearchScreen(
     state: SearchScreenState,
+    pagedItems: LazyPagingItems<CartListItem>,
     onSubmitFlags: (Set<Long>) -> Unit,
     onSubmitSearchSets: (Set<Long>) -> Unit,
     onScanButtonClick: () -> Unit,
@@ -84,15 +92,23 @@ fun SearchScreen(
     onSortingSelect: (SearchScreenSortingType, SortingDirection) -> Unit,
     onLocationFilter: (String) -> Unit,
     onLocationScanClick: () -> Unit,
+    onKeyEvent: (KeyEvent) -> Boolean,
+    onSearchSetsTextChange: (String) -> Unit,
 ) {
     when (state) {
         is SearchScreenState.Loading -> {
             SearchScreenLoading()
         }
 
+        is SearchScreenState.Error -> {
+            // TODO
+            Box {}
+        }
+
         is SearchScreenState.Content -> {
             SearchScreenContent(
                 state = state,
+                pagedItems = pagedItems,
                 onSubmitFlags = onSubmitFlags,
                 onSubmitSearchSets = onSubmitSearchSets,
                 onScanButtonClick = onScanButtonClick,
@@ -101,6 +117,8 @@ fun SearchScreen(
                 onSortingSelect = onSortingSelect,
                 onLocationFilter = onLocationFilter,
                 onLocationScanClick = onLocationScanClick,
+                onKeyEvent = onKeyEvent,
+                onSearchSetsTextChange = onSearchSetsTextChange,
             )
         }
     }
@@ -119,6 +137,7 @@ private fun SearchScreenLoading() {
 @Composable
 private fun SearchScreenContent(
     state: SearchScreenState.Content,
+    pagedItems: LazyPagingItems<CartListItem>,
     onSubmitFlags: (Set<Long>) -> Unit,
     onSubmitSearchSets: (Set<Long>) -> Unit,
     onScanButtonClick: () -> Unit,
@@ -127,9 +146,14 @@ private fun SearchScreenContent(
     onSortingSelect: (SearchScreenSortingType, SortingDirection) -> Unit,
     onLocationFilter: (String) -> Unit,
     onLocationScanClick: () -> Unit,
+    onKeyEvent: (KeyEvent) -> Boolean,
+    onSearchSetsTextChange: (String) -> Unit,
 ) {
     val scrollState = rememberScrollState()
     Scaffold(
+        modifier = Modifier.onKeyEvent {
+            onKeyEvent(it.nativeKeyEvent)
+        },
         contentWindowInsets = WindowInsets.systemBars.only(
             WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
         ),
@@ -170,7 +194,7 @@ private fun SearchScreenContent(
                 onClick = { showSortingDialog.value = true }
             )
             SearchScreenItems(
-                items = state.items,
+                pagedItems = pagedItems,
                 onItemClick = onItemClick,
             )
             showFilterDialogFor.value?.let { filterType ->
@@ -182,6 +206,7 @@ private fun SearchScreenContent(
                     onSubmitSearchSets = onSubmitSearchSets,
                     onLocationFilter = onLocationFilter,
                     onScanClick = onLocationScanClick,
+                    onSearchSetsTextChange = onSearchSetsTextChange,
                 )
             }
             if (showSortingDialog.value) {
@@ -304,11 +329,10 @@ private fun SearchScreenSorting(
         Text(
             textAlign = TextAlign.Center,
             text = when (selectedSorting.type) {
-                SearchScreenSortingType.CELL_NUMBER -> "По номеру ячейки"
+                SearchScreenSortingType.VENDOR_CODE -> "По артикулу"
                 SearchScreenSortingType.QUANTITY -> "По количеству"
-                SearchScreenSortingType.PURCHASE_PRICE -> "По цене покупки"
-                SearchScreenSortingType.SELLING_PRICE -> "По цене продажи"
-                SearchScreenSortingType.ARRIVAL_DATE -> "По дате поступления"
+                SearchScreenSortingType.LOCATION -> "По расположению"
+                SearchScreenSortingType.BRAND -> "По бренду"
             },
             fontSize = 14.sp,
             color = MaterialTheme.colorScheme.onSecondaryContainer
@@ -320,7 +344,7 @@ private const val listItemContentType = "listItem"
 
 @Composable
 private fun SearchScreenItems(
-    items: List<CartListItem>,
+    pagedItems: LazyPagingItems<CartListItem>,
     onItemClick: (CartListItem) -> Unit,
 ) {
     Box(
@@ -331,19 +355,22 @@ private fun SearchScreenItems(
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
         ) {
-            itemsIndexed(
-                items = items,
-                key = { _, item -> item.id },
-                contentType = { _, _ -> listItemContentType },
-            ) { index, item ->
-                RupartsCartItem(
-                    item = item,
-                    isRowVisible = true,
-                    onClick = onItemClick,
-                    showFlags = true,
-                    modifier = Modifier.animateItem(),
-                )
-                Spacer(modifier = Modifier.height(8.dp))
+            items(
+                count = pagedItems.itemCount,
+                key = pagedItems.itemKey { it.id },
+                contentType = pagedItems.itemContentType { listItemContentType }
+            ) { index ->
+                val item = pagedItems[index]
+                if (item != null) {
+                    RupartsCartItem(
+                        item = item,
+                        isRowVisible = true,
+                        onClick = onItemClick,
+                        showFlags = true,
+                        modifier = Modifier.animateItem(),
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
             }
         }
     }
@@ -388,6 +415,7 @@ private fun SearchScreenFilterDialog(
     onSubmitSearchSets: (Set<Long>) -> Unit,
     onLocationFilter: (String) -> Unit,
     onScanClick: () -> Unit,
+    onSearchSetsTextChange: (String) -> Unit,
 ) {
     when (filterType) {
         SearchScreenFilterType.FLAGS -> {
@@ -415,6 +443,7 @@ private fun SearchScreenFilterDialog(
                 state = state,
                 onDismiss = onDismiss,
                 onSubmitSearchSets = onSubmitSearchSets,
+                onSearchSetsTextChange = onSearchSetsTextChange,
             )
         }
     }
@@ -429,13 +458,18 @@ private fun SearchScreenFlagsModalBottomSheet(
 ) {
     val bottomSheetState = rememberModalBottomSheetState(true)
     var checkedFlags by remember(state.flags) {
-        mutableStateOf(state.flags.filter { it.checked }.map { it.flag.id }.toSet())
+        mutableStateOf<Set<Long>>(
+            state.flags
+                .filter { it.checked }
+                .mapTo(mutableSetOf()) { it.flag.id }
+        )
     }
     val showClearButton by remember {
         derivedStateOf {
             checkedFlags.isNotEmpty()
         }
     }
+
     ModalBottomSheet(
         sheetState = bottomSheetState,
         onDismissRequest = onDismiss,
@@ -508,6 +542,7 @@ private fun SearchScreenSelectionsModalBottomSheet(
     state: SearchScreenState.Content,
     onDismiss: () -> Unit,
     onSubmitSearchSets: (Set<Long>) -> Unit,
+    onSearchSetsTextChange: (String) -> Unit,
 ) {
     val bottomSheetState = rememberModalBottomSheetState(true)
     var checkedSearchSets by remember(state.searchSets) {
@@ -542,8 +577,8 @@ private fun SearchScreenSelectionsModalBottomSheet(
                     textAlign = TextAlign.Left
                 )
                 OutlinedTextField(
-                    value = "",
-                    onValueChange = { },
+                    value = state.searchSetsText,
+                    onValueChange = onSearchSetsTextChange,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
@@ -760,11 +795,10 @@ private fun SearchScreenSortingModalBottomSheet(
                         Spacer(modifier = Modifier.width(16.dp))
                         Text(
                             text = when (sortingType) {
-                                SearchScreenSortingType.CELL_NUMBER -> "По номеру ячейки"
+                                SearchScreenSortingType.VENDOR_CODE -> "По артикулу"
                                 SearchScreenSortingType.QUANTITY -> "По количеству"
-                                SearchScreenSortingType.PURCHASE_PRICE -> "По цене покупки"
-                                SearchScreenSortingType.SELLING_PRICE -> "По цене продажи"
-                                SearchScreenSortingType.ARRIVAL_DATE -> "По дате поступления"
+                                SearchScreenSortingType.LOCATION -> "По расположению"
+                                SearchScreenSortingType.BRAND -> "По бренду"
                             },
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurface
@@ -851,46 +885,48 @@ private fun LocationFilterDialog(
 @Preview
 @Composable
 private fun SearchScreenPreview() {
+    val mockItems = listOf(
+        CartListItem(
+            id = 1,
+            article = "123457879654531",
+            brand = "Toyota",
+            quantity = 125,
+            description = "Замок зажигания",
+            barcode = "TE250630T235959II2",
+            cartOwner = "Petrov",
+            info = "L2-A02-1-6-1",
+            flags = listOf(),
+            fromExternalInput = false
+        ),
+        CartListItem(
+            id = 2,
+            article = "987654321",
+            brand = "Honda",
+            quantity = 50,
+            description = "Фильтр воздушный",
+            barcode = "TE250630T235959II3",
+            cartOwner = "Ivanov",
+            info = "L1-B03-2-4-2",
+            flags = listOf(),
+            fromExternalInput = false
+        ),
+        CartListItem(
+            id = 3,
+            article = "456789012",
+            brand = "Nissan",
+            quantity = 200,
+            description = "Тормозные колодки",
+            barcode = "TE250630T235959II4",
+            cartOwner = "Sidorov",
+            info = "L3-C01-1-2-3",
+            flags = listOf(),
+            fromExternalInput = false
+        )
+    )
+    val mockPagingData = flowOf(PagingData.from(mockItems)).collectAsLazyPagingItems()
+
     SearchScreen(
         state = SearchScreenState.Content(
-            items = listOf(
-                CartListItem(
-                    id = 1,
-                    article = "123457879654531",
-                    brand = "Toyota",
-                    quantity = 125,
-                    description = "Замок зажигания",
-                    barcode = "TE250630T235959II2",
-                    cartOwner = "Petrov",
-                    info = "L2-A02-1-6-1",
-                    flags = listOf(),
-                    fromExternalInput = false
-                ),
-                CartListItem(
-                    id = 2,
-                    article = "987654321",
-                    brand = "Honda",
-                    quantity = 50,
-                    description = "Фильтр воздушный",
-                    barcode = "TE250630T235959II3",
-                    cartOwner = "Ivanov",
-                    info = "L1-B03-2-4-2",
-                    flags = listOf(),
-                    fromExternalInput = false
-                ),
-                CartListItem(
-                    id = 3,
-                    article = "456789012",
-                    brand = "Nissan",
-                    quantity = 200,
-                    description = "Тормозные колодки",
-                    barcode = "TE250630T235959II4",
-                    cartOwner = "Sidorov",
-                    info = "L3-C01-1-2-3",
-                    flags = listOf(),
-                    fromExternalInput = false
-                )
-            ),
             filters = listOf(
                 SearchScreenFilter(SearchScreenFilterType.FLAGS, false),
                 SearchScreenFilter(SearchScreenFilterType.LOCATION, true),
@@ -914,9 +950,11 @@ private fun SearchScreenPreview() {
                 SearchScreenSearchSet("Для доставки", "ID 25, Сидоров Г.Д., 21.05.2025", false),
                 SearchScreenSearchSet("Для менеджера", "ID 73, Судоровозражанов Н.А., 14.06.2025", false),
             ),
-            locationFilter = "",
             selectedSorting = SearchScreenSorting(),
+            locationFilter = "",
+            searchSetsText = "",
         ),
+        pagedItems = mockPagingData,
         onScanButtonClick = {},
         onClearFilter = {},
         onItemClick = {},
@@ -925,5 +963,7 @@ private fun SearchScreenPreview() {
         onSortingSelect = { _, _ -> },
         onLocationFilter = {},
         onLocationScanClick = {},
+        onKeyEvent = { false },
+        onSearchSetsTextChange = {},
     )
 }
