@@ -1,4 +1,4 @@
-package com.ruparts.app.features.search.presentation
+package com.ruparts.app.features.search.presentation.model
 
 import androidx.compose.runtime.Immutable
 import com.ruparts.app.features.commonlibrary.ProductFlag

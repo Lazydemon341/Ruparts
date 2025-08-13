@@ -1,26 +1,40 @@
 package com.ruparts.app.features.search.presentation
 
+import android.view.KeyEvent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.ruparts.app.core.barcode.BarcodeType
+import com.ruparts.app.core.barcode.ExternalCodeInputHandler
 import com.ruparts.app.core.utils.combine
 import com.ruparts.app.features.cart.model.CartListItem
-import com.ruparts.app.features.commonlibrary.ProductFlag
 import com.ruparts.app.features.commonlibrary.data.repository.CommonLibraryRepository
 import com.ruparts.app.features.search.data.repository.SearchRepository
-import com.ruparts.app.features.search.model.SearchSetItem
+import com.ruparts.app.features.search.presentation.model.SearchScreenEffect
+import com.ruparts.app.features.search.presentation.model.SearchScreenEvent
+import com.ruparts.app.features.search.presentation.model.SearchScreenFilter
+import com.ruparts.app.features.search.presentation.model.SearchScreenFilterType
+import com.ruparts.app.features.search.presentation.model.SearchScreenFlag
+import com.ruparts.app.features.search.presentation.model.SearchScreenSearchSet
+import com.ruparts.app.features.search.presentation.model.SearchScreenSorting
+import com.ruparts.app.features.search.presentation.model.SearchScreenSortingType
+import com.ruparts.app.features.search.presentation.model.SearchScreenState
+import com.ruparts.app.features.search.presentation.model.SortingDirection
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,8 +47,17 @@ class SearchViewModel @Inject constructor(
     private val checkedSearchSets = MutableStateFlow<Set<Long>>(emptySet())
     private val selectedSorting = MutableStateFlow(SearchScreenSorting())
     private val locationFilterState = MutableStateFlow("")
-    private val _searchState = MutableStateFlow("")
-    private val searchSetsState = MutableStateFlow("")
+    private val searchState = MutableStateFlow("")
+    private val searchSetsText = MutableStateFlow("")
+
+    private val _effect = MutableSharedFlow<SearchScreenEffect>()
+    val effect = _effect.asSharedFlow()
+
+    private val externalCodeInputHandler = ExternalCodeInputHandler { code, type ->
+        if (type == BarcodeType.PRODUCT) {
+            sendEffect(SearchScreenEffect.NavigateToProduct(code))
+        }
+    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val pagedItems: Flow<PagingData<CartListItem>> = combine(
@@ -42,29 +65,30 @@ class SearchViewModel @Inject constructor(
         checkedSearchSets,
         selectedSorting,
         locationFilterState,
-        _searchState,
+        searchState,
     ) { checkedFlags, checkedSearchSets, sorting, locationFilter, search ->
-        searchRepository.getListPaged(locationFilter, checkedFlags.toList(), checkedSearchSets.toList(), search, sorting)
+        searchRepository.getListPaged(
+            locationFilter = locationFilter,
+            flags = checkedFlags.toList(),
+            sets = checkedSearchSets.toList(),
+            search = search,
+            sorting = sorting,
+        )
     }.flatMapLatest { it }
         .cachedIn(viewModelScope)
 
     val state = combine(
         productFlagsFlow(),
-        checkedFlags,
         searchSetsFlow(),
-        checkedSearchSets,
         selectedSorting,
         locationFilterState,
-        searchSetsState,
-    ) { productFlags, checkedFlags, searchSets, checkedSearchSets, sorting, locationFilter, searchSetsText ->
+        searchSetsText,
+        filtersFlow(),
+    ) { productFlags, searchSets, sorting, locationFilter, searchSetsText, filters ->
         SearchScreenState.Content(
-            filters = listOf(
-                SearchScreenFilter(SearchScreenFilterType.FLAGS, checkedFlags.isNotEmpty()),
-                SearchScreenFilter(SearchScreenFilterType.LOCATION, locationFilter.isNotEmpty()),
-                SearchScreenFilter(SearchScreenFilterType.SELECTIONS, checkedSearchSets.isNotEmpty())
-            ),
-            flags = mapFlags(productFlags, checkedFlags),
-            searchSets = mapSearchSets(searchSets, checkedSearchSets),
+            filters = filters,
+            flags = productFlags,
+            searchSets = searchSets,
             selectedSorting = sorting,
             locationFilter = locationFilter,
             searchSetsText = searchSetsText,
@@ -76,6 +100,32 @@ class SearchViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = SearchScreenState.Loading,
     )
+
+    fun handleEvent(event: SearchScreenEvent) {
+        when (event) {
+            is SearchScreenEvent.FilterByFlags -> filterByFlags(event.flags)
+            is SearchScreenEvent.FilterByLocation -> filterByLocation(event.location)
+            is SearchScreenEvent.FilterBySearchSets -> filterBySearchSets(event.searchSets)
+            is SearchScreenEvent.ClearFilter -> clearFilter(event.filter)
+            is SearchScreenEvent.SetSorting -> setSorting(event.type, event.direction)
+            is SearchScreenEvent.UpdateSearchText -> updateSearchText(event.text)
+            is SearchScreenEvent.UpdateSearchSetsText -> updateSearchSetsText(event.text)
+            is SearchScreenEvent.OnScanButtonClick -> sendEffect(SearchScreenEffect.NavigateToProductScan)
+            is SearchScreenEvent.OnItemClick -> sendEffect(SearchScreenEffect.NavigateToProduct(event.item.barcode))
+            is SearchScreenEvent.OnLocationScanClick -> sendEffect(SearchScreenEffect.NavigateToLocationScan)
+            is SearchScreenEvent.OnAssemblyClick -> sendEffect(SearchScreenEffect.NavigateToAssembly)
+        }
+    }
+
+    fun handleKeyEvent(keyEvent: KeyEvent): Boolean {
+        return externalCodeInputHandler.onKeyEvent(keyEvent)
+    }
+
+    private fun sendEffect(effect: SearchScreenEffect) {
+        viewModelScope.launch {
+            _effect.emit(effect)
+        }
+    }
 
     fun filterByFlags(flags: Set<Long>) {
         checkedFlags.value = flags
@@ -102,36 +152,50 @@ class SearchViewModel @Inject constructor(
     }
 
     fun updateSearchText(text: String) {
-        _searchState.value = text
+        searchState.value = text
     }
 
     fun updateSearchSetsText(text: String) {
-        searchSetsState.value = text
+        searchSetsText.value = text
     }
 
-    private fun productFlagsFlow() = flow {
-        emit(commonLibraryRepository.getProductFlags())
-    }
-
-    private fun searchSetsFlow() = searchSetsState.map { searchText ->
-        searchRepository.getSearchSets(searchText)
-            .getOrDefault(emptyList())
-    }
-
-    private fun mapFlags(productFlags: Map<Long, ProductFlag>, checkedFlags: Set<Long>): List<SearchScreenFlag> {
-        return productFlags.map { (_, flag) ->
-            SearchScreenFlag(flag = flag, checked = flag.id in checkedFlags)
-        }
-    }
-
-    private fun mapSearchSets(sets: List<SearchSetItem>, checked: Set<Long>): List<SearchScreenSearchSet> {
-        return sets.map { set ->
-            SearchScreenSearchSet(
-                id = set.id,
-                supportingText = set.author,
-                text = set.title,
-                checked = set.id in checked,
+    private fun productFlagsFlow() = combine(
+        flow { emit(commonLibraryRepository.getProductFlags()) },
+        checkedFlags,
+    ) { flags, checked ->
+        flags.map { (_, flag) ->
+            SearchScreenFlag(
+                flag = flag,
+                checked = flag.id in checked
             )
         }
+    }
+
+    private fun searchSetsFlow() = combine(
+        searchSetsText,
+        checkedSearchSets
+    ) { searchText, checked ->
+        searchRepository.getSearchSets(searchText)
+            .getOrDefault(emptyList())
+            .map { set ->
+                SearchScreenSearchSet(
+                    id = set.id,
+                    supportingText = set.author,
+                    text = set.title,
+                    checked = set.id in checked,
+                )
+            }
+    }
+
+    private fun filtersFlow() = combine(
+        checkedFlags.map { it.isNotEmpty() },
+        checkedSearchSets.map { it.isNotEmpty() },
+        locationFilterState.map { it.isNotEmpty() },
+    ) { hasFlags, hasSearchSets, hasLocation ->
+        listOf(
+            SearchScreenFilter(SearchScreenFilterType.FLAGS, hasFlags),
+            SearchScreenFilter(SearchScreenFilterType.LOCATION, hasLocation),
+            SearchScreenFilter(SearchScreenFilterType.SELECTIONS, hasSearchSets)
+        )
     }
 }

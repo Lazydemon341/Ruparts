@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -70,6 +71,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -78,22 +80,23 @@ import androidx.paging.compose.itemKey
 import com.ruparts.app.R
 import com.ruparts.app.core.ui.components.RupartsCartItem
 import com.ruparts.app.features.cart.model.CartListItem
+import com.ruparts.app.features.search.presentation.model.SearchScreenEvent
+import com.ruparts.app.features.search.presentation.model.SearchScreenFilter
+import com.ruparts.app.features.search.presentation.model.SearchScreenFilterType
+import com.ruparts.app.features.search.presentation.model.SearchScreenFlag
+import com.ruparts.app.features.search.presentation.model.SearchScreenSearchSet
+import com.ruparts.app.features.search.presentation.model.SearchScreenSorting
+import com.ruparts.app.features.search.presentation.model.SearchScreenSortingType
+import com.ruparts.app.features.search.presentation.model.SearchScreenState
+import com.ruparts.app.features.search.presentation.model.SortingDirection
 import kotlinx.coroutines.flow.flowOf
 
 @Composable
 fun SearchScreen(
     state: SearchScreenState,
     pagedItems: LazyPagingItems<CartListItem>,
-    onSubmitFlags: (Set<Long>) -> Unit,
-    onSubmitSearchSets: (Set<Long>) -> Unit,
-    onScanButtonClick: () -> Unit,
-    onClearFilter: (SearchScreenFilter) -> Unit,
-    onItemClick: (CartListItem) -> Unit,
-    onSortingSelect: (SearchScreenSortingType, SortingDirection) -> Unit,
-    onLocationFilter: (String) -> Unit,
-    onLocationScanClick: () -> Unit,
+    onEvent: (SearchScreenEvent) -> Unit,
     onKeyEvent: (KeyEvent) -> Boolean,
-    onSearchSetsTextChange: (String) -> Unit,
 ) {
     when (state) {
         is SearchScreenState.Loading -> {
@@ -109,16 +112,8 @@ fun SearchScreen(
             SearchScreenContent(
                 state = state,
                 pagedItems = pagedItems,
-                onSubmitFlags = onSubmitFlags,
-                onSubmitSearchSets = onSubmitSearchSets,
-                onScanButtonClick = onScanButtonClick,
-                onClearFilter = onClearFilter,
-                onItemClick = onItemClick,
-                onSortingSelect = onSortingSelect,
-                onLocationFilter = onLocationFilter,
-                onLocationScanClick = onLocationScanClick,
+                onEvent = onEvent,
                 onKeyEvent = onKeyEvent,
-                onSearchSetsTextChange = onSearchSetsTextChange,
             )
         }
     }
@@ -138,16 +133,8 @@ private fun SearchScreenLoading() {
 private fun SearchScreenContent(
     state: SearchScreenState.Content,
     pagedItems: LazyPagingItems<CartListItem>,
-    onSubmitFlags: (Set<Long>) -> Unit,
-    onSubmitSearchSets: (Set<Long>) -> Unit,
-    onScanButtonClick: () -> Unit,
-    onClearFilter: (SearchScreenFilter) -> Unit,
-    onItemClick: (CartListItem) -> Unit,
-    onSortingSelect: (SearchScreenSortingType, SortingDirection) -> Unit,
-    onLocationFilter: (String) -> Unit,
-    onLocationScanClick: () -> Unit,
+    onEvent: (SearchScreenEvent) -> Unit,
     onKeyEvent: (KeyEvent) -> Boolean,
-    onSearchSetsTextChange: (String) -> Unit,
 ) {
     val scrollState = rememberScrollState()
     Scaffold(
@@ -159,7 +146,7 @@ private fun SearchScreenContent(
         ),
         floatingActionButton = {
             FloatingActionButton(
-                onClick = onScanButtonClick,
+                onClick = { onEvent(SearchScreenEvent.OnScanButtonClick) },
                 modifier = Modifier.padding(bottom = 8.dp, end = 4.dp),
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
@@ -171,7 +158,9 @@ private fun SearchScreenContent(
             }
         },
         bottomBar = {
-            SearchScreenAssemblyButton()
+            SearchScreenAssemblyButton(
+                onAssemblyClick = { onEvent(SearchScreenEvent.OnAssemblyClick) },
+            )
         },
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
     ) { paddingValues ->
@@ -187,7 +176,9 @@ private fun SearchScreenContent(
                 onFilterClick = { filter ->
                     showFilterDialogFor.value = filter.type
                 },
-                onClearFilter = onClearFilter,
+                onClearFilter = { filter ->
+                    onEvent(SearchScreenEvent.ClearFilter(filter))
+                },
             )
             SearchScreenSorting(
                 selectedSorting = state.selectedSorting,
@@ -195,18 +186,26 @@ private fun SearchScreenContent(
             )
             SearchScreenItems(
                 pagedItems = pagedItems,
-                onItemClick = onItemClick,
+                onItemClick = { item -> onEvent(SearchScreenEvent.OnItemClick(item)) },
             )
             showFilterDialogFor.value?.let { filterType ->
                 SearchScreenFilterDialog(
                     state = state,
                     filterType = filterType,
                     onDismiss = { showFilterDialogFor.value = null },
-                    onSubmitFlags = onSubmitFlags,
-                    onSubmitSearchSets = onSubmitSearchSets,
-                    onLocationFilter = onLocationFilter,
-                    onScanClick = onLocationScanClick,
-                    onSearchSetsTextChange = onSearchSetsTextChange,
+                    onSubmitFlags = { flags ->
+                        onEvent(SearchScreenEvent.FilterByFlags(flags))
+                    },
+                    onSubmitSearchSets = { searchSets ->
+                        onEvent(SearchScreenEvent.FilterBySearchSets(searchSets))
+                    },
+                    onLocationFilter = { location ->
+                        onEvent(SearchScreenEvent.FilterByLocation(location))
+                    },
+                    onScanClick = { onEvent(SearchScreenEvent.OnLocationScanClick) },
+                    onSearchSetsTextChange = { text ->
+                        onEvent(SearchScreenEvent.UpdateSearchSetsText(text))
+                    },
                 )
             }
             if (showSortingDialog.value) {
@@ -214,7 +213,7 @@ private fun SearchScreenContent(
                     selectedSorting = state.selectedSorting,
                     onDismiss = { showSortingDialog.value = false },
                     onSortingSelect = { type, direction ->
-                        onSortingSelect(type, direction)
+                        onEvent(SearchScreenEvent.SetSorting(type, direction))
                         showSortingDialog.value = false
                     }
                 )
@@ -372,24 +371,34 @@ private fun SearchScreenItems(
                     Spacer(modifier = Modifier.height(8.dp))
                 }
             }
+
+            if (pagedItems.loadState.append == LoadState.Loading) {
+                item {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentWidth(Alignment.CenterHorizontally)
+                    )
+                }
+            }
         }
     }
 }
 
 @Composable
-private fun SearchScreenAssemblyButton() {
+private fun SearchScreenAssemblyButton(onAssemblyClick: () -> Unit) {
     Surface(
         modifier = Modifier
-            .fillMaxWidth()
-            .navigationBarsPadding(),
+            .fillMaxWidth(),
         color = MaterialTheme.colorScheme.surface,
         shadowElevation = 8.dp,
     ) {
         Button(
-            onClick = { },
+            onClick = onAssemblyClick,
             modifier = Modifier
                 .padding(horizontal = 20.dp)
                 .padding(top = 8.dp, bottom = 24.dp)
+                .navigationBarsPadding()
                 .fillMaxWidth()
                 .height(56.dp),
             shape = RoundedCornerShape(16.dp),
@@ -474,12 +483,14 @@ private fun SearchScreenFlagsModalBottomSheet(
         sheetState = bottomSheetState,
         onDismissRequest = onDismiss,
         containerColor = MaterialTheme.colorScheme.surface,
+        contentWindowInsets = { WindowInsets(0.dp) },
     ) {
         Box {
             LazyColumn(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
-                    .padding(bottom = 80.dp),
+                    .padding(bottom = 80.dp)
+                    .navigationBarsPadding(),
             ) {
                 item {
                     Text(
@@ -546,7 +557,10 @@ private fun SearchScreenSelectionsModalBottomSheet(
 ) {
     val bottomSheetState = rememberModalBottomSheetState(true)
     var checkedSearchSets by remember(state.searchSets) {
-        mutableStateOf(state.searchSets.filter { it.checked }.map { it.id }.toSet())
+        val initialValue = state.searchSets
+            .filter { it.checked }
+            .mapTo(mutableSetOf()) { it.id }
+        mutableStateOf<Set<Long>>(initialValue)
     }
     val showClearButton by remember {
         derivedStateOf {
@@ -558,12 +572,14 @@ private fun SearchScreenSelectionsModalBottomSheet(
         sheetState = bottomSheetState,
         onDismissRequest = onDismiss,
         containerColor = MaterialTheme.colorScheme.surface,
+        contentWindowInsets = { WindowInsets(0.dp) }
     ) {
         Box {
             Column(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
-                    .padding(bottom = 100.dp),
+                    .padding(bottom = 100.dp)
+                    .navigationBarsPadding(),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
@@ -663,7 +679,9 @@ private fun BottomButtons(
         color = MaterialTheme.colorScheme.surface,
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .navigationBarsPadding(),
         ) {
             if (showClearButton) {
                 Button(
@@ -955,15 +973,7 @@ private fun SearchScreenPreview() {
             searchSetsText = "",
         ),
         pagedItems = mockPagingData,
-        onScanButtonClick = {},
-        onClearFilter = {},
-        onItemClick = {},
-        onSubmitFlags = {},
-        onSubmitSearchSets = {},
-        onSortingSelect = { _, _ -> },
-        onLocationFilter = {},
-        onLocationScanClick = {},
-        onKeyEvent = { false },
-        onSearchSetsTextChange = {},
+        onEvent = {},
+        onKeyEvent = { true },
     )
 }

@@ -11,9 +11,9 @@ import com.ruparts.app.features.commonlibrary.data.repository.CommonLibraryRepos
 import com.ruparts.app.features.search.data.network.model.SearchListRequestDataDto
 import com.ruparts.app.features.search.data.network.model.SearchListRequestDto
 import com.ruparts.app.features.search.data.network.model.SearchListResponseDto
-import com.ruparts.app.features.search.presentation.SearchScreenSorting
-import com.ruparts.app.features.search.presentation.SearchScreenSortingType
-import com.ruparts.app.features.search.presentation.SortingDirection
+import com.ruparts.app.features.search.presentation.model.SearchScreenSorting
+import com.ruparts.app.features.search.presentation.model.SearchScreenSortingType
+import com.ruparts.app.features.search.presentation.model.SortingDirection
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
