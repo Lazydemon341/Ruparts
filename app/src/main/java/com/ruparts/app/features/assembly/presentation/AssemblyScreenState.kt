@@ -1,6 +1,7 @@
 package com.ruparts.app.features.assembly.presentation
 
 import androidx.compose.runtime.Immutable
+import com.ruparts.app.features.cart.model.CartListItem
 
 @Immutable
 sealed interface AssemblyScreenState {
@@ -11,8 +12,7 @@ sealed interface AssemblyScreenState {
     data class Content(
         val selectedTab: AssemblyTab,
         val assemblyGroups: List<AssemblyGroup>,
-        val totalItemsCount: Int,
-        val basketItemsCount: Int,
+        val basketItems: List<CartListItem>,
     ) : AssemblyScreenState
 }
 
@@ -34,7 +34,6 @@ data class AssemblyItem(
     val brand: String,
     val description: String,
     val quantity: Int,
-    val isFavorite: Boolean = false,
 )
 
 enum class AssemblyTab {

@@ -4,8 +4,6 @@ import com.ruparts.app.features.assembly.presentation.AssemblyItem
 
 sealed interface AssemblyScreenEffect {
     data object NavigateBack : AssemblyScreenEffect
-    data object NavigateToSearch : AssemblyScreenEffect
-    data object NavigateToMenu : AssemblyScreenEffect
     data class NavigateToItemDetails(val item: AssemblyItem) : AssemblyScreenEffect
     data object NavigateToScan : AssemblyScreenEffect
 }

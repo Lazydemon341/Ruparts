@@ -59,7 +59,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ruparts.app.R
+import com.ruparts.app.core.ui.components.RupartsCartItem
 import com.ruparts.app.features.assembly.presentation.model.AssemblyScreenEvent
+import com.ruparts.app.features.cart.model.CartListItem
 
 @Composable
 fun AssemblyScreen(
@@ -118,8 +120,8 @@ private fun AssemblyScreenContent(
         topBar = {
             AssemblyTabRow(
                 selectedTab = state.selectedTab,
-                listCount = state.totalItemsCount,
-                basketCount = state.basketItemsCount,
+                listCount = state.assemblyGroups.size,
+                basketCount = state.basketItems.size,
                 onTabClick = { tab -> onEvent(AssemblyScreenEvent.OnTabClick(tab)) }
             )
         },
@@ -154,7 +156,9 @@ private fun AssemblyScreenContent(
                 }
 
                 AssemblyTab.BASKET -> {
-                    AssemblyBasket()
+                    AssemblyBasket(
+                        basketItems = state.basketItems,
+                    )
                 }
             }
         }
@@ -358,8 +362,8 @@ private fun AssemblyGroupCard(
                     item = item,
                     onEvent = onEvent,
                 )
+                Spacer(modifier = Modifier.height(8.dp))
             }
-            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }
@@ -412,15 +416,14 @@ private fun AssemblyItemRow(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.surface)
-                .clickable { onEvent(AssemblyScreenEvent.OnItemClick(item)) }
-                .padding(vertical = 8.dp),
+                .clickable { onEvent(AssemblyScreenEvent.OnItemClick(item)) },
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
             ) {
                 Row(
                     modifier = Modifier
@@ -465,7 +468,7 @@ private fun AssemblyItemRow(
                 )
             }
             IconButton(
-                onClick = { onEvent(AssemblyScreenEvent.OnFavoriteClick(item)) },
+                onClick = { onEvent(AssemblyScreenEvent.OnLocationClick(item)) },
                 modifier = Modifier.size(40.dp),
                 colors = IconButtonDefaults.iconButtonColors(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer
@@ -483,16 +486,43 @@ private fun AssemblyItemRow(
 }
 
 @Composable
-private fun AssemblyBasket() {
+private fun AssemblyBasket(
+    basketItems: List<CartListItem>,
+) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = "Корзина пуста",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        if (basketItems.isEmpty()) {
+            Text(
+                text = "Корзина пуста",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.surfaceContainer),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                items(
+                    items = basketItems,
+                    key = { item -> item.id },
+                ) { item ->
+                    RupartsCartItem(
+                        item = item,
+                        onClick = {
+                            // TODO: Navigate to item details
+                        },
+                        enableSwipeToDismiss = false,
+                        isRowVisible = true,
+                        showFlags = true,
+                        modifier = Modifier.animateItem(),
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -501,8 +531,6 @@ private fun AssemblyBasket() {
 private fun AssemblyScreenPreview() {
     val mockState = AssemblyScreenState.Content(
         selectedTab = AssemblyTab.LIST,
-        totalItemsCount = 168,
-        basketItemsCount = 1,
         assemblyGroups = listOf(
             AssemblyGroup(
                 locationId = "L2-A01-1-6-1",
@@ -517,7 +545,6 @@ private fun AssemblyScreenPreview() {
                         brand = "GENERAL MOTORS",
                         description = "Замок зажигания",
                         quantity = 133,
-                        isFavorite = true
                     ),
                     AssemblyItem(
                         id = 2,
@@ -553,9 +580,22 @@ private fun AssemblyScreenPreview() {
                     )
                 )
             )
-        )
+        ),
+        basketItems = listOf(
+            CartListItem(
+                id = 2,
+                article = "987654321",
+                brand = "Honda",
+                quantity = 50,
+                description = "Фильтр воздушный",
+                barcode = "TE250630T235959II3",
+                cartOwner = "Ivanov",
+                info = "L2-A02-1-6-1",
+                flags = listOf(),
+                fromExternalInput = false
+            ),
+        ),
     )
-
     AssemblyScreen(
         state = mockState,
         onEvent = {},

@@ -40,14 +40,6 @@ class AssemblyFragment : Fragment() {
                                     findNavController().navigateUp()
                                 }
 
-                                is AssemblyScreenEffect.NavigateToSearch -> {
-                                    // TODO: Navigate to search
-                                }
-
-                                is AssemblyScreenEffect.NavigateToMenu -> {
-                                    // TODO: Navigate to menu
-                                }
-
                                 is AssemblyScreenEffect.NavigateToItemDetails -> {
                                     // TODO: Navigate to item details
                                 }
