@@ -79,6 +79,7 @@ fun SearchScreen(
     onSubmitFlags: (Set<Long>) -> Unit,
     onSubmitSearchSets: (Set<Long>) -> Unit,
     onScanButtonClick: () -> Unit,
+    onAssemblingButtonClick: () -> Unit,
     onClearFilter: (SearchScreenFilter) -> Unit,
     onItemClick: (CartListItem) -> Unit,
     onSortingSelect: (SearchScreenSortingType, SortingDirection) -> Unit,
@@ -96,6 +97,7 @@ fun SearchScreen(
                 onSubmitFlags = onSubmitFlags,
                 onSubmitSearchSets = onSubmitSearchSets,
                 onScanButtonClick = onScanButtonClick,
+                onAssemblingButtonClick = onAssemblingButtonClick,
                 onClearFilter = onClearFilter,
                 onItemClick = onItemClick,
                 onSortingSelect = onSortingSelect,
@@ -122,6 +124,7 @@ private fun SearchScreenContent(
     onSubmitFlags: (Set<Long>) -> Unit,
     onSubmitSearchSets: (Set<Long>) -> Unit,
     onScanButtonClick: () -> Unit,
+    onAssemblingButtonClick: () -> Unit,
     onClearFilter: (SearchScreenFilter) -> Unit,
     onItemClick: (CartListItem) -> Unit,
     onSortingSelect: (SearchScreenSortingType, SortingDirection) -> Unit,
@@ -147,7 +150,7 @@ private fun SearchScreenContent(
             }
         },
         bottomBar = {
-            SearchScreenAssemblyButton()
+            SearchScreenAssemblyButton(onAssemblingButtonClick)
         },
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
     ) { paddingValues ->
@@ -350,7 +353,7 @@ private fun SearchScreenItems(
 }
 
 @Composable
-private fun SearchScreenAssemblyButton() {
+private fun SearchScreenAssemblyButton(onAssemblingButtonClick: () -> Unit) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -359,7 +362,7 @@ private fun SearchScreenAssemblyButton() {
         shadowElevation = 8.dp,
     ) {
         Button(
-            onClick = { },
+            onClick = onAssemblingButtonClick,
             modifier = Modifier
                 .padding(horizontal = 20.dp)
                 .padding(top = 8.dp, bottom = 24.dp)
@@ -925,5 +928,6 @@ private fun SearchScreenPreview() {
         onSortingSelect = { _, _ -> },
         onLocationFilter = {},
         onLocationScanClick = {},
+        onAssemblingButtonClick = {}
     )
 }

@@ -44,6 +44,11 @@ class SearchFragment : Fragment() {
                                 SearchFragmentDirections.actionSearchFragmentToProductScanFragment(ProductScanType.PRODUCT)
                             )
                         },
+                        onAssemblingButtonClick = {
+                            findNavController().navigate(
+                                SearchFragmentDirections.actionSearchFragmentToAssemblingFragment()
+                            )
+                        },
                         onClearFilter = viewModel::clearFilter,
                         onItemClick = { item ->
                             findNavController().navigate(
