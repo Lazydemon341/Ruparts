@@ -62,6 +62,8 @@ import com.ruparts.app.R
 import com.ruparts.app.core.ui.components.RupartsCartItem
 import com.ruparts.app.features.assembly.presentation.model.AssemblyScreenEvent
 import com.ruparts.app.features.cart.model.CartListItem
+import com.ruparts.app.features.cart.model.CartOwner
+import com.ruparts.app.features.cart.model.OwnerType
 
 @Composable
 fun AssemblyScreen(
@@ -589,7 +591,7 @@ private fun AssemblyScreenPreview() {
                 quantity = 50,
                 description = "Фильтр воздушный",
                 barcode = "TE250630T235959II3",
-                cartOwner = "Ivanov",
+                cartOwner = CartOwner(type = OwnerType.Cart, text = "Ivanov"),
                 info = "L2-A02-1-6-1",
                 flags = listOf(),
                 fromExternalInput = false

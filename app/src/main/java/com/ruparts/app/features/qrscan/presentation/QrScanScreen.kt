@@ -89,7 +89,9 @@ import com.ruparts.app.core.barcode.camera.BarcodeImageAnalyzer
 import com.ruparts.app.core.ui.components.CameraPreview
 import com.ruparts.app.core.ui.components.RupartsCartItem
 import com.ruparts.app.features.cart.model.CartListItem
+import com.ruparts.app.features.cart.model.CartOwner
 import com.ruparts.app.features.cart.model.CartScanPurpose
+import com.ruparts.app.features.cart.model.OwnerType
 import com.ruparts.app.features.qrscan.presentation.model.QrScanScreenAction
 import com.ruparts.app.features.qrscan.presentation.model.QrScanScreenState
 import java.util.concurrent.Executors
@@ -633,7 +635,7 @@ private fun QrScanScreenPreview() {
                     quantity = 13481,
                     description = "Описание",
                     barcode = "",
-                    cartOwner = "",
+                    cartOwner = CartOwner(type = OwnerType.Location, text = ""),
                     info = "",
                 ),
                 CartListItem(
@@ -643,7 +645,7 @@ private fun QrScanScreenPreview() {
                     quantity = 10,
                     description = "Длинное описание, которое не влезает в одну строчку",
                     barcode = "",
-                    cartOwner = "",
+                    cartOwner = CartOwner(type = OwnerType.Location, text = ""),
                     info = "",
                 ),
                 CartListItem(
@@ -655,7 +657,7 @@ private fun QrScanScreenPreview() {
                         "которое не влезает в одну строчку, которое не влезает в одну строчку, " +
                         "которое не влезает в одну строчку,",
                     barcode = "",
-                    cartOwner = "",
+                    cartOwner = CartOwner(type = OwnerType.Location, text = ""),
                     info = "",
                 )
             ),

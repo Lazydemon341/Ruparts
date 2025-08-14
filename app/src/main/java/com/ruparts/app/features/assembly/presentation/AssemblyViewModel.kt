@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.ruparts.app.features.assembly.presentation.model.AssemblyScreenEffect
 import com.ruparts.app.features.assembly.presentation.model.AssemblyScreenEvent
 import com.ruparts.app.features.cart.model.CartListItem
+import com.ruparts.app.features.cart.model.CartOwner
+import com.ruparts.app.features.cart.model.OwnerType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -93,7 +95,7 @@ class AssemblyViewModel @Inject constructor() : ViewModel() {
                     quantity = 125,
                     description = "Замок зажигания",
                     barcode = "TE250630T235959II2",
-                    cartOwner = "Petrov",
+                    cartOwner = CartOwner(type = OwnerType.Cart, text = "Petrov"),
                     info = "L2-A02-1-6-1",
                     flags = listOf(),
                     fromExternalInput = false
@@ -105,7 +107,7 @@ class AssemblyViewModel @Inject constructor() : ViewModel() {
                     quantity = 50,
                     description = "Фильтр воздушный",
                     barcode = "TE250630T235959II3",
-                    cartOwner = "Ivanov",
+                    cartOwner = CartOwner(type = OwnerType.Cart, text = "Ivanov"),
                     info = "L2-A02-1-6-1",
                     flags = listOf(),
                     fromExternalInput = false
@@ -117,7 +119,7 @@ class AssemblyViewModel @Inject constructor() : ViewModel() {
                     quantity = 200,
                     description = "Тормозные колодки",
                     barcode = "TE250630T235959II4",
-                    cartOwner = "Sidorov",
+                    cartOwner = CartOwner(type = OwnerType.Cart, text = "Sidorov"),
                     info = "L3-C01-1-2-3",
                     flags = listOf(),
                     fromExternalInput = false

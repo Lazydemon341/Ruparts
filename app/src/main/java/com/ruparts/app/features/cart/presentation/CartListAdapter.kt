@@ -19,9 +19,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ruparts.app.R
 import com.ruparts.app.core.utils.makeBold
 import com.ruparts.app.features.cart.model.CartListItem
+import com.ruparts.app.features.cart.model.OwnerType
 import com.ruparts.app.features.cart.presentation.cancelbutton.CartItemCancelButton
 import kotlinx.coroutines.flow.StateFlow
-
 
 class CartListAdapter(
     private val onItemClick: (CartListItem) -> Unit,
@@ -72,10 +72,17 @@ class CartListAdapter(
             amount.text = listItem.quantity.toString()
             description.text = listItem.description
             barcode.text = listItem.barcode.makeBold(listItem.barcode.length - 3)
-            cartOwner.text = listItem.cartOwner
+            cartOwner.text = listItem.cartOwner.text
+
+            // Set drawable based on owner type
+            val drawableRes = when (listItem.cartOwner.type) {
+                OwnerType.Cart -> R.drawable.cart2
+                OwnerType.Location -> R.drawable.location
+            }
+            cartOwner.setCompoundDrawablesRelativeWithIntrinsicBounds(drawableRes, 0, 0, 0)
 
             // Set up product flags RecyclerView
-            if (productFlagsRecyclerView.layoutManager == null) {
+            if (productFlagsRecyclerView.layoutManager == null || productFlagsRecyclerView.adapter == null) {
                 productFlagsRecyclerView.layoutManager = LinearLayoutManager(
                     itemView.context,
                     LinearLayoutManager.HORIZONTAL,
@@ -89,7 +96,7 @@ class CartListAdapter(
 
             if (listItem.info.isEmpty()) {
                 info.isVisible = false
-            } else  {
+            } else {
                 info.isVisible = true
                 info.text = listItem.info
             }
@@ -141,7 +148,6 @@ class CartListAdapter(
         }
     }
 }
-
 
 class CartListItemDiffCallback : DiffUtil.ItemCallback<CartListItem>() {
 

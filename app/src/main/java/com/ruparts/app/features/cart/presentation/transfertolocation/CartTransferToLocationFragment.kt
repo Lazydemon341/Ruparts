@@ -44,6 +44,8 @@ import com.ruparts.app.core.ui.components.RupartsCartItem
 import com.ruparts.app.core.ui.theme.RupartsTheme
 import com.ruparts.app.core.ui.viewmodel.assistedViewModels
 import com.ruparts.app.features.cart.model.CartListItem
+import com.ruparts.app.features.cart.model.CartOwner
+import com.ruparts.app.features.cart.model.OwnerType
 import com.ruparts.app.features.cart.presentation.CartFragment
 import com.ruparts.app.features.cart.presentation.CartFragment.Companion.CART_TOAST_TO_SHOW_KEY
 import com.ruparts.app.features.cart.presentation.transfertolocation.model.CartTransferToLocationScreenEffect
@@ -196,7 +198,10 @@ class CartTransferToLocationFragment : DialogFragment() {
                     quantity = 13481,
                     description = "Описание",
                     barcode = "",
-                    cartOwner = "",
+                    cartOwner = CartOwner(
+                        type = OwnerType.Location,
+                        text = ""
+                    ),
                     info = "",
                 )
             )
