@@ -26,4 +26,9 @@ class RupartsApplication : Application(), SingletonImageLoader.Factory {
             }
             .build()
     }
+
+    override fun onCreate() {
+        super.onCreate()
+        // TODO: Composer.setDiagnosticStackTraceEnabled(BuildConfig.DEBUG)
+    }
 }

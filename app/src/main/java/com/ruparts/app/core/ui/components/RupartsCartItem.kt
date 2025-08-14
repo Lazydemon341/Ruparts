@@ -16,6 +16,8 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBox
@@ -44,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ruparts.app.R
 import com.ruparts.app.features.cart.model.CartListItem
+import com.ruparts.app.features.cart.model.OwnerType
 import com.ruparts.app.features.commonlibrary.presentation.getIconRes
 
 @Composable
@@ -146,7 +149,7 @@ fun RupartsCartItem(
                                 shape = RoundedCornerShape(CornerSize(5.dp)),
                                 color = Color(0xFFFFE8A3)
                             )
-                            .padding(horizontal = 4.dp, vertical = 2.dp),
+                            .padding(horizontal = 4.dp, vertical = 4.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(5.dp),
                     ) {
@@ -162,8 +165,8 @@ fun RupartsCartItem(
                                     append(item.barcode.substring(item.barcode.length - 3))
                                 }
                             },
-                            fontSize = 14.sp,
                             maxLines = 1,
+                            style = MaterialTheme.typography.bodyMedium,
                         )
                     }
                     Row(
@@ -174,18 +177,33 @@ fun RupartsCartItem(
                                 shape = RoundedCornerShape(CornerSize(5.dp)),
                                 color = Color(0xFFE8DEF8)
                             )
-                            .padding(horizontal = 4.dp, vertical = 2.dp),
+                            .padding(horizontal = 4.dp, vertical = 4.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(5.dp)
                     ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.cart2),
-                            contentDescription = "",
-                        )
+                        when (item.cartOwner.type) {
+                            OwnerType.Location -> {
+                                Icon(
+                                    modifier = Modifier.size(18.dp),
+                                    imageVector = Icons.Outlined.LocationOn,
+                                    contentDescription = "",
+                                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                                )
+                            }
+
+                            OwnerType.Cart -> {
+                                Icon(
+                                    modifier = Modifier.size(18.dp),
+                                    painter = painterResource(id = R.drawable.cart2),
+                                    contentDescription = "",
+                                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                                )
+                            }
+                        }
                         Text(
-                            text = item.cartOwner.substring(1),
-                            fontSize = 14.sp,
+                            text = item.cartOwner.text,
                             maxLines = 1,
+                            style = MaterialTheme.typography.bodyMedium,
                         )
                     }
                 }

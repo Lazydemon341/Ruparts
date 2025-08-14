@@ -80,6 +80,8 @@ import androidx.paging.compose.itemKey
 import com.ruparts.app.R
 import com.ruparts.app.core.ui.components.RupartsCartItem
 import com.ruparts.app.features.cart.model.CartListItem
+import com.ruparts.app.features.cart.model.CartOwner
+import com.ruparts.app.features.cart.model.OwnerType
 import com.ruparts.app.features.search.presentation.model.SearchScreenEvent
 import com.ruparts.app.features.search.presentation.model.SearchScreenFilter
 import com.ruparts.app.features.search.presentation.model.SearchScreenFilterType
@@ -911,7 +913,7 @@ private fun SearchScreenPreview() {
             quantity = 125,
             description = "Замок зажигания",
             barcode = "TE250630T235959II2",
-            cartOwner = "Petrov",
+            cartOwner = CartOwner(type = OwnerType.Cart, text = "Petrov"),
             info = "L2-A02-1-6-1",
             flags = listOf(),
             fromExternalInput = false
@@ -923,7 +925,7 @@ private fun SearchScreenPreview() {
             quantity = 50,
             description = "Фильтр воздушный",
             barcode = "TE250630T235959II3",
-            cartOwner = "Ivanov",
+            cartOwner = CartOwner(type = OwnerType.Cart, text = "Ivanov"),
             info = "L1-B03-2-4-2",
             flags = listOf(),
             fromExternalInput = false
@@ -935,7 +937,7 @@ private fun SearchScreenPreview() {
             quantity = 200,
             description = "Тормозные колодки",
             barcode = "TE250630T235959II4",
-            cartOwner = "Sidorov",
+            cartOwner = CartOwner(type = OwnerType.Cart, text = "Sidorov"),
             info = "L3-C01-1-2-3",
             flags = listOf(),
             fromExternalInput = false
