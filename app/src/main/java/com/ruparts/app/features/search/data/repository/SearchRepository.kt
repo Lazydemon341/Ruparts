@@ -14,7 +14,7 @@ import com.ruparts.app.features.search.data.network.model.SearchSetsRequestDto
 import com.ruparts.app.features.search.data.network.model.SearchSetsResponseDto
 import com.ruparts.app.features.search.data.paging.SearchPagingSource
 import com.ruparts.app.features.search.model.SearchSetItem
-import com.ruparts.app.features.search.presentation.SearchScreenSorting
+import com.ruparts.app.features.search.presentation.model.SearchScreenSorting
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext

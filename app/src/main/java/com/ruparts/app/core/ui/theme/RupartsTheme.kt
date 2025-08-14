@@ -40,6 +40,10 @@ fun RupartsTheme(
     val onSurface = colorResource(id = R.color.onSurface)
     val onSurfaceVariant = colorResource(id = R.color.onSurfaceVariant)
 
+    // Error colors
+    val error = colorResource(id = R.color.error)
+    val onError = colorResource(id = R.color.onError)
+    
     // Other colors
     val outline = colorResource(id = R.color.purple)
 
@@ -63,21 +67,110 @@ fun RupartsTheme(
         onSurface = onSurface,
         surfaceVariant = surfaceVariant,
         onSurfaceVariant = onSurfaceVariant,
-        outline = outline
+        outline = outline,
+        error = error,
+        onError = onError,
     )
 
     val typography = Typography(
-        bodyMedium = TextStyle(
+        // Title styles - M3/title/large-emphasized: Font(family: "Roboto", style: Medium, size: 22, weight: 500, lineHeight: 28)
+        titleLarge = TextStyle(
+            fontSize = 22.sp,
+            lineHeight = 28.sp,
+            fontWeight = FontWeight(500), // Medium weight
+            letterSpacing = 0.sp,
+        ),
+        titleMedium = TextStyle(
+            fontSize = 16.sp,
+            lineHeight = 24.sp,
+            fontWeight = FontWeight(500),
+            letterSpacing = 0.5.sp, // M3/body/large-emphasized uses tracking 0.5
+        ),
+        titleSmall = TextStyle(
             fontSize = 14.sp,
             lineHeight = 20.sp,
-            fontWeight = FontWeight(400),
-            letterSpacing = 0.25.sp,
+            fontWeight = FontWeight(500),
+            letterSpacing = 0.1.sp,
         ),
+
+        // Body styles - from Figma design system
         bodyLarge = TextStyle(
             fontSize = 16.sp,
             lineHeight = 24.sp,
+            fontWeight = FontWeight(400), // M3/body/large: Regular weight
+            letterSpacing = 0.5.sp, // Updated from Figma
+        ),
+        bodyMedium = TextStyle(
+            fontSize = 14.sp,
+            lineHeight = 20.sp,
+            fontWeight = FontWeight(400), // M3/body/medium: Regular weight
+            letterSpacing = 0.25.sp, // Static/Body Medium/Tracking: 0.25
+        ),
+        bodySmall = TextStyle(
+            fontSize = 12.sp,
+            lineHeight = 16.sp,
             fontWeight = FontWeight(400),
+            letterSpacing = 0.4.sp,
+        ),
+
+        // Label styles
+        labelLarge = TextStyle(
+            fontSize = 14.sp,
+            lineHeight = 20.sp,
+            fontWeight = FontWeight(500),
+            letterSpacing = 0.1.sp,
+        ),
+        labelMedium = TextStyle(
+            fontSize = 12.sp,
+            lineHeight = 16.sp,
+            fontWeight = FontWeight(500),
             letterSpacing = 0.5.sp,
+        ),
+        labelSmall = TextStyle(
+            fontSize = 11.sp,
+            lineHeight = 16.sp,
+            fontWeight = FontWeight(500),
+            letterSpacing = 0.5.sp,
+        ),
+
+        // Headline styles
+        headlineLarge = TextStyle(
+            fontSize = 32.sp,
+            lineHeight = 40.sp,
+            fontWeight = FontWeight(400),
+            letterSpacing = 0.sp,
+        ),
+        headlineMedium = TextStyle(
+            fontSize = 28.sp,
+            lineHeight = 36.sp,
+            fontWeight = FontWeight(400),
+            letterSpacing = 0.sp,
+        ),
+        headlineSmall = TextStyle(
+            fontSize = 24.sp,
+            lineHeight = 32.sp,
+            fontWeight = FontWeight(400),
+            letterSpacing = 0.sp,
+        ),
+
+        // Display styles
+        displayLarge = TextStyle(
+            fontSize = 57.sp,
+            lineHeight = 64.sp,
+            fontWeight = FontWeight(400),
+            letterSpacing = (-0.25).sp,
+        ),
+        displayMedium = TextStyle(
+            fontSize = 45.sp,
+            lineHeight = 52.sp,
+            fontWeight = FontWeight(400),
+            letterSpacing = 0.sp,
+        ),
+        displaySmall = TextStyle(
+            fontSize = 36.sp,
+            lineHeight = 44.sp,
+            fontWeight = FontWeight(400),
+            letterSpacing = 0.sp,
         )
     )
 

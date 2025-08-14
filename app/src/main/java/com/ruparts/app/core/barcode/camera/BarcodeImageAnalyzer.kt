@@ -32,7 +32,7 @@ class BarcodeImageAnalyzer(
         .build()
     private val scanner = BarcodeScanning.getClient(options)
 
-    private var previewSize: IntSize = IntSize.Companion.Zero
+    private var previewSize: IntSize = IntSize.Zero
 
     fun setPreviewSize(size: IntSize) {
         previewSize = size
@@ -117,7 +117,12 @@ class BarcodeImageAnalyzer(
         }
 
         val cropTop = (rotatedBitmap.height / 2f) - (cropHeight / 2f)
-        return Bitmap.createBitmap(rotatedBitmap, 0, cropTop.toInt(), rotatedBitmap.width, cropHeight.toInt())
+        return if (cropTop > 0) {
+            Bitmap.createBitmap(rotatedBitmap, 0, cropTop.toInt(), rotatedBitmap.width, cropHeight.toInt())
+        } else {
+            // TODO: is it ok to just return original here?
+            original
+        }
     }
 
     /**
