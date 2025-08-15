@@ -49,6 +49,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -128,21 +129,24 @@ private fun AssemblyScreenContent(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = { onEvent(AssemblyScreenEvent.OnScanClick) },
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.scanner),
-                    contentDescription = "",
-                )
+            if (state.selectedTab != AssemblyTab.LIST || state.assemblyGroups.isNotEmpty()) {
+                FloatingActionButton(
+                    onClick = { onEvent(AssemblyScreenEvent.OnScanClick) },
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                ) {
+                    Icon(
+                        modifier = Modifier.size(24.dp),
+                        painter = painterResource(id = R.drawable.scanner),
+                        contentDescription = "",
+                    )
+                }
             }
         },
         contentWindowInsets = WindowInsets.systemBars.only(
             WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
         ),
-        containerColor = MaterialTheme.colorScheme.surface,
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -264,17 +268,34 @@ private fun AssemblyList(
     groups: List<AssemblyGroup>,
     onEvent: (AssemblyScreenEvent) -> Unit,
 ) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surfaceContainer),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
     ) {
-        items(groups) { group ->
-            AssemblyGroupCard(
-                group = group,
-                onEvent = onEvent,
+        if (groups.isEmpty()) {
+            Text(
+                text = "Список пуст",
+                style = MaterialTheme.typography.bodyMedium,
+                color = colorResource(id = R.color.secondary60),
             )
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.surfaceContainer),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(groups) { group ->
+                    AssemblyGroupCard(
+                        group = group,
+                        onEvent = onEvent,
+                    )
+                }
+                // space for fab
+                item {
+                    Spacer(modifier = Modifier.height(80.dp))
+                }
+            }
         }
     }
 }
@@ -498,8 +519,8 @@ private fun AssemblyBasket(
         if (basketItems.isEmpty()) {
             Text(
                 text = "Корзина пуста",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = MaterialTheme.typography.bodyMedium,
+                color = colorResource(id = R.color.secondary60),
             )
         } else {
             LazyColumn(
@@ -522,6 +543,9 @@ private fun AssemblyBasket(
                         showFlags = true,
                         modifier = Modifier.animateItem(),
                     )
+                }
+                item {
+                    Spacer(modifier = Modifier.height(80.dp))
                 }
             }
         }

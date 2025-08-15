@@ -267,6 +267,7 @@ private fun SelectionItem(selectionState: RupartsCartItemSelectionState) {
                 )
             )
         } else {
+            // TODO: handle click
             Icon(
                 imageVector = Icons.Outlined.MoreVert,
                 contentDescription = "",

@@ -141,6 +141,8 @@ private fun SearchScreenContent(
     onKeyEvent: (KeyEvent) -> Boolean,
 ) {
     val scrollState = rememberScrollState()
+    val showFilterDialogFor = remember { mutableStateOf<SearchScreenFilterType?>(null) }
+    val showSortingDialog = remember { mutableStateOf(false) }
     Scaffold(
         modifier = Modifier.onKeyEvent {
             onKeyEvent(it.nativeKeyEvent)
@@ -148,6 +150,24 @@ private fun SearchScreenContent(
         contentWindowInsets = WindowInsets.systemBars.only(
             WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
         ),
+        topBar = {
+            Column {
+                SearchScreenFilters(
+                    filters = state.filters,
+                    scrollState = scrollState,
+                    onFilterClick = { filter ->
+                        showFilterDialogFor.value = filter.type
+                    },
+                    onClearFilter = { filter ->
+                        onEvent(SearchScreenEvent.ClearFilter(filter))
+                    },
+                )
+                SearchScreenSorting(
+                    selectedSorting = state.selectedSorting,
+                    onClick = { showSortingDialog.value = true }
+                )
+            }
+        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { onEvent(SearchScreenEvent.OnScanButtonClick) },
@@ -156,6 +176,7 @@ private fun SearchScreenContent(
                 contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
                 Icon(
+                    modifier = Modifier.size(24.dp),
                     painter = painterResource(id = R.drawable.scanner),
                     contentDescription = "",
                 )
@@ -168,26 +189,11 @@ private fun SearchScreenContent(
         },
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
     ) { paddingValues ->
-        val showFilterDialogFor = remember { mutableStateOf<SearchScreenFilterType?>(null) }
-        val showSortingDialog = remember { mutableStateOf(false) }
-        Column(
+        Box(
             modifier = Modifier
                 .padding(paddingValues)
+                .fillMaxSize(),
         ) {
-            SearchScreenFilters(
-                filters = state.filters,
-                scrollState = scrollState,
-                onFilterClick = { filter ->
-                    showFilterDialogFor.value = filter.type
-                },
-                onClearFilter = { filter ->
-                    onEvent(SearchScreenEvent.ClearFilter(filter))
-                },
-            )
-            SearchScreenSorting(
-                selectedSorting = state.selectedSorting,
-                onClick = { showSortingDialog.value = true }
-            )
             SearchScreenItems(
                 pagedItems = pagedItems,
                 state = state,

@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
@@ -52,7 +53,8 @@ class SearchViewModel @Inject constructor(
     private val searchState = MutableStateFlow("")
     private val searchSetsText = MutableStateFlow("")
     private val searchMode = MutableStateFlow(SearchScreenMode.SEARCH)
-    private val selectedItems = MutableStateFlow<Set<Long>>(emptySet())
+    private val _selectedItems = MutableStateFlow<Set<Long>>(emptySet())
+    val selectedItems: StateFlow<Set<Long>> = _selectedItems
 
     private val _effect = MutableSharedFlow<SearchScreenEffect>()
     val effect = _effect.asSharedFlow()
@@ -89,7 +91,7 @@ class SearchViewModel @Inject constructor(
         searchSetsText,
         filtersFlow(),
         searchMode,
-        selectedItems,
+        _selectedItems,
     ) { productFlags, searchSets, sorting, locationFilter, searchSetsText, filters, mode, selectedItems ->
         SearchScreenState.Content(
             mode = mode,
@@ -137,19 +139,19 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    fun filterByFlags(flags: Set<Long>) {
+    private fun filterByFlags(flags: Set<Long>) {
         checkedFlags.value = flags
     }
 
-    fun filterByLocation(location: String) {
+    private fun filterByLocation(location: String) {
         locationFilterState.value = location
     }
 
-    fun filterBySearchSets(searchSets: Set<Long>) {
+    private fun filterBySearchSets(searchSets: Set<Long>) {
         checkedSearchSets.value = searchSets
     }
 
-    fun clearFilter(filter: SearchScreenFilter) {
+    private fun clearFilter(filter: SearchScreenFilter) {
         when (filter.type) {
             SearchScreenFilterType.FLAGS -> checkedFlags.value = emptySet()
             SearchScreenFilterType.LOCATION -> locationFilterState.value = ""
@@ -157,15 +159,15 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    fun setSorting(type: SearchScreenSortingType, direction: SortingDirection) {
+    private fun setSorting(type: SearchScreenSortingType, direction: SortingDirection) {
         selectedSorting.value = SearchScreenSorting(type, direction)
     }
 
-    fun updateSearchText(text: String) {
+    private fun updateSearchText(text: String) {
         searchState.value = text
     }
 
-    fun updateSearchSetsText(text: String) {
+    private fun updateSearchSetsText(text: String) {
         searchSetsText.value = text
     }
 
@@ -213,13 +215,13 @@ class SearchViewModel @Inject constructor(
         searchMode.value = if (enabled) {
             SearchScreenMode.SELECTION
         } else {
-            selectedItems.value = emptySet()
+            _selectedItems.value = emptySet()
             SearchScreenMode.SEARCH
         }
     }
 
     private fun toggleItemSelection(itemId: Long) {
-        selectedItems.value = selectedItems.value.toMutableSet().apply {
+        _selectedItems.value = _selectedItems.value.toMutableSet().apply {
             if (contains(itemId)) {
                 remove(itemId)
             } else {
