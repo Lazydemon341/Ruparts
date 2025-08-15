@@ -35,9 +35,7 @@ class SearchFragment : Fragment() {
             createMenu(menu, menuInflater)
         }
 
-        override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-            return false
-        }
+        override fun onMenuItemSelected(menuItem: MenuItem): Boolean = false
     }
 
     override fun onCreateView(
@@ -123,12 +121,18 @@ class SearchFragment : Fragment() {
         return object : MenuItem.OnActionExpandListener {
             override fun onMenuItemActionExpand(item: MenuItem): Boolean {
                 itemToHide.isVisible = false
+                if (item.itemId == R.id.checkmark) {
+                    viewModel.handleEvent(SearchScreenEvent.ToggleSelectionMode(true))
+                }
                 return true
             }
 
             override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
                 itemToHide.isVisible = true
                 (requireActivity() as MainActivity).supportInvalidateOptionsMenu()
+                if (item.itemId == R.id.checkmark) {
+                    viewModel.handleEvent(SearchScreenEvent.ToggleSelectionMode(false))
+                }
                 return true
             }
         }

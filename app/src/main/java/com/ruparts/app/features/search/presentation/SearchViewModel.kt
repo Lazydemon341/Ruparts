@@ -17,6 +17,7 @@ import com.ruparts.app.features.search.presentation.model.SearchScreenEvent
 import com.ruparts.app.features.search.presentation.model.SearchScreenFilter
 import com.ruparts.app.features.search.presentation.model.SearchScreenFilterType
 import com.ruparts.app.features.search.presentation.model.SearchScreenFlag
+import com.ruparts.app.features.search.presentation.model.SearchScreenMode
 import com.ruparts.app.features.search.presentation.model.SearchScreenSearchSet
 import com.ruparts.app.features.search.presentation.model.SearchScreenSorting
 import com.ruparts.app.features.search.presentation.model.SearchScreenSortingType
@@ -50,6 +51,8 @@ class SearchViewModel @Inject constructor(
     private val locationFilterState = MutableStateFlow("")
     private val searchState = MutableStateFlow("")
     private val searchSetsText = MutableStateFlow("")
+    private val searchMode = MutableStateFlow(SearchScreenMode.SEARCH)
+    private val selectedItems = MutableStateFlow<Set<Long>>(emptySet())
 
     private val _effect = MutableSharedFlow<SearchScreenEffect>()
     val effect = _effect.asSharedFlow()
@@ -85,14 +88,18 @@ class SearchViewModel @Inject constructor(
         locationFilterState,
         searchSetsText,
         filtersFlow(),
-    ) { productFlags, searchSets, sorting, locationFilter, searchSetsText, filters ->
+        searchMode,
+        selectedItems,
+    ) { productFlags, searchSets, sorting, locationFilter, searchSetsText, filters, mode, selectedItems ->
         SearchScreenState.Content(
+            mode = mode,
             filters = filters,
             flags = productFlags,
             searchSets = searchSets,
             selectedSorting = sorting,
             locationFilter = locationFilter,
             searchSetsText = searchSetsText,
+            selectedItems = selectedItems,
         )
     }.catch<SearchScreenState> {
         emit(SearchScreenState.Error)
@@ -112,9 +119,11 @@ class SearchViewModel @Inject constructor(
             is SearchScreenEvent.UpdateSearchText -> updateSearchText(event.text)
             is SearchScreenEvent.UpdateSearchSetsText -> updateSearchSetsText(event.text)
             is SearchScreenEvent.OnScanButtonClick -> sendEffect(SearchScreenEffect.NavigateToScan(ProductScanType.PRODUCT))
-            is SearchScreenEvent.OnItemClick -> sendEffect(SearchScreenEffect.NavigateToProduct(event.item.barcode))
+            is SearchScreenEvent.OnItemClick -> handleItemClick(event.item)
             is SearchScreenEvent.OnLocationScanClick -> sendEffect(SearchScreenEffect.NavigateToScan(ProductScanType.LOCATION))
             is SearchScreenEvent.OnAssemblyClick -> sendEffect(SearchScreenEffect.NavigateToAssembly)
+            is SearchScreenEvent.ToggleSelectionMode -> toggleSelectionMode(event.enabled)
+            is SearchScreenEvent.ToggleItemSelection -> toggleItemSelection(event.itemId)
         }
     }
 
@@ -198,5 +207,32 @@ class SearchViewModel @Inject constructor(
             SearchScreenFilter(SearchScreenFilterType.LOCATION, hasLocation),
             SearchScreenFilter(SearchScreenFilterType.SELECTIONS, hasSearchSets)
         )
+    }
+
+    private fun toggleSelectionMode(enabled: Boolean) {
+        searchMode.value = if (enabled) {
+            SearchScreenMode.SELECTION
+        } else {
+            selectedItems.value = emptySet()
+            SearchScreenMode.SEARCH
+        }
+    }
+
+    private fun toggleItemSelection(itemId: Long) {
+        selectedItems.value = selectedItems.value.toMutableSet().apply {
+            if (contains(itemId)) {
+                remove(itemId)
+            } else {
+                add(itemId)
+            }
+        }
+    }
+
+    private fun handleItemClick(item: CartListItem) {
+        if (searchMode.value == SearchScreenMode.SELECTION) {
+            toggleItemSelection(item.id)
+        } else {
+            sendEffect(SearchScreenEffect.NavigateToProduct(item.barcode))
+        }
     }
 }

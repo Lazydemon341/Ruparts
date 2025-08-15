@@ -4,6 +4,11 @@ import androidx.compose.runtime.Immutable
 import com.ruparts.app.features.commonlibrary.ProductFlag
 import java.util.UUID
 
+enum class SearchScreenMode {
+    SEARCH,
+    SELECTION
+}
+
 @Immutable
 sealed interface SearchScreenState {
     data object Loading : SearchScreenState
@@ -12,12 +17,14 @@ sealed interface SearchScreenState {
 
     @Immutable
     data class Content(
+        val mode: SearchScreenMode = SearchScreenMode.SEARCH,
         val filters: List<SearchScreenFilter>,
         val flags: List<SearchScreenFlag>,
         val searchSets: List<SearchScreenSearchSet>,
         val selectedSorting: SearchScreenSorting,
         val locationFilter: String,
         val searchSetsText: String,
+        val selectedItems: Set<Long>,
     ) : SearchScreenState
 }
 

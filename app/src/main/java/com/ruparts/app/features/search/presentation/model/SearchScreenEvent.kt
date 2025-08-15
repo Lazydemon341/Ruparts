@@ -14,4 +14,6 @@ sealed interface SearchScreenEvent {
     data class OnItemClick(val item: CartListItem) : SearchScreenEvent
     data object OnLocationScanClick : SearchScreenEvent
     data object OnAssemblyClick : SearchScreenEvent
+    data class ToggleSelectionMode(val enabled: Boolean) : SearchScreenEvent
+    data class ToggleItemSelection(val itemId: Long) : SearchScreenEvent
 }

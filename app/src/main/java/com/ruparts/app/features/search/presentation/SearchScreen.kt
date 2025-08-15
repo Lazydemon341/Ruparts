@@ -79,6 +79,7 @@ import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import com.ruparts.app.R
 import com.ruparts.app.core.ui.components.RupartsCartItem
+import com.ruparts.app.core.ui.components.RupartsCartItemSelectionState
 import com.ruparts.app.features.cart.model.CartListItem
 import com.ruparts.app.features.cart.model.CartOwner
 import com.ruparts.app.features.cart.model.OwnerType
@@ -86,6 +87,7 @@ import com.ruparts.app.features.search.presentation.model.SearchScreenEvent
 import com.ruparts.app.features.search.presentation.model.SearchScreenFilter
 import com.ruparts.app.features.search.presentation.model.SearchScreenFilterType
 import com.ruparts.app.features.search.presentation.model.SearchScreenFlag
+import com.ruparts.app.features.search.presentation.model.SearchScreenMode
 import com.ruparts.app.features.search.presentation.model.SearchScreenSearchSet
 import com.ruparts.app.features.search.presentation.model.SearchScreenSorting
 import com.ruparts.app.features.search.presentation.model.SearchScreenSortingType
@@ -188,7 +190,9 @@ private fun SearchScreenContent(
             )
             SearchScreenItems(
                 pagedItems = pagedItems,
-                onItemClick = { item -> onEvent(SearchScreenEvent.OnItemClick(item)) },
+                state = state,
+                selectedItems = state.selectedItems,
+                onEvent = onEvent,
             )
             showFilterDialogFor.value?.let { filterType ->
                 SearchScreenFilterDialog(
@@ -346,8 +350,11 @@ private const val listItemContentType = "listItem"
 @Composable
 private fun SearchScreenItems(
     pagedItems: LazyPagingItems<CartListItem>,
-    onItemClick: (CartListItem) -> Unit,
+    state: SearchScreenState.Content,
+    selectedItems: Set<Long>,
+    onEvent: (SearchScreenEvent) -> Unit,
 ) {
+    val isSelectionMode = state.mode == SearchScreenMode.SELECTION
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -366,9 +373,24 @@ private fun SearchScreenItems(
                     RupartsCartItem(
                         item = item,
                         isRowVisible = true,
-                        onClick = onItemClick,
+                        onClick = {
+                            if (isSelectionMode) {
+                                onEvent(SearchScreenEvent.ToggleItemSelection(item.id))
+                            } else {
+                                onEvent(SearchScreenEvent.OnItemClick(item))
+                            }
+                        },
                         showFlags = true,
                         modifier = Modifier.animateItem(),
+                        selectionState = if (isSelectionMode) {
+                            if (item.id in selectedItems) {
+                                RupartsCartItemSelectionState.SELECTED
+                            } else {
+                                RupartsCartItemSelectionState.NOT_SELECTED
+                            }
+                        } else {
+                            RupartsCartItemSelectionState.NONE
+                        },
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                 }
@@ -947,6 +969,7 @@ private fun SearchScreenPreview() {
 
     SearchScreen(
         state = SearchScreenState.Content(
+            mode = SearchScreenMode.SEARCH,
             filters = listOf(
                 SearchScreenFilter(SearchScreenFilterType.FLAGS, false),
                 SearchScreenFilter(SearchScreenFilterType.LOCATION, true),
@@ -973,6 +996,7 @@ private fun SearchScreenPreview() {
             selectedSorting = SearchScreenSorting(),
             locationFilter = "",
             searchSetsText = "",
+            selectedItems = emptySet(),
         ),
         pagedItems = mockPagingData,
         onEvent = {},
