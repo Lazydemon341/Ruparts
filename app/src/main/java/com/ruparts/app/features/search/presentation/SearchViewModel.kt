@@ -10,6 +10,7 @@ import com.ruparts.app.core.barcode.ExternalCodeInputHandler
 import com.ruparts.app.core.utils.combine
 import com.ruparts.app.features.cart.model.CartListItem
 import com.ruparts.app.features.commonlibrary.data.repository.CommonLibraryRepository
+import com.ruparts.app.features.productscan.model.ProductScanType
 import com.ruparts.app.features.search.data.repository.SearchRepository
 import com.ruparts.app.features.search.presentation.model.SearchScreenEffect
 import com.ruparts.app.features.search.presentation.model.SearchScreenEvent
@@ -110,9 +111,9 @@ class SearchViewModel @Inject constructor(
             is SearchScreenEvent.SetSorting -> setSorting(event.type, event.direction)
             is SearchScreenEvent.UpdateSearchText -> updateSearchText(event.text)
             is SearchScreenEvent.UpdateSearchSetsText -> updateSearchSetsText(event.text)
-            is SearchScreenEvent.OnScanButtonClick -> sendEffect(SearchScreenEffect.NavigateToProductScan)
+            is SearchScreenEvent.OnScanButtonClick -> sendEffect(SearchScreenEffect.NavigateToScan(ProductScanType.PRODUCT))
             is SearchScreenEvent.OnItemClick -> sendEffect(SearchScreenEffect.NavigateToProduct(event.item.barcode))
-            is SearchScreenEvent.OnLocationScanClick -> sendEffect(SearchScreenEffect.NavigateToLocationScan)
+            is SearchScreenEvent.OnLocationScanClick -> sendEffect(SearchScreenEffect.NavigateToScan(ProductScanType.LOCATION))
             is SearchScreenEvent.OnAssemblyClick -> sendEffect(SearchScreenEffect.NavigateToAssembly)
         }
     }

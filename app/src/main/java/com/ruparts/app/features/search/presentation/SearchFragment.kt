@@ -18,9 +18,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.findNavController
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.ruparts.app.MainActivity
 import com.ruparts.app.R
 import com.ruparts.app.core.ui.theme.RupartsTheme
-import com.ruparts.app.features.productscan.model.ProductScanType
 import com.ruparts.app.features.search.presentation.model.SearchScreenEffect
 import com.ruparts.app.features.search.presentation.model.SearchScreenEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,20 +32,7 @@ class SearchFragment : Fragment() {
 
     private val menuProvider = object : MenuProvider {
         override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-            menuInflater.inflate(R.menu.search_menu, menu)
-            val searchItem = menu.findItem(R.id.search_bar)
-            val searchView = searchItem.actionView as? SearchView
-            searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(query: String?): Boolean {
-                    viewModel.handleEvent(SearchScreenEvent.UpdateSearchText(query ?: ""))
-                    return true
-                }
-
-                override fun onQueryTextChange(newText: String?): Boolean {
-                    viewModel.handleEvent(SearchScreenEvent.UpdateSearchText(newText ?: ""))
-                    return true
-                }
-            })
+            createMenu(menu, menuInflater)
         }
 
         override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
@@ -75,21 +62,15 @@ class SearchFragment : Fragment() {
                     LaunchedEffect(Unit) {
                         viewModel.effect.collectLatest { effect ->
                             when (effect) {
-                                is SearchScreenEffect.NavigateToProductScan -> {
+                                is SearchScreenEffect.NavigateToScan -> {
                                     findNavController().navigate(
-                                        SearchFragmentDirections.actionSearchFragmentToProductScanFragment(ProductScanType.PRODUCT)
+                                        SearchFragmentDirections.actionSearchFragmentToProductScanFragment(effect.scanType)
                                     )
                                 }
 
                                 is SearchScreenEffect.NavigateToProduct -> {
                                     findNavController().navigate(
                                         SearchFragmentDirections.actionSearchFragmentToProductFragment(effect.barcode)
-                                    )
-                                }
-
-                                is SearchScreenEffect.NavigateToLocationScan -> {
-                                    findNavController().navigate(
-                                        SearchFragmentDirections.actionSearchFragmentToProductScanFragment(ProductScanType.LOCATION)
                                     )
                                 }
 
@@ -109,6 +90,46 @@ class SearchFragment : Fragment() {
                         onKeyEvent = viewModel::handleKeyEvent,
                     )
                 }
+            }
+        }
+    }
+
+    private fun createMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.search_menu, menu)
+
+        val searchItem = menu.findItem(R.id.search_bar)
+        val checkmarkItem = menu.findItem(R.id.checkmark)
+        //val menuDotsItem = menu.findItem(R.id.menu_dots)
+
+        searchItem.setOnActionExpandListener(onActionExpandListener(checkmarkItem))
+        checkmarkItem.setOnActionExpandListener(onActionExpandListener(searchItem))
+
+        (searchItem.actionView as? SearchView)?.apply {
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    viewModel.handleEvent(SearchScreenEvent.UpdateSearchText(query ?: ""))
+                    return true
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    viewModel.handleEvent(SearchScreenEvent.UpdateSearchText(newText ?: ""))
+                    return true
+                }
+            })
+        }
+    }
+
+    private fun onActionExpandListener(itemToHide: MenuItem): MenuItem.OnActionExpandListener {
+        return object : MenuItem.OnActionExpandListener {
+            override fun onMenuItemActionExpand(item: MenuItem): Boolean {
+                itemToHide.isVisible = false
+                return true
+            }
+
+            override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
+                itemToHide.isVisible = true
+                (requireActivity() as MainActivity).supportInvalidateOptionsMenu()
+                return true
             }
         }
     }

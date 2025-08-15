@@ -101,7 +101,7 @@ class TasksListFragment : Fragment() {
     private fun setupMenu() {
         val menuProvider = object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.search_menu, menu)
+                menuInflater.inflate(R.menu.task_list_menu, menu)
                 setupSearch(menu)
             }
 
