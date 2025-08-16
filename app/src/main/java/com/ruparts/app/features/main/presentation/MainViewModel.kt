@@ -1,11 +1,9 @@
-package com.ruparts.app
+package com.ruparts.app.features.main.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ruparts.app.core.navigation.NavigationManager
 import com.ruparts.app.features.authorization.data.repository.AuthRepository
-import com.ruparts.app.model.MainScreenState
-import com.ruparts.app.model.MainUiEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow

@@ -3,9 +3,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/checkmark"
+        android:icon="@drawable/checkmark"
+        android:iconTint="?colorOnSecondaryContainer"
+        android:title="Выбор"
+        app:actionLayout="@layout/search_menu_selection"
+        app:showAsAction="ifRoom|collapseActionView" />
+
+    <item
         android:id="@+id/search_bar"
         android:icon="@drawable/search_image"
+        android:iconTint="?colorOnSecondaryContainer"
         android:title="Поиск"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="ifRoom|collapseActionView" />
+
+    <item
+        android:id="@+id/menu_dots"
+        android:icon="@drawable/menu_more"
+        android:iconTint="?colorOnSecondaryContainer"
+        android:title="Опции"
+        android:visible="false" />
 </menu>

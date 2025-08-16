@@ -9,4 +9,5 @@ sealed interface AssemblyScreenEvent {
     data class OnLocationClick(val item: AssemblyItem) : AssemblyScreenEvent
     data class OnDeleteClick(val item: AssemblyItem) : AssemblyScreenEvent
     data object OnScanClick : AssemblyScreenEvent
+    data class OnSearchTextChange(val text: String) : AssemblyScreenEvent
 }

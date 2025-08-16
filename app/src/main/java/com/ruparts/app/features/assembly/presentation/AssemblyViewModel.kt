@@ -139,6 +139,7 @@ class AssemblyViewModel @Inject constructor() : ViewModel() {
             is AssemblyScreenEvent.OnLocationClick -> onLocationClick(event.item)
             is AssemblyScreenEvent.OnDeleteClick -> onDeleteClick(event.item)
             is AssemblyScreenEvent.OnScanClick -> sendEffect(AssemblyScreenEffect.NavigateToScan)
+            is AssemblyScreenEvent.OnSearchTextChange -> onSearch(event.text)
         }
     }
 
@@ -169,5 +170,9 @@ class AssemblyViewModel @Inject constructor() : ViewModel() {
             }.filter { it.items.isNotEmpty() }
             _state.value = currentState.copy(assemblyGroups = updatedGroups)
         }
+    }
+
+    private fun onSearch(text: String) {
+        // TODO
     }
 }

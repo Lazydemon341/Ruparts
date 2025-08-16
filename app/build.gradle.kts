@@ -11,7 +11,7 @@ plugins {
 
 android {
     namespace = "com.ruparts.app"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.ruparts.app"
@@ -34,6 +34,11 @@ android {
                 "proguard-rules.pro"
             )
             signingConfig = signingConfigs.getByName("debug")
+        }
+        debug {
+            isMinifyEnabled = false
+            isShrinkResources = false
+            isDebuggable = true
         }
     }
     compileOptions {
@@ -69,6 +74,8 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+
+    implementation(libs.androidx.activity.ktx)
 
     // Jetpack ViewModel
     implementation(libs.androidx.lifecycle.viewmodel.ktx)

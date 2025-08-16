@@ -1,6 +1,5 @@
 package com.ruparts.app.features.taskslist.presentation
 
-import android.content.Context
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -41,15 +40,6 @@ class TasksListFragment : Fragment() {
     private lateinit var chipGroup: ChipGroup
     private lateinit var progressIndicator: CircularProgressIndicator
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        requireActivity().onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                requireActivity().finish()
-            }
-        })
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -60,6 +50,12 @@ class TasksListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                requireActivity().finish()
+            }
+        })
 
         setupMenu()
 
@@ -101,7 +97,7 @@ class TasksListFragment : Fragment() {
     private fun setupMenu() {
         val menuProvider = object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.search_menu, menu)
+                menuInflater.inflate(R.menu.task_list_menu, menu)
                 setupSearch(menu)
             }
 

@@ -43,6 +43,7 @@ import com.ruparts.app.core.barcode.ExternalCodeInputHandler
 import com.ruparts.app.core.ui.components.RupartsCartItem
 import com.ruparts.app.core.ui.theme.RupartsTheme
 import com.ruparts.app.core.ui.viewmodel.assistedViewModels
+import com.ruparts.app.core.utils.getQuantityStringForRuLocale
 import com.ruparts.app.features.cart.model.CartListItem
 import com.ruparts.app.features.cart.model.CartOwner
 import com.ruparts.app.features.cart.model.OwnerType
@@ -89,7 +90,7 @@ class CartTransferToLocationFragment : DialogFragment() {
             null
         } else {
             val itemsCount = args.cartItems.size
-            resources.getQuantityString(
+            requireContext().getQuantityStringForRuLocale(
                 R.plurals.cart_items_count,
                 itemsCount,
                 itemsCount,

@@ -43,7 +43,7 @@ fun RupartsTheme(
     // Error colors
     val error = colorResource(id = R.color.error)
     val onError = colorResource(id = R.color.onError)
-    
+
     // Other colors
     val outline = colorResource(id = R.color.purple)
 

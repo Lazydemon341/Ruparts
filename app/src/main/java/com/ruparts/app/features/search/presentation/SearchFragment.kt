@@ -7,6 +7,8 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.SearchView
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.ComposeView
@@ -20,7 +22,8 @@ import androidx.navigation.findNavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.ruparts.app.R
 import com.ruparts.app.core.ui.theme.RupartsTheme
-import com.ruparts.app.features.productscan.model.ProductScanType
+import com.ruparts.app.core.utils.collectWhileStarted
+import com.ruparts.app.features.main.MainActivity
 import com.ruparts.app.features.search.presentation.model.SearchScreenEffect
 import com.ruparts.app.features.search.presentation.model.SearchScreenEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,28 +32,14 @@ import kotlinx.coroutines.flow.collectLatest
 @AndroidEntryPoint
 class SearchFragment : Fragment() {
     private val viewModel: SearchViewModel by viewModels()
+    private var checkmarkMenuItem: MenuItem? = null
 
     private val menuProvider = object : MenuProvider {
         override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-            menuInflater.inflate(R.menu.search_menu, menu)
-            val searchItem = menu.findItem(R.id.search_bar)
-            val searchView = searchItem.actionView as? SearchView
-            searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(query: String?): Boolean {
-                    viewModel.handleEvent(SearchScreenEvent.UpdateSearchText(query ?: ""))
-                    return true
-                }
-
-                override fun onQueryTextChange(newText: String?): Boolean {
-                    viewModel.handleEvent(SearchScreenEvent.UpdateSearchText(newText ?: ""))
-                    return true
-                }
-            })
+            createMenu(menu, menuInflater)
         }
 
-        override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-            return false
-        }
+        override fun onMenuItemSelected(menuItem: MenuItem): Boolean = false
     }
 
     override fun onCreateView(
@@ -75,21 +64,15 @@ class SearchFragment : Fragment() {
                     LaunchedEffect(Unit) {
                         viewModel.effect.collectLatest { effect ->
                             when (effect) {
-                                is SearchScreenEffect.NavigateToProductScan -> {
+                                is SearchScreenEffect.NavigateToScan -> {
                                     findNavController().navigate(
-                                        SearchFragmentDirections.actionSearchFragmentToProductScanFragment(ProductScanType.PRODUCT)
+                                        SearchFragmentDirections.actionSearchFragmentToProductScanFragment(effect.scanType)
                                     )
                                 }
 
                                 is SearchScreenEffect.NavigateToProduct -> {
                                     findNavController().navigate(
                                         SearchFragmentDirections.actionSearchFragmentToProductFragment(effect.barcode)
-                                    )
-                                }
-
-                                is SearchScreenEffect.NavigateToLocationScan -> {
-                                    findNavController().navigate(
-                                        SearchFragmentDirections.actionSearchFragmentToProductScanFragment(ProductScanType.LOCATION)
                                     )
                                 }
 
@@ -110,6 +93,73 @@ class SearchFragment : Fragment() {
                     )
                 }
             }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                requireActivity().finish()
+            }
+        })
+    }
+
+    private fun createMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.search_menu, menu)
+
+        val searchItem = menu.findItem(R.id.search_bar)
+        val checkmarkItem = menu.findItem(R.id.checkmark)
+        checkmarkMenuItem = checkmarkItem
+        //val menuDotsItem = menu.findItem(R.id.menu_dots)
+
+        searchItem.setOnActionExpandListener(onActionExpandListener(checkmarkItem))
+        checkmarkItem.setOnActionExpandListener(onActionExpandListener(searchItem))
+
+        (searchItem.actionView as? SearchView)?.apply {
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    viewModel.handleEvent(SearchScreenEvent.UpdateSearchText(query ?: ""))
+                    return true
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    viewModel.handleEvent(SearchScreenEvent.UpdateSearchText(newText ?: ""))
+                    return true
+                }
+            })
+        }
+
+        viewModel.selectedItems.collectWhileStarted(viewLifecycleOwner) { selectedItems ->
+            updateSelectedItemsCount(selectedItems.size)
+        }
+    }
+
+    private fun onActionExpandListener(itemToHide: MenuItem): MenuItem.OnActionExpandListener {
+        return object : MenuItem.OnActionExpandListener {
+            override fun onMenuItemActionExpand(item: MenuItem): Boolean {
+                itemToHide.isVisible = false
+                if (item.itemId == R.id.checkmark) {
+                    viewModel.handleEvent(SearchScreenEvent.ToggleSelectionMode(true))
+                }
+                return true
+            }
+
+            override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
+                itemToHide.isVisible = true
+                (requireActivity() as MainActivity).supportInvalidateOptionsMenu()
+                if (item.itemId == R.id.checkmark) {
+                    viewModel.handleEvent(SearchScreenEvent.ToggleSelectionMode(false))
+                }
+                return true
+            }
+        }
+    }
+
+    private fun updateSelectedItemsCount(count: Int) {
+        checkmarkMenuItem?.actionView?.let { actionView ->
+            val itemsCountText = actionView.findViewById<TextView>(R.id.items_count_text)
+            itemsCountText?.text = resources.getQuantityString(R.plurals.cart_items_count, count, count)
         }
     }
 }

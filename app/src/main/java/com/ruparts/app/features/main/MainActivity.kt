@@ -1,4 +1,4 @@
-package com.ruparts.app
+package com.ruparts.app.features.main
 
 import android.os.Bundle
 import android.view.KeyEvent
@@ -21,11 +21,13 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
+import com.ruparts.app.R
 import com.ruparts.app.core.barcode.ExternalCodeInputHandler
 import com.ruparts.app.core.ui.utils.paddingAllSystemBars
 import com.ruparts.app.core.ui.utils.paddingBelowSystemBars
 import com.ruparts.app.core.utils.collectWhileStarted
-import com.ruparts.app.model.MainUiEffect
+import com.ruparts.app.features.main.presentation.MainUiEffect
+import com.ruparts.app.features.main.presentation.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -34,6 +36,7 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels()
 
     private lateinit var navController: NavController
+    private lateinit var appBarConfiguration: AppBarConfiguration
 
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
@@ -41,8 +44,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var logoutButton: Button
     private lateinit var toolbar: MaterialToolbar
     private lateinit var userName: TextView
-
-    private lateinit var appBarConfiguration: AppBarConfiguration
 
     private var externalCodeInputHandler: ExternalCodeInputHandler? = null
 
