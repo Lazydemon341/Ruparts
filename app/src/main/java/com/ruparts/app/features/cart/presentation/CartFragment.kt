@@ -1,6 +1,5 @@
 package com.ruparts.app.features.cart.presentation
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,15 +17,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.snackbar.Snackbar
-import com.ruparts.app.MainActivity
 import com.ruparts.app.R
 import com.ruparts.app.core.barcode.ExternalCodeInputHandler
 import com.ruparts.app.core.ui.utils.alignAboveSystemBars
 import com.ruparts.app.core.ui.utils.dp
 import com.ruparts.app.core.ui.utils.enableEdgeToEdge
 import com.ruparts.app.core.utils.collectWhileStarted
+import com.ruparts.app.core.utils.getQuantityStringForRuLocale
 import com.ruparts.app.features.cart.presentation.model.CartScreenEffect
 import com.ruparts.app.features.cart.presentation.model.CartScreenState
+import com.ruparts.app.features.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -42,15 +42,6 @@ class CartFragment : Fragment() {
 
     private lateinit var progressIndicator: CircularProgressIndicator
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        requireActivity().onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                requireActivity().finish()
-            }
-        })
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -61,6 +52,12 @@ class CartFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                requireActivity().finish()
+            }
+        })
 
         initialTextView = view.findViewById(R.id.empty_cart)
         addButton = view.findViewById(R.id.add_button)
@@ -158,7 +155,7 @@ class CartFragment : Fragment() {
                 null
             } else {
                 val itemsCount = state.items.size
-                resources.getQuantityString(
+                requireContext().getQuantityStringForRuLocale(
                     R.plurals.cart_items_count,
                     itemsCount,
                     itemsCount,

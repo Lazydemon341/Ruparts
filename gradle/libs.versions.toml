@@ -2,7 +2,7 @@
 agp = "8.9.3"
 barcodeScanning = "17.3.0"
 kotlin = "2.2.0"
-coreKtx = "1.16.0"
+coreKtx = "1.17.0"
 junit = "4.13.2"
 appcompat = "1.7.1"
 material = "1.12.0"
@@ -17,11 +17,12 @@ retrofit = "2.11.0"
 okhttp = "5.1.0"
 gson = "2.12.1"
 ksp = "2.2.0-2.0.2"
-camerax = "1.5.0-beta02"
+camerax = "1.5.0-rc01"
 datastore = "1.1.7"
 coil = "3.3.0"
 flexboxLayout = "3.0.0"
 paging = "3.3.6"
+activityKtx = "1.10.1"
 
 detekt = "1.23.8"
 detektCompose = "0.4.26"
@@ -36,6 +37,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 #AndroidX
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityKtx" }
 
 # Jetpack ViewModel
 androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }

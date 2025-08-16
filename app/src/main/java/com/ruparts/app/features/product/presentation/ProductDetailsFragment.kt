@@ -18,6 +18,7 @@ import com.google.android.flexbox.JustifyContent
 import com.ruparts.app.R
 import com.ruparts.app.core.ui.utils.paddingAboveSystemBars
 import com.ruparts.app.core.ui.viewmodel.assistedViewModels
+import com.ruparts.app.core.utils.LOCALE_RUSSIAN
 import com.ruparts.app.core.utils.collectWhileStarted
 import com.ruparts.app.core.utils.formatSafely
 import com.ruparts.app.core.utils.makeBold
@@ -31,12 +32,13 @@ import com.ruparts.app.features.product.presentation.adapter.ProductPhotosAdapte
 import com.ruparts.app.features.product.presentation.model.ProductDetailsScreenState
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 @AndroidEntryPoint
 class ProductDetailsFragment : Fragment() {
 
-    private val dateFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy").withLocale(Locale("ru", "RU"))
+    private val dateFormatter = DateTimeFormatter
+        .ofPattern("dd MMM yyyy")
+        .withLocale(LOCALE_RUSSIAN)
 
     private val args: ProductDetailsFragmentArgs by navArgs()
     private val viewModel by assistedViewModels<ProductDetailsViewModel, ProductDetailsViewModel.Factory> {

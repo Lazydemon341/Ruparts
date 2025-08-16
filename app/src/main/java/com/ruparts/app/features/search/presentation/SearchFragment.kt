@@ -8,6 +8,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.SearchView
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.ComposeView
@@ -19,10 +20,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.findNavController
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.ruparts.app.MainActivity
 import com.ruparts.app.R
 import com.ruparts.app.core.ui.theme.RupartsTheme
 import com.ruparts.app.core.utils.collectWhileStarted
+import com.ruparts.app.features.main.MainActivity
 import com.ruparts.app.features.search.presentation.model.SearchScreenEffect
 import com.ruparts.app.features.search.presentation.model.SearchScreenEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -93,6 +94,15 @@ class SearchFragment : Fragment() {
                 }
             }
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                requireActivity().finish()
+            }
+        })
     }
 
     private fun createMenu(menu: Menu, menuInflater: MenuInflater) {
