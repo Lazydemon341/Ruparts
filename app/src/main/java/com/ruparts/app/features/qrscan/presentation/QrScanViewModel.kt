@@ -62,6 +62,7 @@ class QrScanViewModel @Inject constructor(
         }
     }
 
+
     private fun onRemoveItem(item: CartListItem) {
         scannedCodes.remove(item.barcode)
         _state.update {
