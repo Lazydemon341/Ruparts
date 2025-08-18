@@ -57,118 +57,112 @@ fun AssemblyAddToCartBottomSheet(
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
         dragHandle = {},
     ) {
-        Box(
-            contentAlignment = Alignment.BottomCenter,
-        ) {
-            Column() {
-                Text(
+        Column {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                color = colorResource(R.color.neutral60),
+                text = "Товар будет перемещён в корзину",
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center,
+            )
+            Box(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+            ) {
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    color = colorResource(R.color.neutral60),
-                    text = "Товар будет перемещён в корзину",
-                    style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Center,
-                )
-                Box(
-                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(12.dp))
                         .padding(horizontal = 16.dp, vertical = 12.dp),
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(12.dp))
-                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = item.article,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                style = TextStyle(fontWeight = FontWeight.Bold),
-                                fontSize = 16.sp
-                            )
-                            Text(
-                                text = item.quantity.toString(),
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontSize = 14.sp,
-                                modifier = Modifier
-                                    .border(1.dp, SolidColor(Color.Black), RoundedCornerShape(percent = 20))
-                                    .padding(horizontal = 6.dp, vertical = 1.dp)
-                            )
-                        }
                         Text(
-                            text = item.brand,
+                            text = item.article,
                             color = MaterialTheme.colorScheme.onSurface,
-                            fontSize = 14.sp,
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Bold,
                         )
                         Text(
-                            text = item.description,
+                            text = item.quantity.toString(),
                             color = MaterialTheme.colorScheme.onSurface,
-                            fontSize = 14.sp,
                             style = MaterialTheme.typography.bodyMedium,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier
+                                .border(1.dp, SolidColor(Color.Black), RoundedCornerShape(percent = 20))
+                                .padding(horizontal = 6.dp, vertical = 1.dp)
                         )
                     }
+                    Text(
+                        text = item.brand,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    Text(
+                        text = item.description,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.bodyMedium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
                 }
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier
-                        .padding(start = 20.dp, top = 8.dp, bottom = 48.dp, end = 20.dp)
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier
+                    .padding(start = 20.dp, top = 8.dp, bottom = 48.dp, end = 20.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Button(
+                    onClick = {},
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer
+                    ),
+                    modifier = Modifier.height(56.dp),
                 ) {
-                    Button(
-                        onClick = {},
-                        shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer
-                        ),
-                        modifier = Modifier.height(56.dp),
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = null,
-                            modifier = Modifier.size(24.dp),
-                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                        )
-                        Text(
-                            modifier = Modifier.padding(start = 8.dp),
-                            text = "Отменить",
-                            fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.onSecondaryContainer
-                        )
-                    }
-                    IconButton(
-                        onClick = {},
-                        modifier = Modifier
-                            .size(56.dp)
-                            .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(16.dp))
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.split),
-                            contentDescription = null,
-                            modifier = Modifier.size(24.dp),
-                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                        )
-                    }
-                    IconButton(
-                        onClick = {},
-                        modifier = Modifier
-                            .size(56.dp)
-                            .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(16.dp))
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.alert),
-                            contentDescription = null,
-                            modifier = Modifier.size(24.dp),
-                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                        )
-                    }
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp),
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                    )
+                    Text(
+                        modifier = Modifier.padding(start = 8.dp),
+                        text = "Отменить",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                }
+                IconButton(
+                    onClick = {},
+                    modifier = Modifier
+                        .size(56.dp)
+                        .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(16.dp))
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.split),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp),
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                    )
+                }
+                IconButton(
+                    onClick = {},
+                    modifier = Modifier
+                        .size(56.dp)
+                        .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(16.dp))
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.alert),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp),
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                    )
                 }
             }
         }
