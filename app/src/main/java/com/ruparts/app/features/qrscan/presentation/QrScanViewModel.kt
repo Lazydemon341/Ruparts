@@ -25,6 +25,7 @@ private val INITIAL_STATE = QrScanScreenState(
     emptyList(),
     false,
     CartScanPurpose.TRANSFER_TO_CART,
+    QrScanType.BOTH
 )
 
 @HiltViewModel
@@ -33,6 +34,8 @@ class QrScanViewModel @Inject constructor(
     private val barcodeTypeDetector: BarcodeTypeDetector,
     private val trackBarcodeFocusUseCase: TrackBarcodeFocusUseCase,
 ) : ViewModel() {
+
+    val scanType: QrScanType = QrScanType.BOTH
 
     private val _state = MutableStateFlow(INITIAL_STATE)
     val state = _state.asStateFlow()
@@ -50,6 +53,12 @@ class QrScanViewModel @Inject constructor(
             is QrScanScreenAction.RemoveItem -> onRemoveItem(action.item)
             is QrScanScreenAction.ManualInput -> onManualInput(action.code)
             QrScanScreenAction.OnTransferToCart -> transferToCart()
+        }
+    }
+
+    fun setScanType(scanType: QrScanType) {
+        _state.update {
+            it.copy(scanType = scanType)
         }
     }
 

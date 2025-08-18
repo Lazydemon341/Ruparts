@@ -15,6 +15,7 @@ import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.navArgs
 import com.ruparts.app.core.ui.theme.RupartsTheme
 import com.ruparts.app.features.cart.presentation.CartFragment
 import com.ruparts.app.features.cart.presentation.CartFragment.Companion.CART_TOAST_TO_SHOW_KEY
@@ -23,16 +24,25 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
+enum class QrScanType {
+    LOCATION_TO_CART,
+    CART_TO_LOCATION,
+    BOTH
+}
+
 @AndroidEntryPoint
 class QrScanFragment : Fragment() {
 
     private val viewModel: QrScanViewModel by viewModels()
+
+    private val args: QrScanFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        viewModel.setScanType(args.scanType)
         return ComposeView(requireContext()).apply {
             setContent {
                 val state = viewModel.state.collectAsStateWithLifecycle()
