@@ -22,6 +22,8 @@ import com.ruparts.app.R
 import com.ruparts.app.core.ui.theme.RupartsTheme
 import com.ruparts.app.features.assembly.presentation.model.AssemblyScreenEffect
 import com.ruparts.app.features.assembly.presentation.model.AssemblyScreenEvent
+import com.ruparts.app.features.cart.presentation.CartFragmentDirections
+import com.ruparts.app.features.qrscan.presentation.QrScanType
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 
@@ -74,11 +76,13 @@ class AssemblyFragment : Fragment() {
                                 }
 
                                 is AssemblyScreenEffect.NavigateToItemDetails -> {
-                                    // TODO: Navigate to item details
+
                                 }
 
                                 is AssemblyScreenEffect.NavigateToScan -> {
-                                    // TODO: Navigate to scanner
+                                    findNavController().navigate(AssemblyFragmentDirections.actionAssemblyFragmentToQrScanFragment(
+                                        QrScanType.LOCATION_TO_CART
+                                    ))
                                 }
                             }
                         }

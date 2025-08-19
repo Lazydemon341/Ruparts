@@ -35,8 +35,6 @@ class QrScanViewModel @Inject constructor(
     private val trackBarcodeFocusUseCase: TrackBarcodeFocusUseCase,
 ) : ViewModel() {
 
-    val scanType: QrScanType = QrScanType.BOTH
-
     private val _state = MutableStateFlow(INITIAL_STATE)
     val state = _state.asStateFlow()
 
