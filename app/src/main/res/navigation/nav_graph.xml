@@ -45,7 +45,7 @@
         android:name="com.ruparts.app.features.task.presentation.TaskFragment"
         android:label="Задача"
         tools:layout="@layout/fragment_task">
-        
+
         <argument
             android:name="task"
             app:argType="com.ruparts.app.features.taskslist.model.TaskListItem" />
@@ -80,7 +80,7 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
-            
+
         <action
             android:id="@+id/action_cartFragment_to_cartTransferToLocationFragment"
             app:destination="@id/cartTransferToLocationFragment" />
@@ -105,12 +105,17 @@
             app:popEnterAnim="@anim/slide_in_right"
             app:popExitAnim="@anim/slide_out_left" />
     </fragment>
-        
+
     <fragment
         android:id="@+id/qrScanFragment"
         android:name="com.ruparts.app.features.qrscan.presentation.QrScanFragment"
         android:label="@string/qr_scan_title">
-        
+
+        <argument
+            android:name="scanType"
+            app:argType="com.ruparts.app.features.qrscan.presentation.QrScanType"
+            android:defaultValue="BOTH" />
+
         <action
             android:id="@+id/action_qrScanFragment_to_cartFragment"
             app:destination="@id/cartFragment"
@@ -169,6 +174,19 @@
         android:name="com.ruparts.app.features.assembly.presentation.AssemblyFragment"
         android:label="Сборка">
 
+        <action
+            android:id="@+id/action_assemblyFragment_to_qrScanFragment"
+            app:destination="@id/qrScanFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
+        <argument
+            android:name="scanType"
+            app:argType="com.ruparts.app.features.qrscan.presentation.QrScanType"
+            android:defaultValue="LOCATION_TO_CART" />
+
     </fragment>
 
     <fragment
@@ -192,5 +210,5 @@
             app:popExitAnim="@anim/slide_out_right" />
 
     </fragment>
-    
+
 </navigation>

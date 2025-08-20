@@ -27,6 +27,7 @@ import com.ruparts.app.core.utils.getQuantityStringForRuLocale
 import com.ruparts.app.features.cart.presentation.model.CartScreenEffect
 import com.ruparts.app.features.cart.presentation.model.CartScreenState
 import com.ruparts.app.features.main.MainActivity
+import com.ruparts.app.features.qrscan.presentation.QrScanType
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -67,7 +68,7 @@ class CartFragment : Fragment() {
         )
 
         addButton.setOnClickListener {
-            findNavController().navigate(CartFragmentDirections.actionCartFragmentToQrScanFragment())
+            findNavController().navigate(CartFragmentDirections.actionCartFragmentToQrScanFragment(QrScanType.BOTH))
         }
 
         progressIndicator = view.findViewById(R.id.cart_progress_indicator)

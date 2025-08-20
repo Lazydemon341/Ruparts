@@ -210,7 +210,7 @@ fun QrScanScreen(
                 shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
             ) {
                 if (state.scannedItems.isEmpty()) {
-                    QrScanEmptyContent()
+                    QrScanEmptyContent(state.scanType)
                 } else {
                     QrScanItemsContent(
                         scannedItems = state.scannedItems,
@@ -397,7 +397,7 @@ private fun QrScanItemsContent(
 }
 
 @Composable
-private fun QrScanEmptyContent() {
+private fun QrScanEmptyContent(scanType: QrScanType) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -405,99 +405,111 @@ private fun QrScanEmptyContent() {
             .padding(top = 24.dp, bottom = 24.dp),
         verticalArrangement = Arrangement.Center
     ) {
+
+        if (scanType == QrScanType.BOTH || scanType == QrScanType.LOCATION_TO_CART) {
+
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.padding(bottom = 4.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.LocationOn,
-                    contentDescription = null,
-                    modifier = Modifier.size(28.dp),
-                    tint = Color.Gray
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.padding(bottom = 4.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.LocationOn,
+                        contentDescription = null,
+                        modifier = Modifier.size(28.dp),
+                        tint = Color.Gray
+                    )
+                    Icon(
+                        imageVector = Icons.Default.ArrowForward,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(horizontal = 10.dp)
+                            .size(20.dp),
+                        tint = Color.Gray
+                    )
+                    Icon(
+                        imageVector = Icons.Default.ShoppingCart,
+                        contentDescription = null,
+                        modifier = Modifier.size(28.dp),
+                        tint = Color.Gray
+                    )
+                }
+                Text(
+                    text = "Из ячейки в корзину",
+                    fontSize = 16.sp,
+                    color = colorResource(id = R.color.secondary60),
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.W500,
                 )
-                Icon(
-                    imageVector = Icons.Default.ArrowForward,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(horizontal = 10.dp)
-                        .size(20.dp),
-                    tint = Color.Gray
-                )
-                Icon(
-                    imageVector = Icons.Default.ShoppingCart,
-                    contentDescription = null,
-                    modifier = Modifier.size(28.dp),
-                    tint = Color.Gray
+                Text(
+                    text = "Отсканируйте товары в ячейке, они попадут в корзину",
+                    color = colorResource(id = R.color.secondary60),
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center,
                 )
             }
+        }
+
+        if (scanType == QrScanType.BOTH) {
+
             Text(
-                text = "Из ячейки в корзину",
-                fontSize = 16.sp,
-                color = colorResource(id = R.color.secondary60),
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.W500,
-            )
-            Text(
-                text = "Отсканируйте товары в ячейке, они попадут в корзину",
+                text = "или",
                 color = colorResource(id = R.color.secondary60),
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
+                modifier = Modifier.padding(vertical = 8.dp)
             )
         }
-        Text(
-            text = "или",
-            color = colorResource(id = R.color.secondary60),
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(vertical = 8.dp)
-        )
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.padding(bottom = 4.dp)
+
+        if (scanType == QrScanType.BOTH || scanType == QrScanType.CART_TO_LOCATION) {
+
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Icon(
-                    imageVector = Icons.Default.ShoppingCart,
-                    contentDescription = null,
-                    modifier = Modifier.size(28.dp),
-                    tint = Color.Gray
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.padding(bottom = 4.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ShoppingCart,
+                        contentDescription = null,
+                        modifier = Modifier.size(28.dp),
+                        tint = Color.Gray
+                    )
+                    Icon(
+                        imageVector = Icons.Default.ArrowForward,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(horizontal = 10.dp)
+                            .size(20.dp),
+                        tint = Color.Gray
+                    )
+                    Icon(
+                        imageVector = Icons.Default.LocationOn,
+                        contentDescription = null,
+                        modifier = Modifier.size(28.dp),
+                        tint = Color.Gray
+                    )
+                }
+                Text(
+                    text = "Из корзины в ячейку",
+                    fontSize = 16.sp,
+                    color = colorResource(id = R.color.secondary60),
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.W500,
                 )
-                Icon(
-                    imageVector = Icons.Default.ArrowForward,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(horizontal = 10.dp)
-                        .size(20.dp),
-                    tint = Color.Gray
-                )
-                Icon(
-                    imageVector = Icons.Default.LocationOn,
-                    contentDescription = null,
-                    modifier = Modifier.size(28.dp),
-                    tint = Color.Gray
+                Text(
+                    text = "Отсканируйте товары в корзине,\n" +
+                        "а затем ячейку",
+                    color = colorResource(id = R.color.secondary60),
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center,
                 )
             }
-            Text(
-                text = "Из корзины в ячейку",
-                fontSize = 16.sp,
-                color = colorResource(id = R.color.secondary60),
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.W500,
-            )
-            Text(
-                text = "Отсканируйте товары в корзине,\n" +
-                    "а затем ячейку",
-                color = colorResource(id = R.color.secondary60),
-                style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center,
-            )
         }
     }
 }
@@ -662,10 +674,11 @@ private fun QrScanScreenPreview() {
                 )
             ),
             isLoading = false,
-            purpose = CartScanPurpose.TRANSFER_TO_CART
+            purpose = CartScanPurpose.TRANSFER_TO_CART,
+            scanType = QrScanType.LOCATION_TO_CART
         ),
         onAction = {},
-        snackbarHostState = remember { SnackbarHostState() }
+        snackbarHostState = remember { SnackbarHostState() },
     )
 }
 
@@ -677,6 +690,7 @@ private fun QrScanScreenEmptyPreview() {
             scannedItems = emptyList(),
             isLoading = false,
             purpose = CartScanPurpose.TRANSFER_TO_CART,
+            scanType = QrScanType.LOCATION_TO_CART
         ),
         onAction = {},
         snackbarHostState = remember { SnackbarHostState() }
@@ -691,6 +705,7 @@ private fun QrScanScreenLoadingPreview() {
             scannedItems = emptyList(),
             isLoading = true,
             purpose = CartScanPurpose.TRANSFER_TO_CART,
+            scanType = QrScanType.LOCATION_TO_CART
         ),
         onAction = {},
         snackbarHostState = remember { SnackbarHostState() }

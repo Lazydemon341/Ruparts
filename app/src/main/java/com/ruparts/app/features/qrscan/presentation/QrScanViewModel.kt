@@ -25,6 +25,7 @@ private val INITIAL_STATE = QrScanScreenState(
     emptyList(),
     false,
     CartScanPurpose.TRANSFER_TO_CART,
+    QrScanType.BOTH
 )
 
 @HiltViewModel
@@ -52,6 +53,13 @@ class QrScanViewModel @Inject constructor(
             QrScanScreenAction.OnTransferToCart -> transferToCart()
         }
     }
+
+    fun setScanType(scanType: QrScanType) {
+        _state.update {
+            it.copy(scanType = scanType)
+        }
+    }
+
 
     private fun onRemoveItem(item: CartListItem) {
         scannedCodes.remove(item.barcode)
