@@ -138,7 +138,7 @@ class AssemblyViewModel @Inject constructor() : ViewModel() {
             is AssemblyScreenEvent.OnItemClick -> sendEffect(AssemblyScreenEffect.NavigateToItemDetails(event.item))
             is AssemblyScreenEvent.OnLocationClick -> onLocationClick(event.item)
             is AssemblyScreenEvent.OnDeleteClick -> onDeleteClick(event.item)
-            is AssemblyScreenEvent.OnScanClick -> sendEffect(AssemblyScreenEffect.NavigateToScan)
+            is AssemblyScreenEvent.OnScanClick -> sendEffect(AssemblyScreenEffect.NavigateToScan(event.selectedTab))
             is AssemblyScreenEvent.OnSearchTextChange -> onSearch(event.text)
         }
     }

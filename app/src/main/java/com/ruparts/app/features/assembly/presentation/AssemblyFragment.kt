@@ -80,9 +80,15 @@ class AssemblyFragment : Fragment() {
                                 }
 
                                 is AssemblyScreenEffect.NavigateToScan -> {
+                                    if (effect.selectedTab == AssemblyTab.LIST) {
                                     findNavController().navigate(AssemblyFragmentDirections.actionAssemblyFragmentToQrScanFragment(
                                         QrScanType.LOCATION_TO_CART
                                     ))
+                                    } else if (effect.selectedTab == AssemblyTab.BASKET) {
+                                        findNavController().navigate(AssemblyFragmentDirections.actionAssemblyFragmentToQrScanFragment(
+                                            QrScanType.CART_TO_LOCATION
+                                        ))
+                                    }
                                 }
                             }
                         }

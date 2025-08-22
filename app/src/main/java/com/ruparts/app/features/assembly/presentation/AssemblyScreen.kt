@@ -131,7 +131,7 @@ private fun AssemblyScreenContent(
         floatingActionButton = {
             if (state.selectedTab != AssemblyTab.LIST || state.assemblyGroups.isNotEmpty()) {
                 FloatingActionButton(
-                    onClick = { onEvent(AssemblyScreenEvent.OnScanClick) },
+                    onClick = { onEvent(AssemblyScreenEvent.OnScanClick(state.selectedTab)) },
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 ) {
