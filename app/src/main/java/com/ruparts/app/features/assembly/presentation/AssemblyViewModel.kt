@@ -7,6 +7,7 @@ import com.ruparts.app.features.assembly.presentation.model.AssemblyScreenEvent
 import com.ruparts.app.features.cart.model.CartListItem
 import com.ruparts.app.features.cart.model.CartOwner
 import com.ruparts.app.features.cart.model.OwnerType
+import com.ruparts.app.features.qrscan.presentation.QrScanType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -138,7 +139,7 @@ class AssemblyViewModel @Inject constructor() : ViewModel() {
             is AssemblyScreenEvent.OnItemClick -> sendEffect(AssemblyScreenEffect.NavigateToItemDetails(event.item))
             is AssemblyScreenEvent.OnLocationClick -> onLocationClick(event.item)
             is AssemblyScreenEvent.OnDeleteClick -> onDeleteClick(event.item)
-            is AssemblyScreenEvent.OnScanClick -> sendEffect(AssemblyScreenEffect.NavigateToScan)
+            is AssemblyScreenEvent.OnScanClick -> onScanClick(event.selectedTab)
             is AssemblyScreenEvent.OnSearchTextChange -> onSearch(event.text)
         }
     }
@@ -174,5 +175,13 @@ class AssemblyViewModel @Inject constructor() : ViewModel() {
 
     private fun onSearch(text: String) {
         // TODO
+    }
+
+    private fun onScanClick(selectedTab: AssemblyTab) {
+        val qrScanType = when (selectedTab) {
+            AssemblyTab.LIST -> QrScanType.LOCATION_TO_CART
+            AssemblyTab.BASKET -> QrScanType.CART_TO_LOCATION
+        }
+        sendEffect(AssemblyScreenEffect.NavigateToScan(qrScanType))
     }
 }
