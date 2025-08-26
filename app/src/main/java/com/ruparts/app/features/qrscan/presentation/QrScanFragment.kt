@@ -12,11 +12,11 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import com.ruparts.app.core.ui.theme.RupartsTheme
+import com.ruparts.app.core.ui.viewmodel.assistedViewModels
 import com.ruparts.app.features.cart.presentation.CartFragment
 import com.ruparts.app.features.cart.presentation.CartFragment.Companion.CART_TOAST_TO_SHOW_KEY
 import com.ruparts.app.features.qrscan.presentation.model.QrScanScreenEvent
@@ -33,16 +33,16 @@ enum class QrScanType {
 @AndroidEntryPoint
 class QrScanFragment : Fragment() {
 
-    private val viewModel: QrScanViewModel by viewModels()
-
     private val args: QrScanFragmentArgs by navArgs()
+    private val viewModel by assistedViewModels<QrScanViewModel, QrScanViewModel.Factory> {
+        create(scanType = args.scanType)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        viewModel.setScanType(args.scanType)
         return ComposeView(requireContext()).apply {
             setContent {
                 val state = viewModel.state.collectAsStateWithLifecycle()
