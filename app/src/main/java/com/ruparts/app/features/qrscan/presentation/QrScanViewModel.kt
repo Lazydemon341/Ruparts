@@ -12,6 +12,9 @@ import com.ruparts.app.features.cart.model.CartScanPurpose
 import com.ruparts.app.features.qrscan.presentation.model.QrScanScreenAction
 import com.ruparts.app.features.qrscan.presentation.model.QrScanScreenEvent
 import com.ruparts.app.features.qrscan.presentation.model.QrScanScreenState
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,23 +22,23 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-private val INITIAL_STATE = QrScanScreenState(
-    emptyList(),
-    false,
-    CartScanPurpose.TRANSFER_TO_CART,
-    QrScanType.BOTH
-)
-
-@HiltViewModel
-class QrScanViewModel @Inject constructor(
+@HiltViewModel(assistedFactory = QrScanViewModel.Factory::class)
+class QrScanViewModel @AssistedInject constructor(
+    @Assisted private val scanType: QrScanType,
     private val cartRepository: CartRepository,
     private val barcodeTypeDetector: BarcodeTypeDetector,
     private val trackBarcodeFocusUseCase: TrackBarcodeFocusUseCase,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(INITIAL_STATE)
+    private val initialState = QrScanScreenState(
+        emptyList(),
+        false,
+        CartScanPurpose.TRANSFER_TO_CART,
+        scanType
+    )
+
+    private val _state = MutableStateFlow(initialState)
     val state = _state.asStateFlow()
 
     private val _events = MutableSharedFlow<QrScanScreenEvent>()
@@ -51,12 +54,6 @@ class QrScanViewModel @Inject constructor(
             is QrScanScreenAction.RemoveItem -> onRemoveItem(action.item)
             is QrScanScreenAction.ManualInput -> onManualInput(action.code)
             QrScanScreenAction.OnTransferToCart -> transferToCart()
-        }
-    }
-
-    fun setScanType(scanType: QrScanType) {
-        _state.update {
-            it.copy(scanType = scanType)
         }
     }
 
@@ -226,5 +223,10 @@ class QrScanViewModel @Inject constructor(
                 // TODO
             }
         )
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(scanType: QrScanType): QrScanViewModel
     }
 }
