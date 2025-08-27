@@ -21,9 +21,11 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.ruparts.app.R
 import com.ruparts.app.core.ui.theme.RupartsTheme
+import com.ruparts.app.features.product.presentation.ProductDetailsFragmentDirections
 
 class ProductActionsFragment : BottomSheetDialogFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -121,7 +123,9 @@ class ProductActionsFragment : BottomSheetDialogFragment() {
                     )
                 }
                 Button(
-                    onClick = { },
+                    onClick = {
+                        findNavController().navigate(ProductDetailsFragmentDirections.actionProductFragmentToEditFragment())
+                    },
                     modifier = Modifier.Companion.padding(vertical = 8.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.surface,

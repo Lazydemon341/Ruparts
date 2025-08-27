@@ -2,10 +2,14 @@ package com.ruparts.app.features.product.presentation
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
@@ -27,6 +31,7 @@ import com.ruparts.app.features.commonlibrary.ProductFlag
 import com.ruparts.app.features.product.domain.ProductCard
 import com.ruparts.app.features.product.domain.ProductDefect
 import com.ruparts.app.features.product.domain.ProductPhotoItem
+import com.ruparts.app.features.product.presentation.actions.ProductActionsFragment
 import com.ruparts.app.features.product.presentation.adapter.ProductFlagsAdapter
 import com.ruparts.app.features.product.presentation.adapter.ProductPhotosAdapter
 import com.ruparts.app.features.product.presentation.model.ProductDetailsScreenState
@@ -83,22 +88,22 @@ class ProductDetailsFragment : Fragment() {
 
     private fun setupMenu() {
         // TODO: uncomment when adding product editing feature
-//        val menuProvider = object : MenuProvider {
-//            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-//                menuInflater.inflate(R.menu.product_unit_bottom_menu, menu)
-//
-//                val unitMenu = menu.findItem(R.id.unit_menu)
-//                unitMenu.setOnMenuItemClickListener {
-//                    ProductActionsFragment().show(parentFragmentManager, "")
-//                    return@setOnMenuItemClickListener true
-//                }
-//            }
-//
-//            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-//                return false
-//            }
-//        }
-//        requireActivity().addMenuProvider(menuProvider, viewLifecycleOwner)
+       val menuProvider = object : MenuProvider {
+           override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+               menuInflater.inflate(R.menu.product_unit_bottom_menu, menu)
+
+               val unitMenu = menu.findItem(R.id.unit_menu)
+               unitMenu.setOnMenuItemClickListener {
+                   ProductActionsFragment().show(parentFragmentManager, "")
+                   return@setOnMenuItemClickListener true
+               }
+           }
+
+           override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+               return false
+           }
+       }
+       requireActivity().addMenuProvider(menuProvider, viewLifecycleOwner)
     }
 
     private fun observeScreenState() {
