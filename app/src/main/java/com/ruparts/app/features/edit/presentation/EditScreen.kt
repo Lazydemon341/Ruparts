@@ -1,15 +1,18 @@
 package com.ruparts.app.features.edit.presentation
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -21,7 +24,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.WrongLocation
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -37,23 +39,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.ruparts.app.features.assembly.presentation.model.AssemblyScreenEvent
 
 @Composable
 fun EditScreen() {
     Scaffold(
+        contentWindowInsets = WindowInsets.systemBars.only(
+            WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
+        ),
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
     ) { paddingValues ->
         Column(
-            modifier = Modifier.verticalScroll(rememberScrollState())
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+                .padding(paddingValues)
         ) {
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
-                    .padding(paddingValues)
                     .padding(horizontal = 16.dp),
-                // .verticalScroll(rememberScrollState())
                 color = MaterialTheme.colorScheme.surface,
                 shape = RoundedCornerShape(16.dp)
             ) {
@@ -63,7 +67,6 @@ fun EditScreen() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
-                    .padding(paddingValues)
                     .padding(horizontal = 16.dp)
                     .padding(top = 12.dp),
                 color = MaterialTheme.colorScheme.surface,
@@ -75,7 +78,6 @@ fun EditScreen() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
-                    .padding(paddingValues)
                     .padding(horizontal = 16.dp)
                     .padding(top = 12.dp),
                 color = MaterialTheme.colorScheme.surface,
@@ -88,7 +90,7 @@ fun EditScreen() {
 }
 
 @Composable
-fun MainBlock() {
+private fun MainBlock() {
     Column(
         modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 16.dp)
@@ -249,7 +251,7 @@ fun MainBlock() {
 }
 
 @Composable
-fun CardBlock() {
+private fun CardBlock() {
     Column(
         modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 16.dp)
@@ -321,7 +323,7 @@ fun CardBlock() {
 }
 
 @Composable
-fun SignsBlock() {
+private fun SignsBlock() {
     Text(
         modifier = Modifier.padding(top = 16.dp),
         text = "Признаки",
@@ -360,7 +362,7 @@ fun SignsBlock() {
 }
 
 @Composable
-fun PhotoBlock() {
+private fun PhotoBlock() {
     Row(modifier = Modifier.padding(top = 16.dp)) {
         // Image(
         //     painter = Painters.empty(),
@@ -385,7 +387,7 @@ fun PhotoBlock() {
 }
 
 @Composable
-fun DefectBlock() {
+private fun DefectBlock() {
     Column(
         modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 16.dp)
