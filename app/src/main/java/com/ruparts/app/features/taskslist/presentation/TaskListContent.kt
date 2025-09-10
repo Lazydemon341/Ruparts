@@ -27,6 +27,8 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,19 +38,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.view.isVisible
 import com.ruparts.app.R
 import com.ruparts.app.features.taskslist.model.TaskListItem
 import com.ruparts.app.features.taskslist.model.TaskPriority
 import com.ruparts.app.features.taskslist.model.TaskStatus
 import com.ruparts.app.features.taskslist.model.TaskType
 import com.ruparts.app.features.taskslist.presentation.model.TaskListScreenEvent
-import java.time.LocalDate
-import java.time.temporal.ChronoUnit
 
 @Composable
 fun TaskListContent(
-    state: TaskListScreenState,
+    state: TaskListScreenStateNew,
     onEvent: (TaskListScreenEvent) -> Unit,
 ) {
     Scaffold(
@@ -140,8 +139,11 @@ private fun TaskListTab(
 @Composable
 private fun TaskList(
     onEvent: (TaskListScreenEvent) -> Unit,
-    state: TaskListScreenState
+    state: TaskListScreenStateNew
 ) {
+    val listState = remember {
+        mutableStateOf<List<TaskListItem>>(state.list)
+    }
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -152,25 +154,33 @@ private fun TaskList(
                 .background(MaterialTheme.colorScheme.surfaceContainer),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            when (state.selectedTab) {
-                TaskListScreenTab.ALL -> {
+            // state.copy(
+            //         list = when (state.selectedTab) {
+            //             TaskListScreenTab.ALL -> state.list
+            //             TaskListScreenTab.IN_WORK -> state.list.filter { it.status == TaskStatus.COMPLETED || it.status == TaskStatus.CANCELLED}
+            //             TaskListScreenTab.DONE -> state.list.filter { it.status == TaskStatus.IN_PROGRESS}
+            //         }
+            //     )
+            //
+            // when (state.selectedTab) {
+            //     TaskListScreenTab.ALL -> {
 
-                    items(state.list) { item ->
-                        if (item.status == TaskStatus.TODO) {
+                    items(listState.value, key = { it.id }) { item ->
+                        // if (item.status == TaskStatus.TODO) {
                             TaskItem(
                                 item = item,
                                 onEvent = onEvent,
                             )
-                        }
-                    }
+                        // }
+                    // }
                 }
 
-                TaskListScreenTab.IN_WORK -> TODO()
-                TaskListScreenTab.DONE -> TODO()
+                // TaskListScreenTab.IN_WORK -> TODO()
+                // TaskListScreenTab.DONE -> TODO()
             }
         }
     }
-}
+// }
 
 @Composable
 private fun TaskItem(
@@ -305,7 +315,7 @@ private fun TaskItem(
 @Composable
 private fun TaskListScreenPreview() {
     TaskListContent(
-        state = TaskListScreenState(
+        state = TaskListScreenStateNew(
             selectedTab = TaskListScreenTab.ALL,
             list = listOf(
                 TaskListItem(

@@ -14,17 +14,33 @@ class TaskMapper @Inject constructor() {
         DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss xxx")
     }
 
-    fun mapTasks(list: List<TaskDto>): List<TaskListGroup> {
+    // fun mapTasks(list: List<TaskDto>): List<TaskListGroup> {
+    //     val dateFormatter = dateFormatterLazy.value
+    //     return list
+    //         .groupBy { it.type }
+    //         .map { (type, tasks) ->
+    //             TaskListGroup(
+    //                 title = type.toDomain().displayName,
+    //                 tasks = tasks.map { task ->
+    //                     mapTask(task, dateFormatter)
+    //                 }
+    //             )
+    //         }
+    // }
+
+    fun mapTasks(list: List<TaskDto>): List<TaskListItem> {
         val dateFormatter = dateFormatterLazy.value
         return list
-            .groupBy { it.type }
-            .map { (type, tasks) ->
-                TaskListGroup(
-                    title = type.toDomain().displayName,
-                    tasks = tasks.map { task ->
-                        mapTask(task, dateFormatter)
-                    }
-                )
+            // .groupBy { it.type }
+            .map { task ->
+                // TaskListItem(
+                //     title = type.toDomain().displayName,
+                //     tasks = tasks.map { task ->
+                //         mapTask(task, dateFormatter)
+                //     }
+                    mapTask(task, dateFormatter)
+                // )
+
             }
     }
 

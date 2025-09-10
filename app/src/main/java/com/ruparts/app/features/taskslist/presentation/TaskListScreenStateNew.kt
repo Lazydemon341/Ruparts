@@ -4,7 +4,7 @@ import androidx.compose.runtime.Immutable
 import com.ruparts.app.features.taskslist.model.TaskListItem
 
 @Immutable
-data class TaskListScreenState(
+data class TaskListScreenStateNew(
     val selectedTab: TaskListScreenTab,
     val list: List<TaskListItem>,
 )

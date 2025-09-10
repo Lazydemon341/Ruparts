@@ -10,6 +10,7 @@ import com.ruparts.app.features.taskslist.data.network.model.TaskListRequestData
 import com.ruparts.app.features.taskslist.data.network.model.TaskListRequestDto
 import com.ruparts.app.features.taskslist.data.network.model.TaskListResponseDto
 import com.ruparts.app.features.taskslist.model.TaskListGroup
+import com.ruparts.app.features.taskslist.model.TaskListItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -23,7 +24,25 @@ class TaskListRepository @Inject constructor(
     private val taskLibraryRepository: TaskLibraryRepository,
 ) {
 
-    suspend fun getTaskList(): Result<List<TaskListGroup>> = withContext(Dispatchers.Default) {
+    // suspend fun getTaskList(): Result<List<TaskListGroup>> = withContext(Dispatchers.Default) {
+    //     runCoroutineCatching {
+    //         coroutineScope {
+    //             val taskLibrary = async { taskLibraryRepository.loadTaskLibrary() }
+    //             val tasks = async {
+    //                 val response = endpointService.request<TaskListRequestDto, TaskListResponseDto>(
+    //                     body = TaskListRequestDto(
+    //                         data = TaskListRequestDataDto(),
+    //                     ),
+    //                     gson = gson,
+    //                 )
+    //                 mapper.mapTasks(response.data.list)
+    //             }
+    //             taskLibrary.await()
+    //             tasks.await()
+    //         }
+    //     }
+    // }
+    suspend fun getTaskList(): Result<List<TaskListItem>> = withContext(Dispatchers.Default) {
         runCoroutineCatching {
             coroutineScope {
                 val taskLibrary = async { taskLibraryRepository.loadTaskLibrary() }
