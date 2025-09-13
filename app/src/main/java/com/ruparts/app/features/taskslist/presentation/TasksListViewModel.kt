@@ -67,7 +67,7 @@ class TasksListViewModel @Inject constructor(
         loadTasksJob?.cancel()
         loadTasksJob = viewModelScope.launch {
             isLoading.value = true
-            taskGroups.value = repository.getTaskList()
+            taskGroups.value = repository.getTaskGroups()
                 .getOrDefault(emptyList())
             isLoading.value = false
         }

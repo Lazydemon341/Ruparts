@@ -30,33 +30,33 @@ class TasksListViewModelNew @Inject constructor(
     private val repository: TaskListRepository,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow<TaskListScreenStateNew>(
-        TaskListScreenStateNew(
-            selectedTab = TaskListScreenTab.ALL,
-            list = listOf(
-                TaskListItem(
-                    id = 1,
-                    status = TaskStatus.TODO,
-                    priority = TaskPriority.LOW,
-                    title = "Заголовок задачи",
-                    description = "Описание задачи",
-                    implementer = "Кладовщик",
-                    type = TaskType.CUSTOM,
-                    createdAtDate = null,
-                    finishAtDate = null,
-                    updatedAtDate = null,
-                )
-            )
-        )
-    )
-    val state = _state.asStateFlow()
+    // private val _state = MutableStateFlow<TaskListScreenStateNew>(
+    //     TaskListScreenStateNew(
+    //         selectedTab = TaskListScreenTab.ALL,
+    //         list = listOf(
+    //             TaskListItem(
+    //                 id = 1,
+    //                 status = TaskStatus.TODO,
+    //                 priority = TaskPriority.LOW,
+    //                 title = "Заголовок задачи",
+    //                 description = "Описание задачи",
+    //                 implementer = "Кладовщик",
+    //                 type = TaskType.CUSTOM,
+    //                 createdAtDate = null,
+    //                 finishAtDate = null,
+    //                 updatedAtDate = null,
+    //             )
+    //         )
+    //     )
+    // )
+
 
     private val tabs = MutableStateFlow<TaskListScreenTab>(TaskListScreenTab.ALL)
     private val tasks = MutableStateFlow<List<TaskListItem>>(emptyList())
 
     private var loadTasksJob: Job? = null
 
-    val screenState: StateFlow<TaskListScreenStateNew> = combine(
+    val state: StateFlow<TaskListScreenStateNew> = combine(
         tasks,
         tabs
         ) { taskList, tab ->
@@ -70,6 +70,7 @@ class TasksListViewModelNew @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = initialScreenState,
         )
+    // val state = _state.asStateFlow()
 
     private fun loadTasks() {
         loadTasksJob?.cancel()
@@ -110,10 +111,10 @@ class TasksListViewModelNew @Inject constructor(
         }
     }
 
-    fun handleEvent(event: AssemblyScreenEvent) {
+    fun handleEvent(event: TaskListScreenEvent) {
         when (event) {
-            is TaskListScreenEvent.OnTabClick -> onTabClick(event.tab)
-            is TaskListScreenEvent.OnItemClick -> sendEffect(AssemblyScreenEffect.NavigateToItemDetails(event.item))
+            is TaskListScreenEvent.OnTabClick -> Unit//onTabClick(event.tab)
+            is TaskListScreenEvent.OnItemClick -> Unit//sendEffect(AssemblyScreenEffect.NavigateToItemDetails(event.item))
         }
     }
 

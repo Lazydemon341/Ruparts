@@ -24,24 +24,24 @@ class TaskListRepository @Inject constructor(
     private val taskLibraryRepository: TaskLibraryRepository,
 ) {
 
-    // suspend fun getTaskList(): Result<List<TaskListGroup>> = withContext(Dispatchers.Default) {
-    //     runCoroutineCatching {
-    //         coroutineScope {
-    //             val taskLibrary = async { taskLibraryRepository.loadTaskLibrary() }
-    //             val tasks = async {
-    //                 val response = endpointService.request<TaskListRequestDto, TaskListResponseDto>(
-    //                     body = TaskListRequestDto(
-    //                         data = TaskListRequestDataDto(),
-    //                     ),
-    //                     gson = gson,
-    //                 )
-    //                 mapper.mapTasks(response.data.list)
-    //             }
-    //             taskLibrary.await()
-    //             tasks.await()
-    //         }
-    //     }
-    // }
+    suspend fun getTaskGroups(): Result<List<TaskListGroup>> = withContext(Dispatchers.Default) {
+        runCoroutineCatching {
+            coroutineScope {
+                val taskLibrary = async { taskLibraryRepository.loadTaskLibrary() }
+                val tasks = async {
+                    val response = endpointService.request<TaskListRequestDto, TaskListResponseDto>(
+                        body = TaskListRequestDto(
+                            data = TaskListRequestDataDto(),
+                        ),
+                        gson = gson,
+                    )
+                    mapper.mapTaskGroups(response.data.list)
+                }
+                taskLibrary.await()
+                tasks.await()
+            }
+        }
+    }
     suspend fun getTaskList(): Result<List<TaskListItem>> = withContext(Dispatchers.Default) {
         runCoroutineCatching {
             coroutineScope {

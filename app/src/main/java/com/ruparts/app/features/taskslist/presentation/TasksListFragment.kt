@@ -63,7 +63,7 @@ class TasksListFragment : Fragment() {
         adapter = ExpandableTaskAdapter(
             onTaskClick = { task ->
                 findNavController().navigate(
-                    TasksListFragmentDirections.actionTaskslistFragmentToTaskFragment(task)
+                    TasksListFragmentNewDirections.actionTaskslistFragmentToTaskFragment(task)
                 )
             }
         )

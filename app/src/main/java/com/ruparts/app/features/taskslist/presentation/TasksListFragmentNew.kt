@@ -28,14 +28,13 @@ class TasksListFragmentNew : Fragment() {
                 val state by viewModel.state.collectAsState()
 
                 RupartsTheme {
-                    TaskListContent (
+                    TaskListContent(
                         state = state,
                         onEvent = viewModel::handleEvent
                     )
                 }
             }
 
-
         }
-
+    }
 }

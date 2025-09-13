@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -39,11 +40,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ruparts.app.R
+import com.ruparts.app.core.utils.formatSafely
 import com.ruparts.app.features.taskslist.model.TaskListItem
 import com.ruparts.app.features.taskslist.model.TaskPriority
 import com.ruparts.app.features.taskslist.model.TaskStatus
 import com.ruparts.app.features.taskslist.model.TaskType
 import com.ruparts.app.features.taskslist.presentation.model.TaskListScreenEvent
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun TaskListContent(
@@ -141,9 +144,6 @@ private fun TaskList(
     onEvent: (TaskListScreenEvent) -> Unit,
     state: TaskListScreenStateNew
 ) {
-    val listState = remember {
-        mutableStateOf<List<TaskListItem>>(state.list)
-    }
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -154,39 +154,25 @@ private fun TaskList(
                 .background(MaterialTheme.colorScheme.surfaceContainer),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // state.copy(
-            //         list = when (state.selectedTab) {
-            //             TaskListScreenTab.ALL -> state.list
-            //             TaskListScreenTab.IN_WORK -> state.list.filter { it.status == TaskStatus.COMPLETED || it.status == TaskStatus.CANCELLED}
-            //             TaskListScreenTab.DONE -> state.list.filter { it.status == TaskStatus.IN_PROGRESS}
-            //         }
-            //     )
-            //
-            // when (state.selectedTab) {
-            //     TaskListScreenTab.ALL -> {
-
-                    items(listState.value, key = { it.id }) { item ->
+                    items(state.list, key = { it.id }) { item ->
                         // if (item.status == TaskStatus.TODO) {
                             TaskItem(
                                 item = item,
                                 onEvent = onEvent,
                             )
-                        // }
-                    // }
                 }
-
-                // TaskListScreenTab.IN_WORK -> TODO()
-                // TaskListScreenTab.DONE -> TODO()
             }
         }
     }
-// }
 
 @Composable
 private fun TaskItem(
     item: TaskListItem,
     onEvent: (TaskListScreenEvent) -> Unit,
 ) {
+
+    val dateFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy")
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -206,21 +192,21 @@ private fun TaskItem(
                             painter = painterResource(id = R.drawable.arrow_up),
                             contentDescription = null,
                             modifier = Modifier.size(24.dp),
-                            tint = MaterialTheme.colorScheme.surfaceContainer
+                            tint = Color(0xFFFF1644)
                         )
                     TaskPriority.LOW ->
                         Icon(
                         painter = painterResource(id = R.drawable.arrow_down),
                         contentDescription = null,
                         modifier = Modifier.size(24.dp),
-                        tint = MaterialTheme.colorScheme.surfaceContainer
+                        tint = Color(0xFF1E88E5)
                     )
                     TaskPriority.MEDIUM ->
                         Icon(
                             painter = painterResource(id = R.drawable.equal),
                             contentDescription = null,
                             modifier = Modifier.size(24.dp),
-                            tint = MaterialTheme.colorScheme.surfaceContainer
+                            tint = Color(0xFFFF9800)
                         )
                 }
                 Row(
@@ -233,12 +219,14 @@ private fun TaskItem(
                         text = item.title,
                         style = TextStyle(fontWeight = FontWeight.Bold),
                         fontSize = 16.sp,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.width(250.dp)
                     )
                     Text(
-                        text = item.status.name.toString(),
+                        text = item.status.textEquivalent,
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.wrapContentWidth()
                     )
                 }
             }
@@ -254,11 +242,11 @@ private fun TaskItem(
                     painter = painterResource(id = R.drawable.clock_image),
                     contentDescription = null,
                     modifier = Modifier.size(16.dp),
-                    tint = MaterialTheme.colorScheme.surfaceContainer
+                    tint = MaterialTheme.colorScheme.primary
                 )
                 Text(
                     modifier = Modifier.padding(start = 4.dp),
-                    text = item.finishAtDate.toString(),
+                    text = item.finishAtDate?.formatSafely(dateFormatter).orEmpty(),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
