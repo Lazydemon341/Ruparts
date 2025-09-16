@@ -7,6 +7,7 @@ import com.ruparts.app.features.taskslist.model.TaskListItem
 data class TaskListScreenStateNew(
     val selectedTab: TaskListScreenTab,
     val list: List<TaskListItem>,
+    val isLoading: Boolean = false
 )
 
 enum class TaskListScreenTab {

@@ -165,14 +165,13 @@ private fun TaskList(
         }
     }
 
+private val dateFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy")
+
 @Composable
 private fun TaskItem(
     item: TaskListItem,
     onEvent: (TaskListScreenEvent) -> Unit,
 ) {
-
-    val dateFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy")
-
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -226,7 +225,6 @@ private fun TaskItem(
                         text = item.status.textEquivalent,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.wrapContentWidth()
                     )
                 }
             }
@@ -246,7 +244,9 @@ private fun TaskItem(
                 )
                 Text(
                     modifier = Modifier.padding(start = 4.dp),
-                    text = item.finishAtDate?.formatSafely(dateFormatter).orEmpty(),
+                    text = remember(item.finishAtDate) {
+                        item.finishAtDate?.formatSafely(dateFormatter).orEmpty()
+                    },
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )

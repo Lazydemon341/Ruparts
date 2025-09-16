@@ -13,12 +13,14 @@ import com.ruparts.app.features.taskslist.model.TaskType
 import com.ruparts.app.features.taskslist.presentation.model.TaskListScreenEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -30,39 +32,24 @@ class TasksListViewModelNew @Inject constructor(
     private val repository: TaskListRepository,
 ) : ViewModel() {
 
-    // private val _state = MutableStateFlow<TaskListScreenStateNew>(
-    //     TaskListScreenStateNew(
-    //         selectedTab = TaskListScreenTab.ALL,
-    //         list = listOf(
-    //             TaskListItem(
-    //                 id = 1,
-    //                 status = TaskStatus.TODO,
-    //                 priority = TaskPriority.LOW,
-    //                 title = "Заголовок задачи",
-    //                 description = "Описание задачи",
-    //                 implementer = "Кладовщик",
-    //                 type = TaskType.CUSTOM,
-    //                 createdAtDate = null,
-    //                 finishAtDate = null,
-    //                 updatedAtDate = null,
-    //             )
-    //         )
-    //     )
-    // )
-
-
+    private val searchQuery = MutableStateFlow("")
     private val tabs = MutableStateFlow<TaskListScreenTab>(TaskListScreenTab.ALL)
     private val tasks = MutableStateFlow<List<TaskListItem>>(emptyList())
+    private val isLoading = MutableStateFlow(false)
 
     private var loadTasksJob: Job? = null
 
+    @OptIn(FlowPreview::class)
     val state: StateFlow<TaskListScreenStateNew> = combine(
         tasks,
-        tabs
-        ) { taskList, tab ->
+        tabs,
+        searchQuery.debounce(300L),
+        isLoading,
+        ) { taskList, tab, query, loading ->
         TaskListScreenStateNew(
-            list = taskList,
-            selectedTab = tab
+            list = performFilter(taskList, tab, query),
+            selectedTab = tab,
+            isLoading = loading
         )
     }.onStart { loadTasks() }
         .stateIn(
@@ -70,15 +57,14 @@ class TasksListViewModelNew @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = initialScreenState,
         )
-    // val state = _state.asStateFlow()
 
     private fun loadTasks() {
         loadTasksJob?.cancel()
         loadTasksJob = viewModelScope.launch {
-            // isLoading.value = true
+            isLoading.value = true
             tasks.value = repository.getTaskList()
                 .getOrDefault(emptyList())
-            // isLoading.value = false
+            isLoading.value = false
         }
     }
 
@@ -87,28 +73,25 @@ class TasksListViewModelNew @Inject constructor(
         tab: TaskListScreenTab,
         query: String
     ): List<TaskListItem> {
-        if (tab == TaskListScreenTab.ALL && query.isEmpty()) {
-            return taskList
-        }
-
-        // val resultList = mutableListOf<TaskListGroup>()
-        // for (group in taskList) {
-        //     val filtered = group.tasks.filter {
-        //         (status == null || it.status == status)
-        //             && it.title.containsNormalized(query)
-        //     }
-        //     if (filtered.isNotEmpty()) {
-        //         resultList.add(group.copy(tasks = filtered))
-        //     }
-        // }
 
         return taskList.filter { task ->
+            if (tab == TaskListScreenTab.ALL && query.isEmpty()) {
+                return taskList
+            }
             when (tab) {
                 TaskListScreenTab.ALL -> true
                 TaskListScreenTab.DONE -> task.status == TaskStatus.CANCELLED || task.status == TaskStatus.COMPLETED
                 TaskListScreenTab.IN_WORK -> task.status == TaskStatus.TODO
             }
+            task.title.containsNormalized(query)
         }
+    }
+
+    private fun String.containsNormalized(value: String): Boolean {
+        fun normalize(input: String): String {
+            return input.lowercase().replace('ё', 'е')
+        }
+        return normalize(this).contains(normalize(value))
     }
 
     fun handleEvent(event: TaskListScreenEvent) {
@@ -118,12 +101,14 @@ class TasksListViewModelNew @Inject constructor(
         }
     }
 
-
-
+    fun onSearchQueryChange(query: String) {
+        searchQuery.value = query
+    }
 
 }
 
 private val initialScreenState = TaskListScreenStateNew(
     list = emptyList(),
-    selectedTab = TaskListScreenTab.ALL
+    selectedTab = TaskListScreenTab.ALL,
+    isLoading = true
 )
