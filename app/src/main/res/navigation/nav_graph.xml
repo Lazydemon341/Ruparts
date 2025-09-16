@@ -27,7 +27,7 @@
 
     <fragment
         android:id="@+id/taskslistFragment"
-        android:name="com.ruparts.app.features.taskslist.presentation.TasksListFragment"
+        android:name="com.ruparts.app.features.taskslist.presentation.TasksListFragmentNew"
         android:label="Задачи"
         tools:layout="@layout/fragment_taskslist">
 

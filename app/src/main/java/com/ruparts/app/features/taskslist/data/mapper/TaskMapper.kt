@@ -14,7 +14,7 @@ class TaskMapper @Inject constructor() {
         DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss xxx")
     }
 
-    fun mapTasks(list: List<TaskDto>): List<TaskListGroup> {
+    fun mapTaskGroups(list: List<TaskDto>): List<TaskListGroup> {
         val dateFormatter = dateFormatterLazy.value
         return list
             .groupBy { it.type }
@@ -22,17 +22,24 @@ class TaskMapper @Inject constructor() {
                 TaskListGroup(
                     title = type.toDomain().displayName,
                     tasks = tasks.map { task ->
-                        mapTask(task, dateFormatter)
+                        mapTask(task)
                     }
                 )
             }
     }
 
-    fun mapTask(task: TaskDto): TaskListItem {
-        return mapTask(task, dateFormatterLazy.value)
+    fun mapTasks(list: List<TaskDto>): List<TaskListItem> {
+        return list
+            .map { task ->
+                    mapTask(task)
+            }
     }
 
-    private fun mapTask(task: TaskDto, dateFormatter: DateTimeFormatter): TaskListItem {
+    // fun mapTask(task: TaskDto): TaskListItem {
+    //     return mapTask(task)
+    // }
+
+    fun mapTask(task: TaskDto): TaskListItem {
         return TaskListItem(
             id = task.id,
             title = task.title,
@@ -41,9 +48,9 @@ class TaskMapper @Inject constructor() {
             priority = task.priority.toDomain(),
             implementer = task.implementer,
             type = task.type.toDomain(),
-            createdAtDate = task.createdAt.toLocalDate(dateFormatter),
-            finishAtDate = task.finishAt.toLocalDate(dateFormatter),
-            updatedAtDate = task.updatedAt.toLocalDate(dateFormatter),
+            createdAtDate = task.createdAt.toLocalDate(dateFormatterLazy.value),
+            finishAtDate = task.finishAt.toLocalDate(dateFormatterLazy.value),
+            updatedAtDate = task.updatedAt.toLocalDate(dateFormatterLazy.value),
         )
     }
 }
