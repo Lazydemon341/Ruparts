@@ -8,19 +8,24 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.SearchView
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.navigation.findNavController
 import com.ruparts.app.R
 import com.ruparts.app.core.ui.theme.RupartsTheme
+import com.ruparts.app.features.task.presentation.TaskFragment
+import com.ruparts.app.features.taskslist.presentation.model.TaskListScreenEffect
 import dagger.hilt.android.AndroidEntryPoint
-import kotlin.getValue
 
 @AndroidEntryPoint
 class TasksListFragmentNew : Fragment() {
@@ -34,19 +39,40 @@ class TasksListFragmentNew : Fragment() {
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
+                LaunchedEffect(Unit) {
+                    viewModel.effect.collect { effect ->
+                        when (effect) {
+                            is TaskListScreenEffect.NavigateToItemDetails -> {
+                                findNavController().navigate(
+                                    TasksListFragmentNewDirections.actionTaskslistFragmentToTaskFragment(effect.item)
+                                )
+                            }
+                        }
+                    }
+                }
+
                 val state by viewModel.state.collectAsState()
-
-                setupMenu()
-
                 RupartsTheme {
                     TaskListContent(
                         state = state,
-                        onEvent = viewModel::handleEvent
+                        onEvent = viewModel::handleEvent,
                     )
                 }
             }
-
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                requireActivity().finish()
+            }
+        })
+
+        setupMenu()
+        setupTaskUpdateListener()
     }
 
     private fun setupMenu() {
@@ -94,6 +120,12 @@ class TasksListFragmentNew : Fragment() {
         searchFrame.background = GradientDrawable().apply {
             cornerRadius = resources.getDimension(R.dimen.search_corner_radius)
             setColor(ContextCompat.getColor(requireContext(), R.color.white_40))
+        }
+    }
+
+    private fun setupTaskUpdateListener() {
+        setFragmentResultListener(TaskFragment.TASK_UPDATED_REQUEST_KEY) { _, _ ->
+            viewModel.refreshTasks()
         }
     }
 }

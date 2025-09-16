@@ -2,29 +2,24 @@ package com.ruparts.app.features.taskslist.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ruparts.app.features.assembly.presentation.model.AssemblyScreenEffect
-import com.ruparts.app.features.assembly.presentation.model.AssemblyScreenEvent
 import com.ruparts.app.features.taskslist.data.repository.TaskListRepository
-import com.ruparts.app.features.taskslist.model.TaskListGroup
 import com.ruparts.app.features.taskslist.model.TaskListItem
-import com.ruparts.app.features.taskslist.model.TaskPriority
 import com.ruparts.app.features.taskslist.model.TaskStatus
-import com.ruparts.app.features.taskslist.model.TaskType
+import com.ruparts.app.features.taskslist.presentation.model.TaskListScreenEffect
 import com.ruparts.app.features.taskslist.presentation.model.TaskListScreenEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.plus
 import javax.inject.Inject
 
 @HiltViewModel
@@ -39,13 +34,16 @@ class TasksListViewModelNew @Inject constructor(
 
     private var loadTasksJob: Job? = null
 
+    private val _effect = MutableSharedFlow<TaskListScreenEffect>()
+    val effect = _effect.asSharedFlow()
+
     @OptIn(FlowPreview::class)
     val state: StateFlow<TaskListScreenStateNew> = combine(
         tasks,
         tabs,
         searchQuery.debounce(300L),
         isLoading,
-        ) { taskList, tab, query, loading ->
+    ) { taskList, tab, query, loading ->
         TaskListScreenStateNew(
             list = performFilter(taskList, tab, query),
             selectedTab = tab,
@@ -53,10 +51,14 @@ class TasksListViewModelNew @Inject constructor(
         )
     }.onStart { loadTasks() }
         .stateIn(
-            scope = viewModelScope + Dispatchers.Default,
+            scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = initialScreenState,
         )
+
+    fun refreshTasks() {
+        loadTasks()
+    }
 
     private fun loadTasks() {
         loadTasksJob?.cancel()
@@ -73,17 +75,17 @@ class TasksListViewModelNew @Inject constructor(
         tab: TaskListScreenTab,
         query: String
     ): List<TaskListItem> {
-
+        if (tab == TaskListScreenTab.ALL && query.isEmpty()) {
+            return taskList
+        }
         return taskList.filter { task ->
-            if (tab == TaskListScreenTab.ALL && query.isEmpty()) {
-                return taskList
-            }
-            when (tab) {
+            val statusFits = when (tab) {
                 TaskListScreenTab.ALL -> true
-                TaskListScreenTab.DONE -> task.status == TaskStatus.CANCELLED || task.status == TaskStatus.COMPLETED
-                TaskListScreenTab.IN_WORK -> task.status == TaskStatus.TODO
+                TaskListScreenTab.DONE -> task.status == TaskStatus.COMPLETED
+                TaskListScreenTab.IN_WORK -> task.status == TaskStatus.IN_PROGRESS
             }
-            task.title.containsNormalized(query)
+            return@filter statusFits
+                && (task.title.containsNormalized(query) || task.description.containsNormalized(query))
         }
     }
 
@@ -96,8 +98,13 @@ class TasksListViewModelNew @Inject constructor(
 
     fun handleEvent(event: TaskListScreenEvent) {
         when (event) {
-            is TaskListScreenEvent.OnTabClick -> Unit//onTabClick(event.tab)
-            is TaskListScreenEvent.OnItemClick -> Unit//sendEffect(AssemblyScreenEffect.NavigateToItemDetails(event.item))
+            is TaskListScreenEvent.OnTabClick -> {
+                if (!state.value.isLoading) {
+                    tabs.value = event.tab
+                }
+            }
+
+            is TaskListScreenEvent.OnItemClick -> sendEffect(TaskListScreenEffect.NavigateToItemDetails(event.item))
         }
     }
 
@@ -105,6 +112,11 @@ class TasksListViewModelNew @Inject constructor(
         searchQuery.value = query
     }
 
+    private fun sendEffect(effect: TaskListScreenEffect) {
+        viewModelScope.launch {
+            _effect.emit(effect)
+        }
+    }
 }
 
 private val initialScreenState = TaskListScreenStateNew(
