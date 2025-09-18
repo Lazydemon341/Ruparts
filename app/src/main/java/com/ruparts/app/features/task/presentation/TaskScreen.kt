@@ -2,6 +2,7 @@ package com.ruparts.app.features.task.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -13,22 +14,31 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.sp
 import com.ruparts.app.R
 import com.ruparts.app.core.ui.theme.RupartsThemeColors
 import com.ruparts.app.core.utils.formatSafely
@@ -53,15 +63,18 @@ fun TaskScreen(
         ),
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp)
                 .fillMaxSize()
         ) {
-            Main(task)
-            Spacer(modifier = Modifier.height(32.dp))
-            Attributes()
+            Column {
+                Main(task)
+                Spacer(modifier = Modifier.height(32.dp))
+                Attributes()
+            }
+            BottomButtons(modifier = Modifier.align(Alignment.BottomCenter))
         }
     }
 }
@@ -238,7 +251,10 @@ private fun Attributes() {
                 .padding(top = 12.dp)
                 .height(56.dp)
                 .fillMaxWidth()
-                .background(shape = RoundedCornerShape(CornerSize(8.dp)), color = MaterialTheme.colorScheme.secondaryContainer),
+                .background(
+                    shape = RoundedCornerShape(CornerSize(8.dp)),
+                    color = MaterialTheme.colorScheme.secondaryContainer
+                ),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -265,6 +281,76 @@ private fun Attributes() {
                     .padding(end = 16.dp)
                     .size(24.dp)
             )
+        }
+    }
+}
+
+@Composable
+private fun BottomButtons(
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        modifier = modifier,
+        shadowElevation = 8.dp,
+        color = MaterialTheme.colorScheme.surfaceContainer,
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .navigationBarsPadding(),
+        ) {
+            Button(
+                onClick = { },
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 20.dp)
+                    .padding(top = 8.dp, bottom = 24.dp)
+                    .height(56.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = colorResource(id = R.color.error90)
+                )
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Cancel,
+                    tint = MaterialTheme.colorScheme.error,
+                    contentDescription = "",
+                    modifier = Modifier.size(24.dp)
+                )
+                Text(
+                    modifier = Modifier.padding(start = 8.dp),
+                    text = "Отклонить",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+
+            Button(
+                onClick = { },
+                modifier = Modifier
+                    .padding(start = 16.dp, end = 20.dp)
+                    .padding(top = 8.dp, bottom = 24.dp)
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .height(56.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                )
+            ) {
+                Icon(
+                    imageVector = Icons.Default.PlayArrow,
+                    tint = MaterialTheme.colorScheme.onPrimary,
+                    contentDescription = "",
+                    modifier = Modifier.size(24.dp)
+                )
+                Text(
+                    modifier = Modifier.padding(start = 8.dp),
+                    text = "В работу",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+            }
         }
     }
 }
